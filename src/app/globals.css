@@ -6,7 +6,7 @@
 
 :root {
   /* Brand Colors - Sage/Emerald Theme */
-  --primary: oklch(0.45 0.15 145);
+  --primary: #708735;
   /* Deep Emerald Green */
   --primary-foreground: oklch(0.985 0 0);
   /* White */
@@ -35,7 +35,7 @@
   /* Light Sage Border */
   --input: oklch(0.92 0.02 145);
   /* Light Sage Input */
-  --ring: oklch(0.45 0.15 145);
+  --ring: #708735;
   /* Ring matches Primary */
 
   /* Font Families */

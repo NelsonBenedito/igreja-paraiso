@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,12 +27,14 @@ export default function Navbar() {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center text-primary-foreground transition-transform group-hover:scale-110">
-                <Leaf size={18} />
-              </div>
-              <span className="font-serif font-bold text-xl tracking-tight text-primary">
-                IGREJA PARAÍSO
-              </span>
+              <Image
+                src="/IgrejaParaiso.webp"
+                alt="Igreja Paraíso"
+                width={180}
+                height={50}
+                className="h-12 w-auto object-contain transition-transform group-hover:scale-105"
+                priority
+              />
             </Link>
           </div>
 
