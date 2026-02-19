@@ -104,7 +104,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">Endereço</h3>
-                    <p className="text-muted-foreground">Rua das Oliveiras, 123<br />Jardim Paraíso, São Paulo - SP</p>
+                    <p className="text-muted-foreground">Rua Helmut Gums, 438 - Virada<br />Santa Maria de Jetibá - ES, 29645-000</p>
                   </div>
                 </div>
 
@@ -120,7 +120,7 @@ export default function Home() {
               </div>
 
               <Button className="w-fit" variant="outline" asChild>
-                <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="gap-2">
+                <a href="https://maps.app.goo.gl/UsxnnZ69miAvFzvs6" target="_blank" rel="noopener noreferrer" className="gap-2">
                   Ver no Google Maps <ArrowRight className="w-4 h-4" />
                 </a>
               </Button>
