@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import FadeIn from "@/components/animations/FadeIn";
+import LatestStream from "@/components/LatestStream";
 
 export default function Home() {
   return (
@@ -35,6 +36,9 @@ export default function Home() {
           </FadeIn>
         </div>
       </section>
+
+      {/* Latest Stream Section */}
+      <LatestStream />
 
       {/* Services Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">

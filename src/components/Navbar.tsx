@@ -12,6 +12,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export default function Navbar() {
   const navLinks = [
@@ -52,6 +53,7 @@ export default function Navbar() {
             <Button asChild variant="default" className="bg-primary hover:bg-primary/90 text-primary-foreground">
               <Link href="/membros">Área de Membros</Link>
             </Button>
+            <ModeToggle />
           </div>
 
           {/* Mobile Navigation */}
@@ -83,6 +85,9 @@ export default function Navbar() {
                       <Link href="/membros">Área de Membros</Link>
                     </Button>
                   </SheetClose>
+                  <div className="flex justify-center mt-4">
+                    <ModeToggle />
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>

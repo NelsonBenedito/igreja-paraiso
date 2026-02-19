@@ -43,8 +43,8 @@
   --font-serif: var(--font-playfair);
 
   --radius: 0.625rem;
-  --background: oklch(0.99 0.01 145);
-  /* Off-white / Very faint sage tint */
+  --background: #f1f1f1;
+  /* Off-white / Very faint sage tint -> Custom Light Gray */
   --foreground: oklch(0.145 0 0);
 
   --popover: oklch(1 0 0);
