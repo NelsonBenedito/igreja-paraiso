@@ -2,9 +2,16 @@
 import { google } from 'googleapis';
 
 export async function getLastStream() {
+    const apiKey = process.env.YOUTUBE_API_KEY;
+
+    if (!apiKey || apiKey === 'your_api_key_here') {
+        console.warn('YOUTUBE_API_KEY is missing or invalid. YouTube integration disabled.');
+        return null;
+    }
+
     const youtube = google.youtube({
         version: 'v3',
-        auth: process.env.YOUTUBE_API_KEY,
+        auth: apiKey,
     });
 
     const channelHandle = 'ibrejetibaoficial';

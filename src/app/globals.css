@@ -5,21 +5,21 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Brand Colors - Sage/Emerald Theme */
-  --primary: #708735;
-  /* Deep Emerald Green */
+  /* Brand Colors - Igreja Paraíso */
+  --primary: #708836;
+  /* Brand Green */
   --primary-foreground: oklch(0.985 0 0);
   /* White */
 
-  --secondary: oklch(0.96 0.02 145);
-  /* Very Light Sage */
-  --secondary-foreground: oklch(0.205 0 0);
-  /* Dark Text */
+  /* Brand Blue */
+  --secondary: #334c71;
+  --secondary-foreground: oklch(0.985 0 0);
+  /* White */
 
-  --accent: oklch(0.75 0.14 75);
-  /* Soft Gold/Amber */
-  --accent-foreground: oklch(0.205 0 0);
-  /* Dark Text */
+  /* Brand Blue Accent */
+  --accent: #334c71;
+  --accent-foreground: oklch(0.985 0 0);
+  /* White */
 
   --muted: oklch(0.96 0.01 145);
   /* Muted Sage */
@@ -35,7 +35,8 @@
   /* Light Sage Border */
   --input: oklch(0.92 0.02 145);
   /* Light Sage Input */
-  --ring: #708735;
+  /* Ring matches Primary */
+  --ring: #708836;
   /* Ring matches Primary */
 
   /* Font Families */
@@ -138,13 +139,14 @@ h6 {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+  --primary: #708836;
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: #334c71;
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  /* Brand Blue Accent */
+  --accent: #334c71;
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);

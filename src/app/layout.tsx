@@ -33,6 +33,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body
+        suppressHydrationWarning
         className={`${outfit.variable} ${playfair.variable} antialiased min-h-screen flex flex-col`}
       >
         <ThemeProvider

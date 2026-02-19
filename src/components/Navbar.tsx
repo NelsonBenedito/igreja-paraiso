@@ -16,9 +16,11 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 export default function Navbar() {
   const navLinks = [
-    { href: "/", label: "Início" },
-    { href: "/sobre", label: "Sobre Nós" },
-    { href: "/eventos", label: "Eventos" },
+    { href: "#inicio", label: "Início" },
+    { href: "#sobre", label: "Sobre" },
+    { href: "#programacao", label: "Programação" },
+    { href: "#mensagens", label: "Mensagens" },
+    { href: "#onde", label: "Onde estamos" },
   ];
 
   return (
@@ -51,7 +53,7 @@ export default function Navbar() {
               </Link>
             ))}
             <Button asChild variant="default" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Link href="/membros">Área de Membros</Link>
+              <Link href="#voluntario">Seja um Voluntário</Link>
             </Button>
             <ModeToggle />
           </div>
@@ -65,28 +67,47 @@ export default function Navbar() {
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right">
-                <SheetHeader>
-                  <SheetTitle className="font-serif text-left">IGREJA PARAÍSO</SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col gap-4 mt-8">
-                  {navLinks.map((link) => (
-                    <SheetClose asChild key={link.href}>
-                      <Link
-                        href={link.href}
-                        className="text-lg font-medium text-foreground hover:text-primary transition-colors"
-                      >
-                        {link.label}
-                      </Link>
+              <SheetContent side="right" className="w-[300px] sm:w-[400px] flex flex-col justify-between bg-background/95 backdrop-blur-xl border-l-primary/10">
+                <div className="flex flex-col h-full">
+                  <SheetHeader className="mb-8 items-center text-center">
+                    <SheetTitle className="sr-only">Menu de Navegação</SheetTitle>
+                    <div className="relative w-40 h-16 mb-2">
+                      <Image
+                        src="/IgrejaParaiso.webp"
+                        alt="Igreja Paraíso"
+                        fill
+                        className="object-contain"
+                        priority
+                      />
+                    </div>
+                  </SheetHeader>
+
+                  <nav className="flex flex-col gap-6 flex-1 px-2">
+                    {navLinks.map((link) => (
+                      <SheetClose asChild key={link.href}>
+                        <Link
+                          href={link.href}
+                          className="flex items-center justify-between text-lg font-medium text-foreground/80 hover:text-primary transition-all p-2 rounded-lg hover:bg-primary/5 group border-b border-transparent hover:border-border"
+                        >
+                          <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
+                          {/* Optional: Add an icon or arrow here if desired */}
+                        </Link>
+                      </SheetClose>
+                    ))}
+                  </nav>
+
+                  <div className="flex flex-col gap-4 mt-auto pb-8 px-2">
+                    <div className="w-full h-px bg-border my-2 opacity-50" />
+                    <SheetClose asChild>
+                      <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-md h-12 text-base">
+                        <Link href="#voluntario">Seja um Voluntário</Link>
+                      </Button>
                     </SheetClose>
-                  ))}
-                  <SheetClose asChild>
-                    <Button asChild className="w-full mt-4">
-                      <Link href="/membros">Área de Membros</Link>
-                    </Button>
-                  </SheetClose>
-                  <div className="flex justify-center mt-4">
-                    <ModeToggle />
+
+                    <div className="flex items-center justify-center gap-4 py-2 text-sm text-muted-foreground">
+                      <span>Tema:</span>
+                      <ModeToggle />
+                    </div>
                   </div>
                 </div>
               </SheetContent>

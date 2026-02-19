@@ -1,46 +1,45 @@
 
 import Link from "next/link"
-import { login } from "@/app/auth/actions"
+import { signup } from "@/app/auth/actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
-export default function LoginPage() {
+export default function SignupPage() {
     return (
         <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] bg-muted/50 px-4 py-12">
             <Card className="w-full max-w-sm">
                 <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-bold font-serif text-center">Entrar na Área de Membros</CardTitle>
+                    <CardTitle className="text-2xl font-bold font-serif text-center">Criar Conta</CardTitle>
                     <CardDescription className="text-center">
-                        Digite seu email e senha para acessar
+                        Preencha seus dados para se cadastrar
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form action={login} className="space-y-4">
+                    <form action={signup} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="name">Nome Completo</Label>
+                            <Input id="name" name="name" type="text" placeholder="Seu nome" required />
+                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input id="email" name="email" type="email" placeholder="seu@email.com" required />
                         </div>
                         <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <Label htmlFor="password">Senha</Label>
-                                <Link href="#" className="text-sm text-muted-foreground hover:underline">
-                                    Esqueceu a senha?
-                                </Link>
-                            </div>
-                            <Input id="password" name="password" type="password" required />
+                            <Label htmlFor="password">Senha</Label>
+                            <Input id="password" name="password" type="password" required minLength={6} />
                         </div>
                         <Button type="submit" className="w-full">
-                            Entrar
+                            Cadastrar
                         </Button>
                     </form>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-2 border-t pt-6 text-sm text-center text-muted-foreground">
                     <div>
-                        Não tem uma conta?{" "}
-                        <Link href="/cadastro" className="text-primary hover:underline font-medium">
-                            Cadastre-se
+                        Já tem uma conta?{" "}
+                        <Link href="/login" className="text-primary hover:underline font-medium">
+                            Faça Login
                         </Link>
                     </div>
                 </CardFooter>
