@@ -242,9 +242,9 @@ export default function AdminEventosPage() {
 
             {/* Slide-in Form Panel */}
             {showForm && (
-                <div className="fixed inset-0 z-50 flex">
+                <div className="fixed inset-0 z-[100] flex">
                     <div className="flex-1 bg-black/60 backdrop-blur-sm" onClick={closeForm} />
-                    <div className="w-full max-w-lg bg-slate-900 border-l border-slate-800 h-full overflow-y-auto shadow-2xl">
+                    <div className="w-full max-w-lg bg-slate-900 border-l border-slate-800 h-full overflow-y-auto shadow-2xl pb-32">
                         <div className="p-7">
                             <div className="flex items-center justify-between mb-7">
                                 <h2 className="text-xl font-black text-white">
@@ -276,7 +276,7 @@ export default function AdminEventosPage() {
                                     />
                                 </Field>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <Field label="Data *">
                                         <input
                                             required
@@ -290,7 +290,7 @@ export default function AdminEventosPage() {
                                         <select
                                             value={form.tag ?? ''}
                                             onChange={(e) => setForm({ ...form, tag: e.target.value })}
-                                            className="input-dark"
+                                            className="input-dark appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%2364748b%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22m6%208%204%204%204-4%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[right_0.5rem_center] bg-no-repeat pr-10"
                                         >
                                             <option value="">Sem categoria</option>
                                             {TAGS.map((t) => <option key={t} value={t}>{t}</option>)}
@@ -298,7 +298,7 @@ export default function AdminEventosPage() {
                                     </Field>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <Field label="Horário início">
                                         <input
                                             type="time"
@@ -376,18 +376,31 @@ export default function AdminEventosPage() {
 
             <style jsx global>{`
                 .input-dark {
+                    display: block;
                     width: 100%;
+                    box-sizing: border-box;
                     background: #0f172a;
                     border: 1px solid #1e293b;
                     border-radius: 0.75rem;
-                    padding: 0.65rem 0.9rem;
+                    padding: 0.75rem 1rem;
                     color: #e2e8f0;
-                    font-size: 0.875rem;
+                    font-size: 0.95rem;
                     outline: none;
-                    transition: border-color 0.2s;
+                    transition: border-color 0.2s, background-color 0.2s;
+                    appearance: none;
+                    -webkit-appearance: none;
                 }
-                .input-dark:focus { border-color: #3b82f6; }
-                .input-dark option { background: #1e293b; }
+                .input-dark:focus { 
+                    border-color: #3b82f6; 
+                    background: #1e293b;
+                }
+                .input-dark option { background: #0f172a; }
+
+                /* Ajuste específico para garantir que data e hora não "vazem" no mobile */
+                input[type="date"].input-dark,
+                input[type="time"].input-dark {
+                    min-height: 3rem; /* Garante altura consistente */
+                }
             `}</style>
         </div>
     )
