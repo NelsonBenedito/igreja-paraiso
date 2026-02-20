@@ -90,27 +90,6 @@ const Header: React.FC<{ user?: User | null }> = ({ user }) => {
                                     {item.label}
                                 </a>
                             ))}
-                            <div className="flex flex-col gap-2 md:gap-4 mt-4 md:mt-8">
-                                {user ? (
-                                    <SlideInButton
-                                        href="/membros"
-                                        text="Acessar"
-                                        className="border-2 border-paraiso-blue text-paraiso-blue w-full flex justify-center"
-                                    />
-                                ) : (
-                                    <SlideInButton
-                                        href="/login"
-                                        text="Área de Membros"
-                                        className="border-2 border-paraiso-blue text-paraiso-blue w-full flex justify-center"
-                                    />
-                                )}
-                                <SwapButton
-                                    href="/#contribuir"
-                                    text="Contribuir Agora"
-                                    className="w-full"
-                                    onClick={() => setIsOpen(false)}
-                                />
-                            </div>
                         </div>
                     </motion.div>
                 )}
