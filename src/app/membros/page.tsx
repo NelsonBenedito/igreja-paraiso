@@ -3,8 +3,33 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { signout } from '@/app/auth/actions'
 import { Button } from "@/components/ui/button"
-import { LogOut, User, Calendar, BookOpen, Heart, Radio, MapPin, Search, Bell, Settings } from "lucide-react"
+import { LogOut, User, Calendar, BookOpen, Heart, Radio, Shield } from "lucide-react"
 import EditProfileModal from "@/components/membros/EditProfileModal"
+import { RoleBadgeList } from "@/components/membros/RoleBadge"
+import ManageRolesModal from "@/components/membros/ManageRolesModal"
+import type { Role } from '@/types'
+
+async function getUserRoles(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<Role[]> {
+    // Step 1: get the role IDs for this user
+    const { data: userRoleData } = await supabase
+        .from('user_roles')
+        .select('role_id')
+        .eq('user_id', userId)
+
+    const roleIds = userRoleData?.map((r: any) => r.role_id) ?? []
+
+    // Short-circuit: avoid .in('id', []) which causes a PostgREST 500
+    if (roleIds.length === 0) return []
+
+    // Step 2: fetch the role details
+    const { data, error } = await supabase
+        .from('roles')
+        .select('id, name, label, color, description')
+        .in('id', roleIds)
+
+    if (error || !data) return []
+    return data as Role[]
+}
 
 export default async function MembersPage() {
     const supabase = await createClient()
@@ -20,23 +45,22 @@ export default async function MembersPage() {
     const userName = user.user_metadata.full_name || user.email?.split('@')[0] || "Membro";
     const firstName = userName.split(' ')[0];
 
+    // Fetch user's roles server-side
+    const userRoles = await getUserRoles(supabase, user.id)
+    const isAdmin = userRoles.some((r) => r.name === 'admin')
+
     return (
         <div className="min-h-screen bg-slate-50 pb-20 pt-24">
-            {/* Top Bar (Mobile/Desktop) - blending with main header but adding dashboard specific context if needed. 
-                Actually, since the transparent header is fixed, we need padding-top. 
-                The main header is visible. We will create a dashboard container.
-            */}
-
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
                 {/* Welcome Section */}
                 <div className="flex flex-col md:flex-row justify-between items-end md:items-center mb-12 gap-6 relative">
                     <div className="relative z-10">
-                        <div className="flex items-center gap-2 mb-2">
-                            <span className="px-3 py-1 rounded-full bg-paraiso-green/10 text-paraiso-green text-xs font-black uppercase tracking-widest border border-paraiso-green/20">
-                                Membro
-                            </span>
+                        {/* Cargo Badges */}
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                            <RoleBadgeList roles={userRoles} emptyLabel="Membro" />
                         </div>
+
                         <h1 className="text-4xl md:text-5xl font-black text-paraiso-blue-dark tracking-tighter">
                             OLÁ, <span className="text-paraiso-green uppercase">{firstName}</span>
                         </h1>
@@ -58,7 +82,7 @@ export default async function MembersPage() {
                 {/* Dashboard Grid - Bento Style */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                    {/* Main Feature Card - Live Stream or Daily Devotional */}
+                    {/* Main Feature Card - Live Stream */}
                     <div className="md:col-span-2 lg:col-span-2 row-span-2 relative group overflow-hidden rounded-[2.5rem] bg-paraiso-blue-dark shadow-xl">
                         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2673&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-30 transition-opacity duration-700 group-hover:scale-105 transform"></div>
                         <div className="absolute inset-0 bg-gradient-to-t from-paraiso-blue-dark via-transparent to-transparent"></div>
@@ -93,7 +117,6 @@ export default async function MembersPage() {
                             </div>
                             <h3 className="text-xl font-bold text-slate-800 mb-1">{userName}</h3>
                             <p className="text-slate-400 text-sm mb-4">Atualize seus dados e preferências.</p>
-
                             <EditProfileModal user={user} />
                         </div>
                     </div>
@@ -154,9 +177,39 @@ export default async function MembersPage() {
                         </div>
                     </div>
 
+                    {/* Admin Panel Card - only visible to admins */}
+                    {isAdmin && (
+                        <div className="md:col-span-2 lg:col-span-4 group relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-violet-600 to-violet-800 p-8 shadow-lg">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                            <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center">
+                                        <Shield size={28} className="text-white" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">Painel do Administrador</h3>
+                                        <p className="text-violet-200 text-sm font-medium">Gerencie membros, eventos e programações</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 flex-wrap">
+                                    <div className="bg-white rounded-xl px-6 py-3">
+                                        <ManageRolesModal currentUserId={user.id} />
+                                    </div>
+                                    <a
+                                        href="/admin"
+                                        className="bg-white/15 hover:bg-white/25 border border-white/30 text-white font-black text-xs uppercase tracking-widest px-6 py-3 rounded-xl transition-all inline-flex items-center gap-2"
+                                    >
+                                        Painel Admin →
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+
                 </div>
 
-                {/* Dev/Admin Note - Hidden or subtle */}
+                {/* Footer Note */}
                 <div className="mt-16 text-center opacity-30 hover:opacity-100 transition-opacity">
                     <p className="text-xs text-slate-400 uppercase tracking-widest">Painel do Membro v2.0 • Igreja Paraíso</p>
                 </div>
