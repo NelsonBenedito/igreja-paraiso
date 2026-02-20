@@ -158,17 +158,23 @@ export default async function MembersPage() {
                     </div>
 
                     {/* Contribution Card - Highlighted */}
-                    <div className="md:col-span-2 bg-paraiso-green bg-gradient-to-r from-paraiso-green to-emerald-500 rounded-[2rem] p-8 relative overflow-hidden shadow-lg group">
+                    <div 
+                        className="md:col-span-2 bg-paraiso-green bg-gradient-to-r from-paraiso-green to-emerald-500 rounded-[2rem] p-8 relative overflow-hidden shadow-lg group"
+                        style={{ backgroundColor: '#22c55e' }} // Fallback para Safari Mobile
+                    >
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
                         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                             <div>
-                                <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-2">Contribuição Online</h3>
+                                <div className="flex items-center gap-2 mb-2 flex-wrap sm:flex-nowrap">
+                                    <h3 className="text-2xl font-black text-white uppercase tracking-tighter truncate">Contribuição Online</h3>
+                                    <span className="text-[9px] font-black bg-white/20 text-white px-3 py-0.5 rounded-full uppercase tracking-widest backdrop-blur-sm border border-white/30 whitespace-nowrap shrink-0">Em Breve</span>
+                                </div>
                                 <p className="text-white/90 font-medium max-w-sm">
                                     "Cada um dê conforme determinou em seu coração, não com pesar ou por obrigação, pois Deus ama quem dá com alegria."
                                 </p>
                             </div>
-                            <Button className="bg-white text-paraiso-green hover:bg-paraiso-blue hover:text-white font-black uppercase tracking-widest py-6 px-8 rounded-xl shadow-lg transition-all duration-300 shrink-0">
+                            <Button disabled className="bg-white/50 text-emerald-950 cursor-not-allowed font-black uppercase tracking-widest py-6 px-8 rounded-xl shadow-lg transition-all duration-300 shrink-0">
                                 Dizimar Agora
                             </Button>
                         </div>
@@ -195,13 +201,16 @@ export default async function MembersPage() {
                     </div>
 
                     {/* Prayer Requests */}
-                    <div className="group relative overflow-hidden rounded-[2rem] bg-white p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <div className="group relative overflow-hidden rounded-[2rem] bg-white p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 opacity-80">
                         <div className="relative z-10">
                             <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 mb-4 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300">
                                 <Heart size={24} />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-800 mb-1">Pedidos de Oração</h3>
-                            <p className="text-slate-400 text-sm mb-4">Compartilhe seus pedidos conosco.</p>
+                            <div className="flex items-center gap-2 mb-1">
+                                <h3 className="text-xl font-bold text-slate-800">Cuidado</h3>
+                                <span className="text-[10px] font-black bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full uppercase tracking-widest whitespace-nowrap shrink-0">Em breve</span>
+                            </div>
+                            <p className="text-slate-400 text-sm mb-4">Compartilhe seus pedidos de oração conosco.</p>
                         </div>
                     </div>
 
