@@ -83,7 +83,7 @@ const AssistantAI: React.FC = () => {
                 {messages.map((m, i) => (
                     <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`flex gap-3 max-w-[85%] ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                            <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center mt-auto ${m.role === 'user' ? 'bg-paraiso-green/20 text-paraiso-green' : 'bg-white shadow-sm text-slate-400 border border-slate-100'}`}>
+                            <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center mt-auto ${m.role === 'user' ? 'bg-paraiso-green/20 text-paraiso-green' : 'bg-white shadow-sm text-slate-400 border border-slate-100'}`}>
                                 {m.role === 'user' ? <User className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
                             </div>
                             <div className={`p-5 rounded-3xl text-sm leading-relaxed shadow-sm ${m.role === 'user' ? 'bg-paraiso-green text-white rounded-tr-none' : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'}`}>
@@ -96,7 +96,7 @@ const AssistantAI: React.FC = () => {
                     <div className="flex justify-start">
                         <div className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-3">
                             <Loader2 className="w-4 h-4 animate-spin text-paraiso-green" />
-                            <span className="text-[10px] uppercase font-black tracking-widest text-slate-400">Restaurando resposta...</span>
+                            <span className="text-[10px] uppercase font-black tracking-widest text-slate-400">Buscando uma palavra...</span>
                         </div>
                     </div>
                 )}
