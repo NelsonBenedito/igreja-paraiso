@@ -16,9 +16,10 @@ import { Shield, Search, ChevronDown, ChevronUp, Loader2, UserCog, X, Check } fr
 
 interface ManageRolesModalProps {
     currentUserId: string
+    trigger?: React.ReactNode
 }
 
-export default function ManageRolesModal({ currentUserId }: ManageRolesModalProps) {
+export default function ManageRolesModal({ currentUserId, trigger }: ManageRolesModalProps) {
     const [open, setOpen] = useState(false)
     const [members, setMembers] = useState<MemberWithRoles[]>([])
     const [allRoles, setAllRoles] = useState<Role[]>([])
@@ -73,10 +74,12 @@ export default function ManageRolesModal({ currentUserId }: ManageRolesModalProp
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <button className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-violet-600 hover:text-violet-800 transition-colors cursor-pointer bg-transparent border-0 p-0">
-                    <Shield size={14} />
-                    Gerenciar Cargos
-                </button>
+                {trigger || (
+                    <button className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-violet-600 hover:text-violet-800 transition-colors cursor-pointer bg-transparent border-0 p-0">
+                        <Shield size={14} />
+                        Gerenciar Cargos
+                    </button>
+                )}
             </DialogTrigger>
 
             <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col">

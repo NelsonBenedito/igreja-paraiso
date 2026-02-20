@@ -1,12 +1,12 @@
 
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { signout } from '@/app/auth/actions'
 import { Button } from "@/components/ui/button"
 import { LogOut, User, Calendar, BookOpen, Heart, Radio, Shield } from "lucide-react"
-import EditProfileModal from "@/components/membros/EditProfileModal"
 import { RoleBadgeList } from "@/components/membros/RoleBadge"
-import ManageRolesModal from "@/components/membros/ManageRolesModal"
+import { getYouTubeData } from '@/services/youtubeService'
 import type { Role } from '@/types'
 
 async function getUserRoles(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<Role[]> {
@@ -49,6 +49,10 @@ export default async function MembersPage() {
     const userRoles = await getUserRoles(supabase, user.id)
     const isAdmin = userRoles.some((r) => r.name === 'admin')
 
+    // Fetch YouTube live status
+    const youtube = await getYouTubeData()
+    const isLive = !!youtube?.live
+
     return (
         <div className="min-h-screen bg-slate-50 pb-20 pt-24">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -70,10 +74,19 @@ export default async function MembersPage() {
                     </div>
 
                     <div className="flex items-center gap-3">
+                        {isAdmin && (
+                            <a href="/admin">
+                                <Button variant="ghost" className="space-x-1.5 md:space-x-2 text-violet-600 hover:text-violet-700 hover:bg-violet-50 transition-colors px-2 md:px-4">
+                                    <Shield size={16} className="md:w-[18px] md:h-[18px]" />
+                                    <span className="font-bold uppercase tracking-tight md:tracking-widest text-[10px] md:text-xs">Painel Admin</span>
+                                </Button>
+                            </a>
+                        )}
                         <form action={signout}>
-                            <Button variant="ghost" className="space-x-2 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors">
-                                <LogOut size={18} />
-                                <span className="font-bold uppercase tracking-widest text-xs hidden sm:inline">Sair</span>
+
+                            <Button variant="ghost" className="space-x-1.5 md:space-x-2 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors px-2 md:px-4">
+                                <LogOut size={16} className="md:w-[18px] md:h-[18px]" />
+                                <span className="font-bold uppercase tracking-tight md:tracking-widest text-[10px] md:text-xs">Sair</span>
                             </Button>
                         </form>
                     </div>
@@ -88,17 +101,21 @@ export default async function MembersPage() {
                         <div className="absolute inset-0 bg-gradient-to-t from-paraiso-blue-dark via-transparent to-transparent"></div>
 
                         <div className="relative h-full p-8 flex flex-col justify-end items-start text-white">
-                            <div className="absolute top-8 right-8 bg-red-500 text-white text-[10px] font-black uppercase tracking-widest py-1 px-3 rounded-full animate-pulse flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-white"></span>
-                                Ao Vivo Agora
-                            </div>
+                            {isLive && (
+                                <div className="absolute top-8 right-8 bg-red-500 text-white text-[10px] font-black uppercase tracking-widest py-1 px-3 rounded-full animate-pulse flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-white"></span>
+                                    Ao Vivo Agora
+                                </div>
+                            )}
 
                             <h2 className="text-3xl font-black uppercase tracking-tighter mb-2 leading-tight">Culto de Celebração</h2>
                             <p className="text-white/80 mb-6 font-medium max-w-md">Acompanhe nossa transmissão ao vivo e adore conosco de onde estiver.</p>
 
-                            <Button className="bg-paraiso-green hover:bg-white hover:text-paraiso-green text-white font-black uppercase tracking-widest rounded-full py-6 px-8 transition-all duration-300 shadow-lg hover:shadow-xl">
-                                Assistir Culto
-                            </Button>
+                            <Link href="/membros/ao-vivo">
+                                <Button className="bg-paraiso-green hover:bg-white hover:text-paraiso-green text-white font-black uppercase tracking-widest rounded-full py-6 px-8 transition-all duration-300 shadow-lg hover:shadow-xl">
+                                    Assistir Culto
+                                </Button>
+                            </Link>
                         </div>
                     </div>
 
@@ -117,7 +134,9 @@ export default async function MembersPage() {
                             </div>
                             <h3 className="text-xl font-bold text-slate-800 mb-1">{userName}</h3>
                             <p className="text-slate-400 text-sm mb-4">Atualize seus dados e preferências.</p>
-                            <EditProfileModal user={user} />
+                            <Link href="/membros/perfil" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-paraiso-blue hover:text-paraiso-green transition-colors">
+                                Editar Perfil <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                            </Link>
                         </div>
                     </div>
 
@@ -132,14 +151,14 @@ export default async function MembersPage() {
                             </div>
                             <h3 className="text-xl font-bold text-slate-800 mb-1">Eventos</h3>
                             <p className="text-slate-400 text-sm mb-4">Inscrições abertas para o Retiro 2026.</p>
-                            <a href="#" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-paraiso-blue group-hover:text-paraiso-green transition-colors">
+                            <Link href="/membros/eventos" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-paraiso-blue group-hover:text-paraiso-green transition-colors">
                                 Ver Agenda <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
-                            </a>
+                            </Link>
                         </div>
                     </div>
 
                     {/* Contribution Card - Highlighted */}
-                    <div className="md:col-span-2 bg-gradient-to-r from-paraiso-green to-emerald-500 rounded-[2rem] p-8 relative overflow-hidden shadow-lg group">
+                    <div className="md:col-span-2 bg-paraiso-green bg-gradient-to-r from-paraiso-green to-emerald-500 rounded-[2rem] p-8 relative overflow-hidden shadow-lg group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
                         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -157,12 +176,21 @@ export default async function MembersPage() {
 
                     {/* Courses/Small Groups */}
                     <div className="group relative overflow-hidden rounded-[2rem] bg-white p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                        <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity text-orange-600">
+                            <BookOpen size={80} strokeWidth={1} />
+                        </div>
                         <div className="relative z-10">
                             <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500 mb-4 group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300">
                                 <BookOpen size={24} />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-800 mb-1">EBD & Cursos</h3>
-                            <p className="text-slate-400 text-sm mb-4">Continue seus estudos bíblicos.</p>
+                            <div className="flex items-center gap-2 mb-1">
+                                <h3 className="text-xl font-bold text-slate-800">Polo FLMU</h3>
+                                <span className="text-[10px] font-black bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full uppercase tracking-widest">Educação</span>
+                            </div>
+                            <p className="text-slate-400 text-sm mb-4 leading-tight">Curso Intermediário em Teologia pela FLMU.</p>
+                            <Link href="/membros/cursos" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-orange-600 hover:text-orange-700 transition-colors">
+                                Acessar Lições <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                            </Link>
                         </div>
                     </div>
 
@@ -177,34 +205,6 @@ export default async function MembersPage() {
                         </div>
                     </div>
 
-                    {/* Admin Panel Card - only visible to admins */}
-                    {isAdmin && (
-                        <div className="md:col-span-2 lg:col-span-4 group relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-violet-600 to-violet-800 p-8 shadow-lg">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-                            <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center">
-                                        <Shield size={28} className="text-white" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">Painel do Administrador</h3>
-                                        <p className="text-violet-200 text-sm font-medium">Gerencie membros, eventos e programações</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-3 flex-wrap">
-                                    <div className="bg-white rounded-xl px-6 py-3">
-                                        <ManageRolesModal currentUserId={user.id} />
-                                    </div>
-                                    <a
-                                        href="/admin"
-                                        className="bg-white/15 hover:bg-white/25 border border-white/30 text-white font-black text-xs uppercase tracking-widest px-6 py-3 rounded-xl transition-all inline-flex items-center gap-2"
-                                    >
-                                        Painel Admin →
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
 
                 </div>

@@ -10,6 +10,7 @@ import {
     Home,
     Radio,
     UserCircle,
+    GraduationCap,
 } from 'lucide-react'
 
 /* ── Configurações de nav por seção ─────────────────────── */
@@ -18,14 +19,13 @@ const ADMIN_NAV = [
     { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/admin/eventos', icon: CalendarDays, label: 'Eventos' },
     { href: '/admin/programacao', icon: ListChecks, label: 'Agenda' },
-    { href: '/membros', icon: Users, label: 'Membros' },
 ]
 
 const MEMBROS_NAV = [
     { href: '/membros', icon: Home, label: 'Painel' },
-    { href: '/eventos', icon: CalendarDays, label: 'Eventos' },
-    { href: '/', icon: Radio, label: 'Ao Vivo' },
-    { href: '/membros', icon: UserCircle, label: 'Perfil', scroll: true },
+    { href: '/membros/ao-vivo', icon: Radio, label: 'Ao Vivo' },
+    { href: '/membros/cursos', icon: GraduationCap, label: 'Cursos' },
+    { href: '/membros/perfil', icon: UserCircle, label: 'Perfil' },
 ]
 
 /* ─────────────────────────────────────────────────────────── */
@@ -44,6 +44,7 @@ export default function BottomNav() {
     /* active match: exact for admin dashboard, startsWith for rest */
     const isActive = (href: string) => {
         if (href === '/admin') return pathname === '/admin'
+        if (href === '/membros') return pathname === '/membros' // Match exato para evitar duplicidade
         return pathname === href || pathname?.startsWith(href + '/')
     }
 
