@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
+import AnimatedLogo from './AnimatedLogo';
 
 const Hero: React.FC = () => {
     return (
@@ -27,38 +28,40 @@ const Hero: React.FC = () => {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 1.2, delay: 0.5 }}
                 >
-                    <div className="inline-block px-4 py-1.5 bg-paraiso-green text-white text-[10px] font-black uppercase tracking-[0.4em] rounded-full mb-10 shadow-2xl">
-                        Casa de Deus, minha família
+                    <div className="mb-20">
+                        <AnimatedLogo size={750} />
                     </div>
 
-                    <h1 className="text-7xl md:text-[10rem] font-black text-white leading-[0.8] tracking-tighter mb-12 flex flex-col items-center">
-                        <span className="text-2xl md:text-4xl font-bold tracking-[0.8em] text-paraiso-green-light mb-4">IGREJA</span>
-                        <span>PARAÍSO</span>
-                    </h1>
-
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1.5 }}
-                        className="flex flex-wrap justify-center gap-6"
-                    >
-                        <button className="group px-10 py-5 bg-paraiso-green text-white rounded-full font-black uppercase tracking-widest text-xs hover:bg-paraiso-blue hover:shadow-[0_0_40px_rgba(124,154,64,0.4)] transition-all flex items-center gap-2">
-                            Assista Online <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                        </button>
-                        <button className="px-10 py-5 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-full font-black uppercase tracking-widest text-xs hover:bg-white/20 transition-all">
-                            Seja um Voluntário
-                        </button>
-                    </motion.div>
                 </motion.div>
             </div>
 
-            {/* Scroll Indicator */}
+            {/* Scroll Indicator - Modern & Animated */}
             <motion.div
-                animate={{ y: [0, 10, 0] }}
-                transition={{ repeat: Infinity, duration: 2.5 }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2.5, duration: 1 }}
+                className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
             >
-                <div className="w-[1px] h-20 bg-gradient-to-b from-transparent via-paraiso-green to-transparent"></div>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Descobrir</span>
+                <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1.5">
+                    <motion.div
+                        animate={{ 
+                            y: [0, 12, 0],
+                            opacity: [1, 0.2, 1]
+                        }}
+                        transition={{ 
+                            repeat: Infinity, 
+                            duration: 2,
+                            ease: "easeInOut"
+                        }}
+                        className="w-1 h-2 bg-paraiso-green rounded-full"
+                    />
+                </div>
+                <motion.div 
+                    animate={{ y: [0, 5, 0] }}
+                    transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}
+                    className="w-px h-12 bg-gradient-to-b from-paraiso-green to-transparent"
+                ></motion.div>
             </motion.div>
         </section>
     );

@@ -27,7 +27,10 @@ const Header: React.FC<{ user?: User | null }> = ({ user }) => {
     return (
         <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-white shadow-xl py-2 md:py-4' : 'bg-transparent py-4 md:py-8'}`}>
             <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
-                <a href="/" className="flex items-center gap-3 group shrink-0">
+                <a 
+                    href="/" 
+                    className={`flex items-center gap-3 group shrink-0 transition-all duration-700 ${scrolled ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                >
                     <div className="flex items-center justify-center transition-all duration-500">
                         <img
                             src={scrolled ? "/IgrejaParaiso.webp" : "/LogoParaisoW.svg"}

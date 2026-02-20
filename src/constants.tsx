@@ -129,7 +129,7 @@ export const MISSIONS: Mission[] = [
 ];
 
 export const SOCIAL_LINKS = [
-    { icon: <Youtube className="w-5 h-5" />, href: '#' },
-    { icon: <Instagram className="w-5 h-5" />, href: '#' },
-    { icon: <Facebook className="w-5 h-5" />, href: '#' }
+    { icon: <Youtube className="w-5 h-5" />, href: 'https://www.youtube.com/@paraisoigreja' },
+    { icon: <Instagram className="w-5 h-5" />, href: 'https://www.instagram.com/paraisoigreja/' },
+    { icon: <Facebook className="w-5 h-5" />, href: 'https://www.facebook.com/paraisoigreja/' }
 ];

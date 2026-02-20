@@ -16,14 +16,20 @@ const Footer: React.FC = () => {
                     {/* Brand */}
                     <div className="space-y-8">
                         <div className="flex items-center gap-3">
-                            <img src="/IgrejaParaiso.webp" alt="Logo" className="w-42 object-contain" />
+                            <img src="/LogoParaisoW.svg" alt="Logo" className="w-42 object-contain" />
                         </div>
                         <p className="text-slate-400 leading-relaxed text-lg">
                             Um lugar de refúgio e renovo espiritual. Existimos para amar a Deus, servir ao próximo e levar a mensagem de restauração a todos.
                         </p>
                         <div className="flex gap-5">
                             {SOCIAL_LINKS.map((social, i) => (
-                                <a key={i} href={social.href} className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-paraiso-green transition-all transform hover:scale-110">
+                                <a 
+                                    key={i} 
+                                    href={social.href} 
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-paraiso-green transition-all transform hover:scale-110"
+                                >
                                     {social.icon}
                                 </a>
                             ))}
@@ -32,12 +38,12 @@ const Footer: React.FC = () => {
 
                     {/* Quick Links */}
                     <div>
-                        <h4 className="text-xl font-bold mb-8 text-paraiso-green uppercase tracking-widest text-sm">Links Úteis</h4>
+                        <h4 className="font-bold mb-8 text-paraiso-green uppercase tracking-widest text-sm">Links Úteis</h4>
                         <ul className="space-y-4">
                             {NAV_ITEMS.map((item) => (
                                 <li key={item.href}>
                                     <a href={item.href} className="text-slate-400 hover:text-white transition-colors flex items-center gap-2 group">
-                                        <span className="w-0 h-[1px] bg-paraiso-green transition-all group-hover:w-4"></span>
+                                        <span className="w-0 h-px bg-paraiso-green transition-all group-hover:w-4"></span>
                                         {item.label}
                                     </a>
                                 </li>
@@ -47,14 +53,14 @@ const Footer: React.FC = () => {
 
                     {/* Contact */}
                     <div>
-                        <h4 className="text-xl font-bold mb-8 text-paraiso-green uppercase tracking-widest text-sm">Contato</h4>
+                        <h4 className="font-bold mb-8 text-paraiso-green uppercase tracking-widest text-sm">Contato</h4>
                         <ul className="space-y-6">
                             <li className="flex items-start gap-4 text-slate-400 group cursor-pointer hover:text-white transition-colors">
-                                <Phone className="w-6 h-6 text-paraiso-green flex-shrink-0" />
+                                <Phone className="w-6 h-6 text-paraiso-green shrink-0" />
                                 <span className="text-lg">(27) 99875-7008</span>
                             </li>
                             <li className="flex items-start gap-4 text-slate-400 group cursor-pointer hover:text-white transition-colors">
-                                <MapPin className="w-6 h-6 text-paraiso-green flex-shrink-0" />
+                                <MapPin className="w-6 h-6 text-paraiso-green shrink-0" />
                                 <span className="text-lg">Rua Helmut Gums, 438 - Virada, Santa Maria de Jetibá - ES</span>
                             </li>
                         </ul>
