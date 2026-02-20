@@ -40,7 +40,7 @@
   /* Ring matches Primary */
 
   /* Font Families */
-  --font-sans: var(--font-outfit);
+  --font-sans: var(--font-inter);
   --font-serif: var(--font-playfair);
 
   --radius: 0.625rem;
@@ -65,6 +65,13 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Paraiso Colors */
+  --paraiso-green: #7C9A40;
+  --paraiso-green-light: #a1bc6b;
+  --paraiso-blue: #2B4364;
+  --paraiso-blue-dark: #1e3047;
+  --paraiso-blue-deep: #0f1a2a;
 }
 
 @theme inline {
@@ -115,6 +122,13 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Paraiso Colors */
+  --color-paraiso-green: var(--paraiso-green);
+  --color-paraiso-green-light: var(--paraiso-green-light);
+  --color-paraiso-blue: var(--paraiso-blue);
+  --color-paraiso-blue-dark: var(--paraiso-blue-dark);
+  --color-paraiso-blue-deep: var(--paraiso-blue-deep);
 }
 
 body {

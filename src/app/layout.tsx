@@ -1,53 +1,39 @@
+import React from "react";
 import type { Metadata } from "next";
-import { Outfit, Playfair_Display } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import AssistantAI from "@/components/AssistantAI";
 
-const outfit = Outfit({
-  subsets: ['latin'],
-  variable: '--font-outfit',
-  display: 'swap',
-});
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "Igreja Paraíso",
-  description: "Casa de Deus, minha família",
+  title: "Igreja Paraíso | Casa de Deus, Minha família",
+  description: "Bem-vindo à Igreja Paraíso. Um lugar de restauração, amor e crescimento espiritual.",
 };
 
+// Fixed: Added React import to provide the React namespace for ReactNode
+import { createClient } from "@/utils/supabase/server";
 
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-
-import { ThemeProvider } from "@/components/theme-provider"
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <body
-        suppressHydrationWarning
-        className={`${outfit.variable} ${playfair.variable} antialiased min-h-screen flex flex-col`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Navbar />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer />
-        </ThemeProvider>
+    <html lang="pt-BR" className="scroll-smooth">
+      <body className={`${inter.variable} font-sans antialiased bg-white text-slate-900`} suppressHydrationWarning>
+        <Header user={user} />
+        <main>{children}</main>
+        <AssistantAI />
+        <Footer />
       </body>
     </html>
   );
