@@ -25,14 +25,14 @@ const Header: React.FC<{ user?: User | null }> = ({ user }) => {
     if (pathname === '/login' || pathname?.startsWith('/membros')) return null;
 
     return (
-        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-white shadow-xl py-4' : 'bg-transparent py-8'}`}>
+        <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-white shadow-xl py-2 md:py-4' : 'bg-transparent py-4 md:py-8'}`}>
             <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
                 <a href="/" className="flex items-center gap-3 group shrink-0">
                     <div className="flex items-center justify-center transition-all duration-500">
                         <img
                             src={scrolled ? "/IgrejaParaiso.webp" : "/LogoParaisoW.svg"}
                             alt="Logo"
-                            className="h-16 w-auto object-contain transition-all duration-500"
+                            className="h-12 md:h-16 w-auto object-contain transition-all duration-500"
                         />
                     </div>
                 </a>
@@ -64,7 +64,7 @@ const Header: React.FC<{ user?: User | null }> = ({ user }) => {
                     )}
                 </div>
                 <button className="xl:hidden p-2" onClick={() => setIsOpen(true)}>
-                    <Menu className={scrolled ? 'text-paraiso-blue' : 'text-white'} size={32} />
+                    <Menu className={scrolled ? 'text-paraiso-blue' : 'text-white'} size={24} />
                 </button>
             </div>
 
@@ -75,42 +75,21 @@ const Header: React.FC<{ user?: User | null }> = ({ user }) => {
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed inset-0 bg-white z-[60] flex flex-col p-8"
+                        className="fixed inset-0 bg-white z-[60] flex flex-col p-4 md:p-8"
                     >
-                        <div className="flex justify-between items-center mb-12">
+                        <div className="flex justify-between items-center mb-8 md:mb-12">
                             <div className="flex items-center gap-2">
-                                <img src="/IgrejaParaiso.webp" alt="Logo" className="w-12 h-12 object-contain" />
-                                <span className="font-black text-paraiso-blue text-2xl uppercase">PARAÍSO</span>
+                                <img src="/IgrejaParaiso.webp" alt="Logo" className="w-8 h-8 md:w-12 md:h-12 object-contain" />
+                                <span className="font-black text-paraiso-blue text-xl md:text-2xl uppercase">PARAÍSO</span>
                             </div>
-                            <button onClick={() => setIsOpen(false)}><X size={40} className="text-paraiso-blue" /></button>
+                            <button onClick={() => setIsOpen(false)}><X size={32} className="text-paraiso-blue" /></button>
                         </div>
-                        <div className="flex flex-col gap-6">
+                        <div className="flex flex-col gap-4 md:gap-6">
                             {NAV_ITEMS.map((item) => (
-                                <a key={item.label} href={item.href} onClick={() => setIsOpen(false)} className="text-4xl font-black uppercase tracking-tighter text-paraiso-blue hover:text-paraiso-green transition-colors">
+                                <a key={item.label} href={item.href} onClick={() => setIsOpen(false)} className="text-2xl md:text-4xl font-black uppercase tracking-tighter text-paraiso-blue hover:text-paraiso-green transition-colors">
                                     {item.label}
                                 </a>
                             ))}
-                            <div className="flex flex-col gap-4 mt-8">
-                                {user ? (
-                                    <SlideInButton
-                                        href="/membros"
-                                        text="Acessar"
-                                        className="border-2 border-paraiso-blue text-paraiso-blue w-full flex justify-center"
-                                    />
-                                ) : (
-                                    <SlideInButton
-                                        href="/login"
-                                        text="Área de Membros"
-                                        className="border-2 border-paraiso-blue text-paraiso-blue w-full flex justify-center"
-                                    />
-                                )}
-                                <SwapButton
-                                    href="/#contribuir"
-                                    text="Contribuir Agora"
-                                    className="w-full"
-                                    onClick={() => setIsOpen(false)}
-                                />
-                            </div>
                         </div>
                     </motion.div>
                 )}

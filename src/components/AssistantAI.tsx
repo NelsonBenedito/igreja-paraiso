@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User, Loader2, Sparkles, X } from 'lucide-react';
 import { askChurchAssistant } from '../services/geminiService';
+import { usePathname } from 'next/navigation';
 
 interface Message {
     role: 'bot' | 'user';
@@ -9,6 +10,13 @@ interface Message {
 }
 
 const AssistantAI: React.FC = () => {
+    const pathname = usePathname();
+
+    // Don't render on login page
+    if (pathname === '/login') {
+        return null;
+    }
+
     const [messages, setMessages] = useState<Message[]>([
         { role: 'bot', text: 'Paz do Senhor! Sou o assistente da Igreja Paraíso. Como posso ajudar você em sua caminhada hoje?' }
     ]);
