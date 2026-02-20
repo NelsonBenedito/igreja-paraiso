@@ -7,7 +7,7 @@ import AssistantAI from '@/components/AssistantAI'
 import BottomNav from '@/components/BottomNav'
 import type { User } from '@supabase/supabase-js'
 
-export default function PublicShell({ user }: { user: User | null }) {
+export default function PublicShell({ user, children }: { user: User | null, children: React.ReactNode }) {
     const pathname = usePathname()
     const isAdmin = pathname?.startsWith('/admin')
     const isMembros = pathname?.startsWith('/membros')
@@ -16,8 +16,10 @@ export default function PublicShell({ user }: { user: User | null }) {
         <>
             {!isAdmin && <Header user={user} />}
             {!isMembros && !isAdmin && <AssistantAI />}
+            {children}
             {!isAdmin && <Footer />}
             <BottomNav />
         </>
     )
 }
+

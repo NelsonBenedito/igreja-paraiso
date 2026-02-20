@@ -26,9 +26,11 @@ export default async function RootLayout({
   return (
     <html lang="pt-BR" className="scroll-smooth">
       <body className={`${inter.variable} font-sans antialiased bg-white text-slate-900`} suppressHydrationWarning>
-        <PublicShell user={user} />
-        <main>{children}</main>
+        <PublicShell user={user}>
+          <main>{children}</main>
+        </PublicShell>
       </body>
     </html>
   );
 }
+
