@@ -389,12 +389,23 @@ export default function AdminEventosPage() {
                     transition: border-color 0.2s, background-color 0.2s;
                     appearance: none;
                     -webkit-appearance: none;
+                    color-scheme: dark; /* Garante que os ícones nativos (calendário/relógio) fiquem claros */
                 }
                 .input-dark:focus { 
                     border-color: #3b82f6; 
                     background: #1e293b;
                 }
                 .input-dark option { background: #0f172a; }
+
+                /* Ajuste específico para garantir que os ícones nativos do navegador apareçam com contraste */
+                .input-dark::-webkit-calendar-picker-indicator {
+                    filter: invert(1);
+                    opacity: 0.5;
+                    cursor: pointer;
+                }
+                .input-dark::-webkit-calendar-picker-indicator:hover {
+                    opacity: 1;
+                }
 
                 /* Ajuste específico para garantir que data e hora não "vazem" no mobile */
                 input[type="date"].input-dark,

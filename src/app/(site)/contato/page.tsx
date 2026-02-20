@@ -61,19 +61,6 @@ export default function ContactPage() {
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardContent className="p-6 flex items-start space-x-4">
-                            <div className="bg-primary/10 p-3 rounded-full">
-                                <Mail className="text-primary w-6 h-6" />
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-lg mb-1">Email</h3>
-                                <p className="text-muted-foreground text-sm">
-                                    contato@igrejaparaiso.com.br
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
 
                     <Card>
                         <CardContent className="p-6 flex items-start space-x-4">

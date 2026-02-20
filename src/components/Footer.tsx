@@ -12,7 +12,7 @@ const Footer: React.FC = () => {
     return (
         <footer className="bg-paraiso-blue-dark text-white py-24">
             <div className="container mx-auto px-6 md:px-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
                     {/* Brand */}
                     <div className="space-y-8">
                         <div className="flex items-center gap-3">
@@ -50,35 +50,16 @@ const Footer: React.FC = () => {
                         <h4 className="text-xl font-bold mb-8 text-paraiso-green uppercase tracking-widest text-sm">Contato</h4>
                         <ul className="space-y-6">
                             <li className="flex items-start gap-4 text-slate-400 group cursor-pointer hover:text-white transition-colors">
-                                <Mail className="w-6 h-6 text-paraiso-green flex-shrink-0" />
-                                <span className="text-lg">contato@igrejaparaiso.com.br</span>
-                            </li>
-                            <li className="flex items-start gap-4 text-slate-400 group cursor-pointer hover:text-white transition-colors">
                                 <Phone className="w-6 h-6 text-paraiso-green flex-shrink-0" />
-                                <span className="text-lg">(11) 98765-4321</span>
+                                <span className="text-lg">(27) 99875-7008</span>
                             </li>
                             <li className="flex items-start gap-4 text-slate-400 group cursor-pointer hover:text-white transition-colors">
                                 <MapPin className="w-6 h-6 text-paraiso-green flex-shrink-0" />
-                                <span className="text-lg">Rua do Paraíso, 777 - Jardim Eden, São Paulo - SP</span>
+                                <span className="text-lg">Rua Helmut Gums, 438 - Virada, Santa Maria de Jetibá - ES</span>
                             </li>
                         </ul>
                     </div>
 
-                    {/* Newsletter */}
-                    <div>
-                        <h4 className="text-xl font-bold mb-8 text-paraiso-green uppercase tracking-widest text-sm">Receba Notícias</h4>
-                        <p className="text-slate-400 mb-6">Inscreva-se para receber nossas mensagens semanais e avisos de eventos.</p>
-                        <div className="flex flex-col gap-3">
-                            <input
-                                type="email"
-                                placeholder="Seu melhor e-mail"
-                                className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 w-full focus:outline-none focus:ring-2 focus:ring-paraiso-green transition-all"
-                            />
-                            <button className="bg-paraiso-green py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-paraiso-green-light transition-all shadow-lg">
-                                Inscrever
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
                 <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-slate-500">
