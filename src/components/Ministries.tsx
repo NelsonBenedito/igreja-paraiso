@@ -6,14 +6,14 @@ import { motion } from 'framer-motion';
 
 const Ministries: React.FC = () => {
     return (
-        <section id="ministerios" className="py-32 bg-white">
+        <section id="ministerios" className="py-32 bg-white dark:bg-paraiso-blue-deep">
             <div className="container mx-auto px-6">
                 <Reveal>
                     <div className="flex flex-col items-center text-center mb-24">
                         <div className="inline-block px-4 py-1.5 bg-paraiso-green/10 text-paraiso-green text-[10px] font-black uppercase tracking-widest rounded-md mb-6">
                             Serviço & Propósito
                         </div>
-                        <h2 className="text-6xl md:text-9xl font-black uppercase tracking-tighter text-paraiso-blue leading-none">
+                        <h2 className="text-6xl md:text-9xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
                             NOSSOS <br />
                             <span className="text-paraiso-green-light italic font-serif lowercase">ministérios</span>
                         </h2>

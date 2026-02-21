@@ -2,9 +2,8 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { signout } from '@/app/auth/actions'
+import { User, Calendar, BookOpen, Heart, Radio } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { LogOut, User, Calendar, BookOpen, Heart, Radio, Shield } from "lucide-react"
 import { RoleBadgeList } from "@/components/membros/RoleBadge"
 import { getYouTubeData } from '@/services/youtubeService'
 import type { Role } from '@/types'
@@ -54,42 +53,22 @@ export default async function MembersPage() {
     const isLive = !!youtube?.live
 
     return (
-        <div className="min-h-screen bg-slate-50 pb-20 pt-24">
+        <div className="min-h-screen bg-slate-50 dark:bg-paraiso-blue-deep pb-20 pt-24">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
                 {/* Welcome Section */}
-                <div className="flex flex-col md:flex-row justify-between items-end md:items-center mb-12 gap-6 relative">
-                    <div className="relative z-10">
-                        {/* Cargo Badges */}
-                        <div className="flex flex-wrap items-center gap-2 mb-3">
-                            <RoleBadgeList roles={userRoles} emptyLabel="Membro" />
-                        </div>
-
-                        <h1 className="text-4xl md:text-5xl font-black text-paraiso-blue-dark tracking-tighter">
-                            OLÁ, <span className="text-paraiso-green uppercase">{firstName}</span>
-                        </h1>
-                        <p className="text-slate-500 font-medium text-lg mt-2">
-                            Que bom ter você aqui! O que vamos fazer hoje?
-                        </p>
+                <div className="mb-12">
+                    {/* Cargo Badges */}
+                    <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <RoleBadgeList roles={userRoles} emptyLabel="Membro" />
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        {isAdmin && (
-                            <a href="/admin">
-                                <Button variant="ghost" className="space-x-1.5 md:space-x-2 text-violet-600 hover:text-violet-700 hover:bg-violet-50 transition-colors px-2 md:px-4">
-                                    <Shield size={16} className="md:w-[18px] md:h-[18px]" />
-                                    <span className="font-bold uppercase tracking-tight md:tracking-widest text-[10px] md:text-xs">Painel Admin</span>
-                                </Button>
-                            </a>
-                        )}
-                        <form action={signout}>
-
-                            <Button variant="ghost" className="space-x-1.5 md:space-x-2 text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors px-2 md:px-4">
-                                <LogOut size={16} className="md:w-[18px] md:h-[18px]" />
-                                <span className="font-bold uppercase tracking-tight md:tracking-widest text-[10px] md:text-xs">Sair</span>
-                            </Button>
-                        </form>
-                    </div>
+                    <h1 className="text-4xl md:text-5xl font-black text-paraiso-blue-dark dark:text-white tracking-tighter">
+                        OLÁ, <span className="text-paraiso-green uppercase">{firstName}</span>
+                    </h1>
+                    <p className="text-slate-500 dark:text-slate-300 font-medium text-lg mt-2">
+                        Que bom ter você aqui! O que vamos fazer hoje?
+                    </p>
                 </div>
 
                 {/* Dashboard Grid - Bento Style */}
@@ -120,45 +99,45 @@ export default async function MembersPage() {
                     </div>
 
                     {/* Profile Card */}
-                    <div className="group relative overflow-hidden rounded-[2rem] bg-white p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity text-paraiso-blue">
+                    <div className="group relative overflow-hidden rounded-[2rem] bg-white dark:bg-white/[0.04] dark:backdrop-blur-sm p-6 shadow-sm dark:shadow-none border border-slate-100 dark:border-white/[0.08] hover:shadow-xl dark:hover:border-white/20 hover:-translate-y-1 transition-all duration-300">
+                        <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity text-paraiso-blue dark:text-white">
                             <User size={80} strokeWidth={1} />
                         </div>
                         <div className="relative z-10">
-                            <div className="w-12 h-12 rounded-2xl bg-paraiso-blue/10 flex items-center justify-center text-paraiso-blue mb-4 group-hover:bg-paraiso-blue group-hover:text-white transition-colors duration-300 overflow-hidden">
+                            <div className="w-12 h-12 rounded-2xl bg-paraiso-blue/10 dark:bg-white/10 flex items-center justify-center text-paraiso-blue dark:text-white mb-4 group-hover:bg-paraiso-blue dark:group-hover:bg-white/20 group-hover:text-white transition-colors duration-300 overflow-hidden">
                                 {user.user_metadata.avatar_url ? (
                                     <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                                 ) : (
                                     <User size={24} />
                                 )}
                             </div>
-                            <h3 className="text-xl font-bold text-slate-800 mb-1">{userName}</h3>
-                            <p className="text-slate-400 text-sm mb-4">Atualize seus dados e preferências.</p>
-                            <Link href="/membros/perfil" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-paraiso-blue hover:text-paraiso-green transition-colors">
+                            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-1">{userName}</h3>
+                            <p className="text-slate-400 dark:text-slate-400 text-sm mb-4">Atualize seus dados e preferências.</p>
+                            <Link href="/membros/perfil" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-paraiso-blue dark:text-paraiso-green hover:text-paraiso-green dark:hover:text-white transition-colors">
                                 Editar Perfil <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                             </Link>
                         </div>
                     </div>
 
                     {/* Events Card */}
-                    <div className="group relative overflow-hidden rounded-[2rem] bg-white p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <div className="group relative overflow-hidden rounded-[2rem] bg-white dark:bg-white/[0.04] dark:backdrop-blur-sm p-6 shadow-sm dark:shadow-none border border-slate-100 dark:border-white/[0.08] hover:shadow-xl dark:hover:border-white/20 hover:-translate-y-1 transition-all duration-300">
                         <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity text-paraiso-green">
                             <Calendar size={80} strokeWidth={1} />
                         </div>
                         <div className="relative z-10">
-                            <div className="w-12 h-12 rounded-2xl bg-paraiso-green/10 flex items-center justify-center text-paraiso-green mb-4 group-hover:bg-paraiso-green group-hover:text-white transition-colors duration-300">
+                            <div className="w-12 h-12 rounded-2xl bg-paraiso-green/10 dark:bg-paraiso-green/15 flex items-center justify-center text-paraiso-green mb-4 group-hover:bg-paraiso-green group-hover:text-white transition-colors duration-300">
                                 <Calendar size={24} />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-800 mb-1">Eventos</h3>
-                            <p className="text-slate-400 text-sm mb-4">Inscrições abertas para o Retiro 2026.</p>
-                            <Link href="/membros/eventos" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-paraiso-blue group-hover:text-paraiso-green transition-colors">
+                            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-1">Eventos</h3>
+                            <p className="text-slate-400 dark:text-slate-400 text-sm mb-4">Inscrições abertas para o Retiro 2026.</p>
+                            <Link href="/membros/eventos" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-paraiso-green hover:text-paraiso-blue dark:hover:text-white transition-colors">
                                 Ver Agenda <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                             </Link>
                         </div>
                     </div>
 
                     {/* Contribution Card - Highlighted */}
-                    <div 
+                    <div
                         className="md:col-span-2 bg-paraiso-green bg-gradient-to-r from-paraiso-green to-emerald-500 rounded-[2rem] p-8 relative overflow-hidden shadow-lg group"
                         style={{ backgroundColor: '#22c55e' }} // Fallback para Safari Mobile
                     >
@@ -181,36 +160,36 @@ export default async function MembersPage() {
                     </div>
 
                     {/* Courses/Small Groups */}
-                    <div className="group relative overflow-hidden rounded-[2rem] bg-white p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                        <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity text-orange-600">
+                    <div className="group relative overflow-hidden rounded-[2rem] bg-white dark:bg-white/[0.04] dark:backdrop-blur-sm p-6 shadow-sm dark:shadow-none border border-slate-100 dark:border-white/[0.08] hover:shadow-xl dark:hover:border-white/20 hover:-translate-y-1 transition-all duration-300">
+                        <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity text-orange-500">
                             <BookOpen size={80} strokeWidth={1} />
                         </div>
                         <div className="relative z-10">
-                            <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-500 mb-4 group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300">
+                            <div className="w-12 h-12 rounded-2xl bg-orange-500/10 dark:bg-orange-500/15 flex items-center justify-center text-orange-500 mb-4 group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300">
                                 <BookOpen size={24} />
                             </div>
                             <div className="flex items-center gap-2 mb-1">
-                                <h3 className="text-xl font-bold text-slate-800">Polo FLMU</h3>
-                                <span className="text-[10px] font-black bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full uppercase tracking-widest">Educação</span>
+                                <h3 className="text-xl font-bold text-slate-800 dark:text-white">Polo FLMU</h3>
+                                <span className="text-[10px] font-black bg-orange-100 dark:bg-orange-500/15 text-orange-600 dark:text-orange-400 px-2 py-0.5 rounded-full uppercase tracking-widest">Educação</span>
                             </div>
-                            <p className="text-slate-400 text-sm mb-4 leading-tight">Curso Intermediário em Teologia pela FLMU.</p>
-                            <Link href="/membros/cursos" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-orange-600 hover:text-orange-700 transition-colors">
+                            <p className="text-slate-400 dark:text-slate-400 text-sm mb-4 leading-tight">Curso Intermediário em Teologia pela FLMU.</p>
+                            <Link href="/membros/cursos" className="inline-flex items-center text-xs font-black uppercase tracking-widest text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 transition-colors">
                                 Acessar Lições <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                             </Link>
                         </div>
                     </div>
 
                     {/* Prayer Requests */}
-                    <div className="group relative overflow-hidden rounded-[2rem] bg-white p-6 shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 opacity-80">
+                    <div className="group relative overflow-hidden rounded-[2rem] bg-white dark:bg-white/[0.04] dark:backdrop-blur-sm p-6 shadow-sm dark:shadow-none border border-slate-100 dark:border-white/[0.08] hover:shadow-xl dark:hover:border-white/20 hover:-translate-y-1 transition-all duration-300 opacity-80">
                         <div className="relative z-10">
-                            <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 mb-4 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300">
+                            <div className="w-12 h-12 rounded-2xl bg-red-500/10 dark:bg-red-500/15 flex items-center justify-center text-red-500 mb-4 group-hover:bg-red-500 group-hover:text-white transition-colors duration-300">
                                 <Heart size={24} />
                             </div>
                             <div className="flex items-center gap-2 mb-1">
-                                <h3 className="text-xl font-bold text-slate-800">Cuidado</h3>
-                                <span className="text-[10px] font-black bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full uppercase tracking-widest whitespace-nowrap shrink-0">Em breve</span>
+                                <h3 className="text-xl font-bold text-slate-800 dark:text-white">Cuidado</h3>
+                                <span className="text-[10px] font-black bg-slate-100 dark:bg-white/10 text-slate-400 dark:text-slate-400 px-2 py-0.5 rounded-full uppercase tracking-widest whitespace-nowrap shrink-0">Em breve</span>
                             </div>
-                            <p className="text-slate-400 text-sm mb-4">Compartilhe seus pedidos de oração conosco.</p>
+                            <p className="text-slate-400 dark:text-slate-400 text-sm mb-4">Compartilhe seus pedidos de oração conosco.</p>
                         </div>
                     </div>
 

@@ -22,7 +22,7 @@ const Missions: React.FC = () => {
     }, []);
 
     return (
-        <section id="missoes" className="py-32 bg-slate-50 relative overflow-hidden">
+        <section id="missoes" className="py-32 bg-slate-50 dark:bg-paraiso-blue-deep relative overflow-hidden">
             {/* Background Element */}
             <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cube-coat.png')] opacity-[0.03]"></div>
 
@@ -32,11 +32,11 @@ const Missions: React.FC = () => {
                         <div className="inline-block px-4 py-1.5 bg-paraiso-green/10 text-paraiso-green text-[10px] font-black uppercase tracking-widest rounded-md mb-6">
                             Ide & Pregai
                         </div>
-                        <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-paraiso-blue leading-none">
+                        <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
                             NOSSAS <br />
                             <span className="text-paraiso-green-light italic font-serif lowercase">missões</span>
                         </h2>
-                        <p className="mt-8 text-slate-500 font-medium max-w-2xl text-lg">
+                        <p className="mt-8 text-slate-500 dark:text-slate-300 font-medium max-w-2xl text-lg">
                             Conheça os líderes que cuidam das nossas igrejas filiais e missões, levando o amor de Deus a cada comunidade.
                         </p>
                     </div>
@@ -57,11 +57,11 @@ const Missions: React.FC = () => {
                             {MISSIONS.map((m, idx) => (
                                 <motion.div
                                     key={m.id}
-                                    className="min-w-[320px] md:min-w-[400px] bg-white rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-100 relative group select-none"
+                                    className="min-w-[320px] md:min-w-[400px] bg-white dark:bg-[#0f2540] rounded-[2.5rem] overflow-hidden shadow-xl dark:shadow-paraiso-green/5 border border-slate-100 dark:border-white/5 relative group select-none dark:[box-shadow:0_0_0_1px_rgba(255,255,255,0.05),0_25px_50px_-12px_rgba(0,0,0,0.6)]"
                                 >
                                     {/* Image Wrapper */}
                                     <div className="relative h-[450px] overflow-hidden">
-                                        <div className="absolute inset-0 bg-paraiso-blue/20 z-10 group-hover:bg-transparent transition-colors duration-500"></div>
+                                        <div className="absolute inset-0 bg-paraiso-blue/10 dark:bg-transparent z-10 group-hover:bg-transparent transition-colors duration-500"></div>
                                         <img
                                             src={m.image}
                                             alt={m.name}
@@ -85,24 +85,24 @@ const Missions: React.FC = () => {
                                     </div>
 
                                     {/* Content */}
-                                    <div className="p-8 relative bg-white">
+                                    <div className="p-8 relative bg-white dark:bg-[#0f2540] border-t-2 border-transparent dark:border-paraiso-green/30">
                                         <div className="flex items-start gap-4">
-                                            <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-paraiso-green flex-shrink-0">
+                                            <div className="w-10 h-10 rounded-full bg-paraiso-green/10 dark:bg-paraiso-green/15 flex items-center justify-center text-paraiso-green shrink-0">
                                                 <MapPin className="w-5 h-5" />
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-paraiso-blue text-sm uppercase tracking-widest mb-1">Localização</h4>
-                                                <p className="text-slate-500 font-medium leading-relaxed">
+                                                <h4 className="font-bold text-paraiso-blue dark:text-white text-sm uppercase tracking-widest mb-1">Localização</h4>
+                                                <p className="text-slate-500 dark:text-slate-300 font-medium leading-relaxed">
                                                     {m.location}
                                                 </p>
                                             </div>
                                         </div>
 
-                                        <div className="mt-8 pt-6 border-t border-slate-100 flex justify-between items-center group/btn cursor-pointer">
-                                            <span className="text-paraiso-blue font-black uppercase tracking-widest text-xs group-hover/btn:text-paraiso-green transition-colors">
+                                        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-white/10 flex justify-between items-center group/btn cursor-pointer">
+                                            <span className="text-paraiso-blue dark:text-paraiso-green-light font-black uppercase tracking-widest text-xs group-hover/btn:text-paraiso-green dark:group-hover/btn:text-white transition-colors">
                                                 Saiba Mais
                                             </span>
-                                            <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-paraiso-blue group-hover/btn:bg-paraiso-green group-hover/btn:text-white transition-all">
+                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-paraiso-green/20 flex items-center justify-center text-paraiso-blue dark:text-paraiso-green group-hover/btn:bg-paraiso-green group-hover/btn:text-white transition-all">
                                                 <ArrowRight size={14} />
                                             </div>
                                         </div>

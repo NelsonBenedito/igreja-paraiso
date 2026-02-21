@@ -6,9 +6,9 @@ export default async function CoursesPage() {
     const courseVideos = await getYouTubeCourses()
 
     return (
-        <div className="bg-slate-50 min-h-screen pb-20 pt-24">
+        <div className="bg-slate-50 dark:bg-paraiso-blue-deep min-h-screen pb-20 pt-24">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                
+
                 {/* Header */}
                 <div className="mb-12">
                     <Link href="/membros" className="text-slate-500 hover:text-slate-700 text-sm flex items-center gap-1 mb-4 transition-colors">
@@ -20,17 +20,17 @@ export default async function CoursesPage() {
                                 <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Polo FLMU</span>
                                 <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">Igreja Paraíso</span>
                             </div>
-                            <h1 className="text-4xl font-black text-paraiso-blue-dark tracking-tighter">
+                            <h1 className="text-4xl font-black text-paraiso-blue-dark dark:text-white tracking-tighter">
                                 Curso Intermediário em <span className="text-orange-600">Teologia</span>
                             </h1>
-                            <p className="text-slate-500 mt-2 max-w-2xl">
+                            <p className="text-slate-500 dark:text-slate-300 mt-2 max-w-2xl">
                                 Estude as Escrituras com profundidade e clareza. Nosso polo FLMU oferece formação teológica de excelência.
                             </p>
                         </div>
-                        <a 
-                            href="https://flmu.education/" 
+                        <a
+                            href="https://flmu.education/"
                             target="_blank"
-                            className="bg-white border-2 border-slate-100 hover:border-orange-500 text-slate-700 px-6 py-3 rounded-2xl flex items-center gap-3 font-black uppercase tracking-widest text-[10px] transition-all shadow-sm"
+                            className="bg-white dark:bg-paraiso-blue border-2 border-slate-100 dark:border-white/10 hover:border-orange-500 text-slate-700 dark:text-white px-6 py-3 rounded-2xl flex items-center gap-3 font-black uppercase tracking-widest text-[10px] transition-all shadow-sm"
                         >
                             Site Oficial FLMU <ExternalLink size={14} />
                         </a>
@@ -39,12 +39,12 @@ export default async function CoursesPage() {
 
                 {/* Course Content Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                    
+
                     {/* Main Content Area */}
                     <div className="lg:col-span-3 space-y-8">
-                        
+
                         {/* Featured Info Box */}
-                        <div 
+                        <div
                             className="bg-orange-600 bg-gradient-to-r from-orange-600 to-orange-500 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-xl"
                             style={{ backgroundColor: '#ea580c' }} // Fallback para Safari Mobile
                         >
@@ -53,7 +53,7 @@ export default async function CoursesPage() {
                                 <GraduationCap size={48} className="mb-6 opacity-30" />
                                 <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter mb-4">Sobre o Curso</h2>
                                 <p className="text-white/90 text-sm md:text-base leading-relaxed max-w-3xl mb-8">
-                                    O Curso Intermediário em Teologia é desenhado para quem deseja avançar no conhecimento bíblico e doutrinário. 
+                                    O Curso Intermediário em Teologia é desenhado para quem deseja avançar no conhecimento bíblico e doutrinário.
                                     Aqui você encontrará as lições gravadas, materiais de apoio e as transmissões das aulas presenciais do nosso polo.
                                 </p>
                                 <div className="flex flex-wrap gap-4">
@@ -83,14 +83,14 @@ export default async function CoursesPage() {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     {courseVideos.map((video: any) => (
-                                        <a 
+                                        <a
                                             key={video.id.videoId}
                                             href={`/membros/ao-vivo?video=${video.id.videoId}`}
                                             className="group bg-white rounded-[2rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                                         >
                                             <div className="relative aspect-video overflow-hidden">
-                                                <img 
-                                                    src={video.snippet.thumbnails.high.url} 
+                                                <img
+                                                    src={video.snippet.thumbnails.high.url}
                                                     alt={video.snippet.title}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                 />
@@ -144,14 +144,14 @@ export default async function CoursesPage() {
                             </ul>
                         </div>
 
-                        <div 
+                        <div
                             className="bg-orange-600 rounded-[2rem] p-8 text-white relative overflow-hidden shadow-lg group cursor-pointer"
                             style={{ backgroundColor: '#ea580c' }} // Fallback para Safari Mobile
                         >
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-8 -mt-8 pointer-events-none"></div>
                             <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mb-2">Suporte do Polo</p>
                             <h4 className="font-bold text-lg leading-tight mb-4">Tem alguma dúvida sobre as lições?</h4>
-                            <button 
+                            <button
                                 className="w-full py-3 bg-white !text-orange-600 rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-orange-50 transition-colors shadow-sm"
                                 style={{ color: '#ea580c' }} // Forçar cor de texto no Safari Mobile
                             >

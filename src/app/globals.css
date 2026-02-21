@@ -72,6 +72,12 @@
   --paraiso-blue: #2B4364;
   --paraiso-blue-dark: #1e3047;
   --paraiso-blue-deep: #0f1a2a;
+
+  /* Light Mode Semantic Vars */
+  --paraiso-section-bg: #f1f5f9;
+  --paraiso-section-alt: #e8edf4;
+  --paraiso-text: #1e3047;
+  --paraiso-text-muted: rgba(30,48,71,0.6);
 }
 
 @theme inline {
@@ -129,6 +135,12 @@
   --color-paraiso-blue: var(--paraiso-blue);
   --color-paraiso-blue-dark: var(--paraiso-blue-dark);
   --color-paraiso-blue-deep: var(--paraiso-blue-deep);
+
+  /* Semantic theme-aware colors */
+  --color-paraiso-section-bg: var(--paraiso-section-bg);
+  --color-paraiso-section-alt: var(--paraiso-section-alt);
+  --color-paraiso-text: var(--paraiso-text);
+  --color-paraiso-text-muted: var(--paraiso-text-muted);
 }
 
 body {
@@ -147,7 +159,7 @@ h6 {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: #0f1a2a;
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
@@ -159,7 +171,6 @@ h6 {
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  /* Brand Blue Accent */
   --accent: #334c71;
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
@@ -179,6 +190,17 @@ h6 {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Paraíso brand colors - Dark Mode (original palette) */
+  --paraiso-green: #7C9A40;
+  --paraiso-green-light: #a1bc6b;
+  --paraiso-blue: #2B4364;
+  --paraiso-blue-dark: #1e3047;
+  --paraiso-blue-deep: #0f1a2a;
+  --paraiso-section-bg: #0f1a2a;
+  --paraiso-section-alt: #1e3047;
+  --paraiso-text: #ffffff;
+  --paraiso-text-muted: rgba(255,255,255,0.6);
 }
 
 @layer base {

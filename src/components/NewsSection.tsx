@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 
 const NewsSection: React.FC = () => {
     return (
-        <section id="mensagens" className="py-32 bg-white overflow-hidden">
+        <section id="mensagens" className="py-32 bg-white dark:bg-paraiso-blue-dark overflow-hidden">
             <div className="container mx-auto px-6">
                 <Reveal>
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
@@ -15,11 +15,11 @@ const NewsSection: React.FC = () => {
                                 <span className="w-12 h-[2px] bg-paraiso-green"></span>
                                 <span className="text-paraiso-green font-black uppercase tracking-widest text-xs">Novidades</span>
                             </div>
-                            <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-paraiso-blue leading-none">
+                            <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
                                 ACONTECE NA <br />PARAÍSO
                             </h2>
                         </div>
-                        <p className="text-slate-500 font-bold uppercase tracking-widest text-sm max-w-[200px] leading-tight">
+                        <p className="text-slate-500 dark:text-slate-300 font-bold uppercase tracking-widest text-sm max-w-[200px] leading-tight">
                             Fique por dentro de tudo que move nossa casa.
                         </p>
                     </div>
@@ -50,10 +50,10 @@ const NewsSection: React.FC = () => {
                                     </div>
                                 </div>
 
-                                <h3 className="text-3xl font-black uppercase tracking-tighter mb-4 group-hover:text-paraiso-green transition-colors text-paraiso-blue leading-tight">
+                                <h3 className="text-3xl font-black uppercase tracking-tighter mb-4 group-hover:text-paraiso-green transition-colors text-paraiso-blue dark:text-white leading-tight">
                                     {item.title}
                                 </h3>
-                                <p className="text-slate-600 leading-relaxed line-clamp-2 font-medium">
+                                <p className="text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2 font-medium">
                                     {item.description}
                                 </p>
 

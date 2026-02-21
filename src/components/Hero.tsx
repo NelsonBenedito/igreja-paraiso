@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ChevronUp } from 'lucide-react';
 import AnimatedLogo from './AnimatedLogo';
 
 const Hero: React.FC = () => {
@@ -35,7 +35,7 @@ const Hero: React.FC = () => {
                 </motion.div>
             </div>
 
-            {/* Scroll Indicator - Modern & Animated */}
+            {/* Scroll Indicator - Responsivo */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -43,21 +43,40 @@ const Hero: React.FC = () => {
                 className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
             >
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Descobrir</span>
-                <div className="w-6 h-10 border-2 border-white/20 rounded-full flex justify-center p-1.5">
+
+                {/* Desktop: Mouse Wheel */}
+                <div className="hidden md:flex w-6 h-10 border-2 border-white/20 rounded-full justify-center p-1.5">
                     <motion.div
-                        animate={{ 
+                        animate={{
                             y: [0, 12, 0],
                             opacity: [1, 0.2, 1]
                         }}
-                        transition={{ 
-                            repeat: Infinity, 
+                        transition={{
+                            repeat: Infinity,
                             duration: 2,
                             ease: "easeInOut"
                         }}
                         className="w-1 h-2 bg-paraiso-green rounded-full"
                     />
                 </div>
-                <motion.div 
+
+                {/* Mobile: Swipe Up Gesture */}
+                <div className="flex md:hidden flex-col items-center gap-1">
+                    <motion.div
+                        animate={{ y: [4, -4, 4], opacity: [0.4, 1, 0.4] }}
+                        transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+                    >
+                        <ChevronUp className="w-5 h-5 text-paraiso-green" />
+                    </motion.div>
+                    <motion.div
+                        animate={{ y: [4, -4, 4], opacity: [0.2, 0.7, 0.2] }}
+                        transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut", delay: 0.15 }}
+                    >
+                        <ChevronUp className="w-5 h-5 text-paraiso-green/50 -mt-3" />
+                    </motion.div>
+                </div>
+
+                <motion.div
                     animate={{ y: [0, 5, 0] }}
                     transition={{ repeat: Infinity, duration: 2, delay: 0.5 }}
                     className="w-px h-12 bg-gradient-to-b from-paraiso-green to-transparent"

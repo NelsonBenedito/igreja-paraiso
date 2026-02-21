@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 
 const MissionSection: React.FC = () => {
     return (
-        <section id="sobre" className="py-32 bg-white relative overflow-hidden">
-            <div className="absolute -top-24 -right-24 w-96 h-96 bg-paraiso-green/5 rounded-full blur-3xl opacity-50"></div>
+        <section id="sobre" className="py-32 bg-white dark:bg-paraiso-blue-deep relative overflow-hidden">
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-paraiso-green/5 rounded-full blur-3xl opacity-50" />
 
             <div className="container mx-auto px-6 relative z-10">
                 <Reveal>
@@ -14,13 +14,33 @@ const MissionSection: React.FC = () => {
                         <span className="inline-block px-4 py-1 bg-paraiso-green/10 text-paraiso-green text-[10px] font-black uppercase tracking-widest rounded-md mb-8">
                             Nossa Missão
                         </span>
-                        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-tight mb-12 text-paraiso-blue">
-                            Acreditamos que todo ser humano é uma obra de arte em <span className="text-paraiso-green italic">restauração</span>.
+
+                        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-tight mb-10 text-paraiso-blue dark:text-white">
+                            O mesmo povo.{' '}
+                            <span className="text-paraiso-green italic">A mesma fé.</span>{' '}
+                            Um nome novo.
                         </h2>
-                        <p className="text-2xl text-slate-500 font-medium mb-12 leading-relaxed">
-                            Na Igreja Paraíso, você não é apenas um número. Você é família. Nossos grupos de vida e ministérios existem para apoiar sua caminhada e revelar seu propósito em Deus.
+
+                        <p className="text-xl text-slate-500 dark:text-slate-300 font-medium mb-6 leading-relaxed">
+                            Agora, somos a <strong className="text-paraiso-blue dark:text-white font-black">Igreja Paraíso</strong>. O mesmo povo, a mesma igreja, com um novo nome, uma nova mentalidade e uma visão renovada.
                         </p>
-                        <h3 className="text-4xl font-black uppercase tracking-tighter mb-10 text-paraiso-blue-dark">Sua jornada começa aqui.</h3>
+
+                        <p className="text-xl text-slate-500 dark:text-slate-300 font-medium mb-12 leading-relaxed">
+                            E o nosso compromisso permanece:{' '}
+                            <em className="text-paraiso-blue dark:text-slate-100 not-italic font-bold">
+                                alcançar todos a quem o Senhor nos enviar.
+                            </em>
+                        </p>
+
+                        <blockquote className="border-l-4 border-paraiso-green pl-6 mb-10">
+                            <p className="text-2xl md:text-3xl font-black italic text-paraiso-blue dark:text-white leading-snug">
+                                "Paraíso é a casa de Deus, o lugar da presença, onde a minha família se reúne, onde Deus habita."
+                            </p>
+                        </blockquote>
+
+                        <p className="text-paraiso-green font-black uppercase tracking-widest text-sm mb-10">
+                            Igreja Paraíso — Casa de Deus. Minha família.
+                        </p>
 
                         <motion.button
                             whileHover={{ scale: 1.05 }}

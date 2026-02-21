@@ -132,20 +132,20 @@ export default function AdminProgramacaoPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-950 pt-24 pb-20">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pt-24 pb-20">
             <div className="max-w-4xl mx-auto px-6">
 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <Link href="/admin" className="text-slate-500 hover:text-slate-300 text-sm flex items-center gap-1 mb-3 transition-colors">
+                        <Link href="/admin" className="text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm flex items-center gap-1 mb-3 transition-colors">
                             <ChevronLeft size={14} /> Painel Admin
                         </Link>
-                        <h1 className="text-3xl font-black text-white tracking-tighter flex items-center gap-3">
+                        <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter flex items-center gap-3">
                             <ListChecks className="text-emerald-400" size={28} />
                             Programação Semanal
                         </h1>
-                        <p className="text-slate-500 text-sm mt-1">{schedules.length} item(s) na programação</p>
+                        <p className="text-slate-400 dark:text-slate-500 text-sm mt-1">{schedules.length} item(s) na programação</p>
                     </div>
                     <button
                         onClick={openCreate}
@@ -177,7 +177,7 @@ export default function AdminProgramacaoPage() {
                                     {items.map((s) => (
                                         <div
                                             key={s.id}
-                                            className={`bg-slate-900 border rounded-2xl p-4 flex items-center gap-4 transition-all ${s.active ? 'border-slate-800 hover:border-slate-700' : 'border-slate-800/50 opacity-50'
+                                            className={`bg-white dark:bg-slate-900 border rounded-2xl p-4 flex items-center gap-4 shadow-sm dark:shadow-none transition-all ${s.active ? 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700' : 'border-slate-200/50 dark:border-slate-800/50 opacity-50'
                                                 }`}
                                         >
                                             {/* Time pill */}
@@ -187,9 +187,9 @@ export default function AdminProgramacaoPage() {
 
                                             {/* Info */}
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-black text-white">{s.title}</p>
+                                                <p className="font-black text-slate-900 dark:text-white">{s.title}</p>
                                                 {s.location && (
-                                                    <p className="text-slate-500 text-xs mt-0.5">{s.location}</p>
+                                                    <p className="text-slate-500 dark:text-slate-500 text-xs mt-0.5">{s.location}</p>
                                                 )}
                                             </div>
 
@@ -197,8 +197,8 @@ export default function AdminProgramacaoPage() {
                                             <button
                                                 onClick={() => toggleActive(s)}
                                                 className={`text-xs font-bold px-2.5 py-1 rounded-full transition-all ${s.active
-                                                    ? 'bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 hover:bg-red-600/10 hover:text-red-400 hover:border-red-600/30'
-                                                    : 'bg-slate-800 text-slate-500 border border-slate-700 hover:bg-emerald-600/10 hover:text-emerald-400'
+                                                    ? 'bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 border border-emerald-600/30 hover:bg-red-600/10 hover:text-red-500 dark:hover:text-red-400 hover:border-red-600/30'
+                                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700 hover:bg-emerald-600/10 hover:text-emerald-600 dark:hover:text-emerald-400'
                                                     }`}
                                                 title={s.active ? 'Desativar' : 'Ativar'}
                                             >
@@ -223,10 +223,10 @@ export default function AdminProgramacaoPage() {
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <button onClick={() => openEdit(s)} className="text-slate-500 hover:text-emerald-400 p-2 rounded-xl hover:bg-emerald-400/10 transition-all" title="Editar">
+                                                        <button onClick={() => openEdit(s)} className="text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 p-2 rounded-xl hover:bg-emerald-400/10 transition-all" title="Editar">
                                                             <Pencil size={15} />
                                                         </button>
-                                                        <button onClick={() => setConfirmDelete(s.id)} className="text-slate-500 hover:text-red-400 p-2 rounded-xl hover:bg-red-400/10 transition-all" title="Excluir">
+                                                        <button onClick={() => setConfirmDelete(s.id)} className="text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 p-2 rounded-xl hover:bg-red-400/10 transition-all" title="Excluir">
                                                             <Trash2 size={15} />
                                                         </button>
                                                     </>
@@ -245,13 +245,13 @@ export default function AdminProgramacaoPage() {
             {showForm && (
                 <div className="fixed inset-0 z-[100] flex">
                     <div className="flex-1 bg-black/60 backdrop-blur-sm" onClick={closeForm} />
-                    <div className="w-full max-w-md bg-slate-900 border-l border-slate-800 h-full overflow-y-auto shadow-2xl pb-32">
+                    <div className="w-full max-w-md bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 h-full overflow-y-auto shadow-2xl pb-32">
                         <div className="p-7">
                             <div className="flex items-center justify-between mb-7">
-                                <h2 className="text-xl font-black text-white">
+                                <h2 className="text-xl font-black text-slate-900 dark:text-white">
                                     {editing ? 'Editar Item' : 'Novo Item'}
                                 </h2>
-                                <button onClick={closeForm} className="text-slate-500 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition-all">
+                                <button onClick={closeForm} className="text-slate-400 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
                                     <X size={20} />
                                 </button>
                             </div>
@@ -324,7 +324,7 @@ export default function AdminProgramacaoPage() {
                                     >
                                         <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${form.active ? 'translate-x-5' : ''}`} />
                                     </div>
-                                    <span className="text-slate-300 text-sm font-bold">
+                                    <span className="text-slate-600 dark:text-slate-300 text-sm font-bold">
                                         {form.active ? 'Ativo' : 'Inativo'}
                                     </span>
                                 </label>
@@ -333,7 +333,7 @@ export default function AdminProgramacaoPage() {
                                     <button
                                         type="button"
                                         onClick={closeForm}
-                                        className="flex-1 border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 font-bold text-sm py-3 rounded-2xl transition-all"
+                                        className="flex-1 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-400 dark:hover:border-slate-600 font-bold text-sm py-3 rounded-2xl transition-all"
                                     >
                                         Cancelar
                                     </button>
@@ -357,35 +357,40 @@ export default function AdminProgramacaoPage() {
                     display: block;
                     width: 100%;
                     box-sizing: border-box;
-                    background: #0f172a;
-                    border: 1px solid #1e293b;
+                    background: #f8fafc;
+                    border: 1px solid #e2e8f0;
                     border-radius: 0.75rem;
                     padding: 0.75rem 1rem;
-                    color: #e2e8f0;
+                    color: #1e293b;
                     font-size: 0.95rem;
                     outline: none;
                     transition: border-color 0.2s, background-color 0.2s;
                     appearance: none;
                     -webkit-appearance: none;
-                    color-scheme: dark; /* Garante que os ícones nativos (calendário/relógio) fiquem claros */
+                    color-scheme: light;
                 }
-                .input-dark:focus { 
-                    border-color: #10b981; 
+                .input-dark:focus {
+                    border-color: #10b981;
+                    background: #f1f5f9;
+                }
+                .input-dark option { background: #f8fafc; }
+                .dark .input-dark {
+                    background: #0f172a;
+                    border-color: #1e293b;
+                    color: #e2e8f0;
+                    color-scheme: dark;
+                }
+                .dark .input-dark:focus {
+                    border-color: #10b981;
                     background: #1e293b;
                 }
-                .input-dark option { background: #0f172a; }
-
-                /* Ajuste específico para garantir que os ícones nativos do navegador apareçam com contraste */
-                .input-dark::-webkit-calendar-picker-indicator {
+                .dark .input-dark option { background: #0f172a; }
+                .dark .input-dark::-webkit-calendar-picker-indicator {
                     filter: invert(1);
                     opacity: 0.5;
                     cursor: pointer;
                 }
-                .input-dark::-webkit-calendar-picker-indicator:hover {
-                    opacity: 1;
-                }
-
-                /* Ajuste específico para garantir que campos de tempo não "vazem" no mobile */
+                .dark .input-dark::-webkit-calendar-picker-indicator:hover { opacity: 1; }
                 input[type="time"].input-dark {
                     min-height: 3rem;
                 }

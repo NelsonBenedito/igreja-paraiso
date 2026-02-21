@@ -73,7 +73,7 @@ const LatestStream: React.FC = () => {
     if (!video && !loading) return null;
 
     return (
-        <section id="aovivo" className="py-24 bg-slate-50 relative overflow-hidden">
+        <section id="aovivo" className="py-24 bg-slate-50 dark:bg-paraiso-blue-deep relative overflow-hidden">
             {/* Background Decorative */}
             <div className="absolute inset-0 bg-paraiso-blue/5"></div>
 
@@ -84,11 +84,11 @@ const LatestStream: React.FC = () => {
                             <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
                             <span className="text-red-600 font-black uppercase tracking-widest text-xs">Youtube</span>
                         </div>
-                        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-paraiso-blue leading-none mb-6">
+                        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none mb-6">
                             Transmissões <br />
                             <span className="text-paraiso-green italic font-serif lowercase">online</span>
                         </h2>
-                        <p className="text-slate-500 font-medium max-w-2xl text-lg">
+                        <p className="text-slate-500 dark:text-slate-300 font-medium max-w-2xl text-lg">
                             Acompanhe nossos cultos e mensagens onde você estiver.
                         </p>
                     </div>
@@ -131,7 +131,7 @@ const LatestStream: React.FC = () => {
                         href="https://www.youtube.com/@ibrejetibaoficial"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-white border border-slate-200 text-paraiso-blue rounded-full font-black uppercase tracking-widest text-xs hover:bg-paraiso-blue hover:text-white hover:border-transparent transition-all shadow-lg"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-white dark:bg-paraiso-blue border border-slate-200 dark:border-white/10 text-paraiso-blue dark:text-white rounded-full font-black uppercase tracking-widest text-xs hover:bg-paraiso-blue hover:text-white hover:border-transparent transition-all shadow-lg"
                     >
                         <Youtube size={18} />
                         Ver Canal Completo

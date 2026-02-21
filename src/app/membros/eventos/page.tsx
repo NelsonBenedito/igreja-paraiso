@@ -18,23 +18,23 @@ export default async function MembersEventsPage() {
         })
 
     return (
-        <div className="bg-slate-50 min-h-screen pb-20 pt-24">
+        <div className="bg-slate-50 dark:bg-paraiso-blue-deep min-h-screen pb-20 pt-24">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
                 {/* Header */}
                 <div className="mb-12">
-                     <Link href="/membros" className="text-slate-500 hover:text-slate-700 text-sm flex items-center gap-1 mb-4 transition-colors">
+                    <Link href="/membros" className="text-slate-500 hover:text-slate-700 text-sm flex items-center gap-1 mb-4 transition-colors">
                         <ChevronLeft size={14} /> Voltar ao Painel
                     </Link>
-                    <h1 className="text-4xl font-black text-paraiso-blue-dark tracking-tighter">
+                    <h1 className="text-4xl font-black text-paraiso-blue-dark dark:text-white tracking-tighter">
                         Agenda de <span className="text-paraiso-green">Eventos</span>
                     </h1>
-                    <p className="text-slate-500 mt-2">Confira o que preparamos para você e sua família.</p>
+                    <p className="text-slate-500 dark:text-slate-300 mt-2">Confira o que preparamos para você e sua família.</p>
                 </div>
 
                 {/* Events Grid */}
                 {!events || events.length === 0 ? (
-                    <div className="text-center py-24 text-slate-400 bg-white rounded-[2.5rem] border border-slate-100 shadow-sm">
+                    <div className="text-center py-24 text-slate-400 bg-white dark:bg-paraiso-blue rounded-[2.5rem] border border-slate-100 dark:border-white/10 shadow-sm">
                         <Calendar size={56} className="mx-auto mb-4 opacity-30" />
                         <p className="text-xl font-bold">Nenhum evento programado no momento.</p>
                         <p className="text-sm mt-2">Fique atento às notificações!</p>
@@ -44,7 +44,7 @@ export default async function MembersEventsPage() {
                         {events.map((event) => (
                             <div
                                 key={event.id}
-                                className="group bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl border border-slate-100 hover:-translate-y-1 transition-all duration-300 flex flex-col"
+                                className="group bg-white dark:bg-paraiso-blue rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl border border-slate-100 dark:border-white/10 hover:-translate-y-1 transition-all duration-300 flex flex-col"
                             >
                                 <div className="relative h-52 w-full overflow-hidden">
                                     {event.image_url ? (
@@ -72,17 +72,17 @@ export default async function MembersEventsPage() {
                                         <span>{formatDate(event.date)}</span>
                                     </div>
 
-                                    <h2 className="text-2xl font-black text-slate-800 mb-3 group-hover:text-paraiso-blue-dark transition-colors leading-tight">
+                                    <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-3 group-hover:text-paraiso-blue-dark dark:group-hover:text-paraiso-green transition-colors leading-tight">
                                         {event.title}
                                     </h2>
 
                                     {event.description && (
-                                        <p className="text-slate-500 text-sm leading-relaxed mb-6 grow line-clamp-3">
+                                        <p className="text-slate-500 dark:text-slate-300 text-sm leading-relaxed mb-6 grow line-clamp-3">
                                             {event.description}
                                         </p>
                                     )}
 
-                                    <div className="space-y-2 mt-auto pt-6 border-t border-slate-100 text-xs font-bold text-slate-400">
+                                    <div className="space-y-2 mt-auto pt-6 border-t border-slate-100 dark:border-white/10 text-xs font-bold text-slate-400 dark:text-slate-300">
                                         {(event.time_start || event.time_end) && (
                                             <div className="flex items-center gap-2">
                                                 <Clock size={14} className="text-paraiso-green" />

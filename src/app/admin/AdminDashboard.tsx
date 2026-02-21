@@ -52,7 +52,7 @@ export default function AdminDashboard({ user, stats }: AdminDashboardProps) {
     ]
 
     return (
-        <div className="min-h-screen bg-slate-950 pt-24 pb-20">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pt-24 pb-20">
             <div className="max-w-6xl mx-auto px-6 lg:px-8">
 
                 {/* Header */}
@@ -66,10 +66,10 @@ export default function AdminDashboard({ user, stats }: AdminDashboardProps) {
                                 Painel Administrativo
                             </span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter">
-                            Olá, <span className="text-violet-400">{user.user_metadata.full_name?.split(' ')[0] ?? 'Admin'}</span>
+                        <h1 className="text-4xl md:text-5xl font-black text-slate-800 dark:text-white tracking-tighter">
+                            Olá, <span className="text-violet-600 dark:text-violet-400">{user.user_metadata.full_name?.split(' ')[0] ?? 'Admin'}</span>
                         </h1>
-                        <p className="text-slate-400 mt-2 text-lg">
+                        <p className="text-slate-500 dark:text-slate-400 mt-2 text-lg">
                             O que você quer gerenciar hoje?
                         </p>
                     </div>
@@ -83,7 +83,7 @@ export default function AdminDashboard({ user, stats }: AdminDashboardProps) {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                     {cards.map((card, i) => {
                         const Icon = card.icon
-                        
+
                         const content = (
                             <div className={`h-full group relative overflow-hidden rounded-3xl bg-gradient-to-br ${card.color} p-7 shadow-xl hover:scale-[1.02] transition-all duration-300 text-left w-full border-0 cursor-pointer`}>
                                 <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none group-hover:bg-white/10 transition-all duration-500" />
@@ -107,8 +107,8 @@ export default function AdminDashboard({ user, stats }: AdminDashboardProps) {
                         if (card.isModal) {
                             return (
                                 <div key={i} className="h-full">
-                                    <ManageRolesModal 
-                                        currentUserId={user.id} 
+                                    <ManageRolesModal
+                                        currentUserId={user.id}
                                         trigger={content}
                                     />
                                 </div>
@@ -129,7 +129,7 @@ export default function AdminDashboard({ user, stats }: AdminDashboardProps) {
 
                 {/* Back link */}
                 <div className="text-center">
-                    <Link href="/membros" className="text-slate-500 hover:text-slate-300 text-sm transition-colors inline-flex items-center gap-2">
+                    <Link href="/membros" className="text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm transition-colors inline-flex items-center gap-2">
                         ← Voltar para a área de membros
                     </Link>
                 </div>
