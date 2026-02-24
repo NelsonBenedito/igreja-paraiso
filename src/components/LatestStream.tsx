@@ -77,7 +77,7 @@ const LatestStream: React.FC = () => {
             {/* Background Decorative */}
             <div className="absolute inset-0 bg-paraiso-blue/5"></div>
 
-            <div className="container mx-auto px-6 relative z-10">
+            <div className="container mx-auto px-20 relative z-10">
                 <Reveal>
                     <div className="flex flex-col items-center text-center mb-16">
                         <div className="flex items-center gap-2 mb-4">

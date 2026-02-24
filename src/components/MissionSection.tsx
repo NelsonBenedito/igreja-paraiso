@@ -6,9 +6,9 @@ import { motion } from 'framer-motion';
 const MissionSection: React.FC = () => {
     return (
         <section id="sobre" className="py-32 bg-white dark:bg-paraiso-blue-deep relative overflow-hidden">
-            <div className="absolute -top-24 -right-24 w-96 h-96 bg-paraiso-green/5 rounded-full blur-3xl opacity-50" />
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-paraiso-green rounded-full blur-3xl opacity-50" />
 
-            <div className="container mx-auto px-6 relative z-10">
+            <div className="container px-20 py-20 bg-gray-100/50 dark:bg-gray-900/50 border mx-auto backdrop-blur-3xl rounded-4xl relative z-10">
                 <Reveal>
                     <div className="max-w-4xl">
                         <span className="inline-block px-4 py-1 bg-paraiso-green/10 text-paraiso-green text-[10px] font-black uppercase tracking-widest rounded-md mb-8">

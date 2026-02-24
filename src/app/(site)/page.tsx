@@ -5,9 +5,36 @@ import Missions from "@/components/Missions";
 import LatestStream from "@/components/LatestStream";
 import Reveal from "@/components/Reveal";
 import MissionSection from "@/components/MissionSection";
-import { MapPin, Clock } from 'lucide-react';
+import CelulasSection from "@/components/CelulasSection";
+import { createClient } from "@/utils/supabase/server";
+import { MapPin } from 'lucide-react';
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+
+  const { data: events } = await supabase
+    .from('events')
+    .select('*')
+    .eq('published', true)
+    .order('date', { ascending: true });
+
+  const { data: schedules } = await supabase
+    .from('schedules')
+    .select('*')
+    .eq('active', true)
+    .order('sort_order', { ascending: true });
+
+  // Verifica se há usuário logado e busca suas inscrições
+  const { data: { user } } = await supabase.auth.getUser();
+  let registeredEventIds: string[] = [];
+  if (user?.email) {
+    const { data: registrations } = await supabase
+      .from('event_registrations')
+      .select('event_id')
+      .eq('email', user.email.toLowerCase());
+    registeredEventIds = (registrations ?? []).map((r) => r.event_id);
+  }
+
   return (
     <>
       <Hero />
@@ -15,11 +42,13 @@ export default function Home() {
       {/* Seção de Texto Impactante - Estilo Igreja da Cidade */}
       <MissionSection />
 
+      <CelulasSection />
+
       <LatestStream />
 
-      <NewsSection />
+      <NewsSection events={events ?? []} registeredEventIds={registeredEventIds} />
 
-      <ProgramacaoSection />
+      <ProgramacaoSection schedules={schedules ?? []} />
 
       <Missions />
 

@@ -1,7 +1,6 @@
 import React from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import AssistantAI from "@/components/AssistantAI";
 import { createClient } from "@/utils/supabase/server";
 import ThemeHandler from "@/components/ThemeHandler";
 
@@ -18,7 +17,6 @@ export default async function SiteLayout({
       <ThemeHandler color="#ffffff" />
 
       <Header user={user} />
-      <AssistantAI />
       <main className="flex-1">{children}</main>
       <Footer />
     </div>

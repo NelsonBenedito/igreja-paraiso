@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { CalendarDays, ListChecks, Users, Shield, ArrowRight, UserCog } from 'lucide-react'
+import { CalendarDays, ListChecks, Users, Shield, ArrowRight, UserPlus } from 'lucide-react'
 import ManageRolesModal from '@/components/membros/ManageRolesModal'
 import RevalidateYoutubeButton from '@/components/admin/RevalidateYoutubeButton'
 
@@ -11,6 +11,7 @@ interface AdminDashboardProps {
         eventsCount: number
         schedulesCount: number
         membersCount: number
+        registrationsCount: number
     }
 }
 
@@ -37,6 +38,17 @@ export default function AdminDashboard({ user, stats }: AdminDashboardProps) {
             color: 'from-emerald-600 to-emerald-800',
             iconBg: 'bg-emerald-500/20',
             iconColor: 'text-emerald-200',
+        },
+        {
+            href: '/admin/inscricoes',
+            icon: UserPlus,
+            label: 'Inscrições',
+            description: 'Ver e exportar inscrições recebidas nos eventos.',
+            count: stats.registrationsCount,
+            countLabel: 'inscrições recebidas',
+            color: 'from-paraiso-green to-green-800',
+            iconBg: 'bg-green-400/20',
+            iconColor: 'text-green-200',
         },
         {
             icon: Users,
@@ -127,12 +139,6 @@ export default function AdminDashboard({ user, stats }: AdminDashboardProps) {
                     })}
                 </div>
 
-                {/* Back link */}
-                <div className="text-center">
-                    <Link href="/membros" className="text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm transition-colors inline-flex items-center gap-2">
-                        ← Voltar para a área de membros
-                    </Link>
-                </div>
             </div>
         </div>
     )

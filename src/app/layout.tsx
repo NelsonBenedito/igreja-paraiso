@@ -21,11 +21,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className="scroll-smooth" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased text-slate-900`}>
+      {/* Blocking script: apply theme BEFORE React hydrates (prevents mobile FOUC) */}
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var theme = localStorage.getItem('paraiso-theme') || localStorage.getItem('theme') || 'dark';
+                  document.documentElement.classList.add(theme);
+                } catch(e) {
+                  document.documentElement.classList.add('dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className={`${inter.variable} font-sans antialiased text-slate-900`} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          enableSystem
+          storageKey="paraiso-theme"
           disableTransitionOnChange={false}
         >
           {children}

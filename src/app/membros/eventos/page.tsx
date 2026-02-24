@@ -1,10 +1,15 @@
 import { createClient } from '@/utils/supabase/server'
-import { Calendar, Clock, MapPin, Tag, ChevronLeft } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import Link from 'next/link'
+import MembrosEventosClient from './MembrosEventosClient'
 
 export default async function MembersEventsPage() {
     const supabase = await createClient()
 
+    // Usuário logado
+    const { data: { user } } = await supabase.auth.getUser()
+
+    // Eventos futuros publicados
     const { data: events } = await supabase
         .from('events')
         .select('*')
@@ -12,10 +17,17 @@ export default async function MembersEventsPage() {
         .gte('date', new Date().toISOString().split('T')[0])
         .order('date', { ascending: true })
 
-    const formatDate = (d: string) =>
-        new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', {
-            day: 'numeric', month: 'long', year: 'numeric',
-        })
+    // Inscrições do usuário autenticado (pelo e-mail)
+    // Se logado, busca quais event_ids ele já está inscrito
+    let registeredEventIds: string[] = []
+    if (user?.email) {
+        const { data: registrations } = await supabase
+            .from('event_registrations')
+            .select('event_id')
+            .eq('email', user.email.toLowerCase())
+
+        registeredEventIds = (registrations ?? []).map((r) => r.event_id)
+    }
 
     return (
         <div className="bg-slate-50 dark:bg-paraiso-blue-deep min-h-screen pb-20 pt-24">
@@ -29,81 +41,15 @@ export default async function MembersEventsPage() {
                     <h1 className="text-4xl font-black text-paraiso-blue-dark dark:text-white tracking-tighter">
                         Agenda de <span className="text-paraiso-green">Eventos</span>
                     </h1>
-                    <p className="text-slate-500 dark:text-slate-300 mt-2">Confira o que preparamos para você e sua família.</p>
+                    <p className="text-slate-500 dark:text-slate-300 mt-2">
+                        Confira o que preparamos para você e sua família.
+                    </p>
                 </div>
 
-                {/* Events Grid */}
-                {!events || events.length === 0 ? (
-                    <div className="text-center py-24 text-slate-400 bg-white dark:bg-paraiso-blue rounded-[2.5rem] border border-slate-100 dark:border-white/10 shadow-sm">
-                        <Calendar size={56} className="mx-auto mb-4 opacity-30" />
-                        <p className="text-xl font-bold">Nenhum evento programado no momento.</p>
-                        <p className="text-sm mt-2">Fique atento às notificações!</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {events.map((event) => (
-                            <div
-                                key={event.id}
-                                className="group bg-white dark:bg-paraiso-blue rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl border border-slate-100 dark:border-white/10 hover:-translate-y-1 transition-all duration-300 flex flex-col"
-                            >
-                                <div className="relative h-52 w-full overflow-hidden">
-                                    {event.image_url ? (
-                                        <img
-                                            src={event.image_url}
-                                            alt={event.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-paraiso-blue-dark/5">
-                                            <Calendar size={40} className="text-paraiso-blue-dark/20" />
-                                        </div>
-                                    )}
-                                    {event.tag && (
-                                        <span className="absolute top-6 left-6 flex items-center gap-1 bg-white/95 backdrop-blur-sm text-paraiso-blue-dark text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm">
-                                            <Tag size={10} className="text-paraiso-green" />
-                                            {event.tag}
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div className="p-8 flex flex-col grow">
-                                    <div className="flex items-center gap-2 text-paraiso-green font-black text-xs uppercase tracking-widest mb-4">
-                                        <Calendar size={14} />
-                                        <span>{formatDate(event.date)}</span>
-                                    </div>
-
-                                    <h2 className="text-2xl font-black text-slate-800 dark:text-white mb-3 group-hover:text-paraiso-blue-dark dark:group-hover:text-paraiso-green transition-colors leading-tight">
-                                        {event.title}
-                                    </h2>
-
-                                    {event.description && (
-                                        <p className="text-slate-500 dark:text-slate-300 text-sm leading-relaxed mb-6 grow line-clamp-3">
-                                            {event.description}
-                                        </p>
-                                    )}
-
-                                    <div className="space-y-2 mt-auto pt-6 border-t border-slate-100 dark:border-white/10 text-xs font-bold text-slate-400 dark:text-slate-300">
-                                        {(event.time_start || event.time_end) && (
-                                            <div className="flex items-center gap-2">
-                                                <Clock size={14} className="text-paraiso-green" />
-                                                <span>
-                                                    {event.time_start?.slice(0, 5)}
-                                                    {event.time_end && ` – ${event.time_end.slice(0, 5)}`}
-                                                </span>
-                                            </div>
-                                        )}
-                                        {event.location && (
-                                            <div className="flex items-center gap-2">
-                                                <MapPin size={14} className="text-paraiso-green" />
-                                                <span className="truncate">{event.location}</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <MembrosEventosClient
+                    events={events ?? []}
+                    registeredEventIds={registeredEventIds}
+                />
             </div>
         </div>
     )
