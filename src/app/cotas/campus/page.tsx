@@ -68,7 +68,7 @@ export default function CotasCampusPage() {
               preload="metadata"
               poster="/ConferenciaDeFamilias.jpg"
             >
-              <source src="/video_campus.mp4" type="video/mp4" />
+              <source src="/video_campus.MP4" type="video/mp4" />
             </video>
             <div className="cb-hero-overlay" aria-hidden />
             <div className="cb-hero-content">
