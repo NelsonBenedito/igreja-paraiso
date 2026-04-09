@@ -4,9 +4,9 @@ import { PixCopyButton } from "./PixCopyButton";
 import "./campus.css";
 
 export const metadata: Metadata = {
-  title: "Visão do Futuro — Novo Campus | Cotas",
+  title: "Campus Paraíso | Projeto Cotas",
   description:
-    "Contribua com o Novo Campus: cotas, Pix e informações do projeto Visão do Futuro.",
+    "Conheca o projeto do novo Campus Paraiso, acompanhe as frentes em atividade e participe com cotas mensais.",
 };
 
 const COTAS_DESC = [
@@ -25,18 +25,22 @@ const COTAS_DESC = [
 ] as const;
 
 export default function CotasCampusPage() {
+  const whatsappMessage = encodeURIComponent(
+    "Olá! Gostaria de tirar uma dúvida sobre o projeto cotas para o Campus. ",
+  );
+
   return (
     <main className="campus-page">
       <nav id="top">
         <a href="#top" className="nav-logo">
-          Visão<span>.</span>Futuro
+          Campus<span>.</span>Paraiso
         </a>
         <ul className="nav-links">
           <li>
             <a href="#visao">A Visão</a>
           </li>
           <li>
-            <a href="#projeto">Projeto</a>
+            <a href="#projetos">Projetos</a>
           </li>
           <li>
             <a href="#cotas">Cotas</a>
@@ -54,126 +58,249 @@ export default function CotasCampusPage() {
 
       <div className="cb-shell">
         <section className="cb-slab cb-slab--hero" aria-label="Destaque do projeto">
-          <Image
-            className="hero-img"
-            src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80"
-            alt="Projeto Novo Campus"
-            width={1600}
-            height={520}
-            sizes="(max-width: 1180px) 100vw, 1180px"
-            priority
-          />
+          <div className="cb-hero-media">
+            <video
+              className="hero-video"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster="/ConferenciaDeFamilias.jpg"
+            >
+              <source src="/video_campus.mp4" type="video/mp4" />
+            </video>
+            <div className="cb-hero-overlay" aria-hidden />
+            <div className="cb-hero-content">
+              <span className="cb-eyebrow cb-eyebrow--light">Cotas Campus Paraiso</span>
+              <Image
+                className="cb-hero-logo"
+                src="/paraiso_logo_branca.png"
+                alt="Igreja Paraiso"
+                width={512}
+                height={288}
+                priority
+              />
+              <h1 className="sr-only">Campus Paraiso</h1>
+              <p className="cb-hero-subtitle">
+                Casa de Deus, minha família.
+              </p>
+              <a href="#cotas" className="cb-hero-cta">
+                Quero participar das cotas
+              </a>
+            </div>
+          </div>
           <div className="cb-hero-bar" aria-hidden />
         </section>
 
         {/* Grande bloco — Visão */}
         <section className="cb-slab" id="visao">
           <div className="cb-inner">
-          <header className="cb-head">
-            <span className="cb-eyebrow">Nossa missão</span>
-            <h1 className="cb-title">
-              A Visão do Futuro nasceu no coração de Deus para a nossa
-              comunidade.
-            </h1>
-            <div className="cb-rule" />
-          </header>
+            <header className="cb-head cb-head--center">
+              <span className="cb-eyebrow">Nossa missao</span>
+              <h2 className="cb-title">Nossa Missao: Um Lugar para Todos</h2>
+              <div className="cb-rule cb-rule--center" />
+            </header>
 
-          <div className="cb-intro-grid">
-            <p className="cb-intro-lead">
-              Expandir o Reino de Deus, anunciar a salvação em Cristo e servir
-              com excelência — com o espaço que o futuro da nossa igreja
-              precisa.
-            </p>
-            <div className="cb-prose">
-              <p>
-                Nossa comunidade recebeu a missão de expandir o Reino de Deus
-                através desta Visão de anunciar a salvação em Cristo Jesus a
-                toda criatura. O Reino de Deus é chegado no Brasil e no mundo, e
-                a nossa comunidade está totalmente envolvida neste grande
-                avivamento.
-              </p>
-              <p>
-                Com a Visão do Futuro teremos as condições necessárias para
-                realizarmos ações de missões, serviço, amor e cuidado,
-                excelência, salvação de vidas e ação social, com muito mais
-                agilidade.
-              </p>
-              <p>
-                Para que tudo isto se concretize necessitamos de pessoas como
-                você, escolhidas por Deus, que contribuem voluntariamente para
-                vencermos os desafios que envolvem os projetos da Visão do
-                Futuro.
-              </p>
-              <p>
-                <strong>
-                  Nosso grande desafio é a reforma e inauguração do nosso novo
-                  campus, com capacidade para mais de 1.800 pessoas por culto,
-                  incluindo a linda área infantil.
-                </strong>
-              </p>
-              <p>Você faz parte desta grandiosa missão! E isto é só o começo!</p>
+            <div className="cb-intro-grid cb-intro-grid--center">
+              <div className="cb-prose cb-prose--mission">
+                <p>
+                  Nossa igreja recebeu a missao de expandir o Reino de Deus por
+                  meio desta visao. Queremos anunciar a salvacao em Cristo,
+                  cuidar de pessoas e fortalecer familias com amor e
+                  compromisso.
+                </p>
+                <p>
+                  Com o novo campus, teremos melhores condicoes para realizar
+                  missoes, acoes sociais, discipulado e servico com mais
+                  qualidade, estrutura e alcance.
+                </p>
+                <p>
+                  Cremos que Deus levanta semeadores para esta obra, e cada
+                  contribuicao voluntaria e um ato de fidelidade que nos faz avançar
+                  mais perto do nosso objetivo, servir com mais excelência!
+                </p>
+                <p>
+                  <strong>
+                    Nosso grande desafio e concluir a reforma e construção do
+                    novo campus, preparado para receber mais almas e gerar um
+                    legado espiritual para as proximas geracoes.
+                  </strong>
+                </p>
+                <p>Entramos como igreja nessa missão. E isto é apenas o começo.</p>
+              </div>
 
-              <div className="cb-card cb-card--accent">
-                <p className="cb-card-name">Pastores seniores</p>
-                <p className="cb-card-role">
-                  Liderança da comunidade — Igreja Paraíso
+              <div className="cb-signature">
+                <Image
+                  className="cb-signature-photo"
+                  src="/prevandro_praricele_without.png"
+                  alt="Pr. Evandro e Pra. Ricelle"
+                  width={992}
+                  height={992}
+                />
+                <p className="cb-signature-name">PR. EVANDRO E PRA. RICELLE</p>
+                <p className="cb-signature-role">
+                  Pastores seniores da Igreja Paraiso
                 </p>
               </div>
             </div>
           </div>
-        </div>
         </section>
 
-        {/* Grande bloco — Projeto / galeria */}
-        <section className="cb-slab" id="projeto">
+        {/* Grande bloco — Projetos em atividade */}
+        <section className="cb-slab" id="projetos">
           <div className="cb-inner">
           <header className="cb-head">
-            <span className="cb-eyebrow">Projeto</span>
-            <h2 className="cb-title">Apresentação do projeto</h2>
-            <p className="cb-subtitle">Local do futuro campus</p>
+            <span className="cb-eyebrow">Projetos</span>
+            <h2 className="cb-title">Projetos em atividade</h2>
+            <p className="cb-subtitle">
+              Quatro frentes prioritarias para conclusao do campus
+            </p>
             <div className="cb-rule" />
           </header>
 
-          <div className="cb-gallery-wrap">
-            <div className="gallery-grid">
-              <Image
-                className="wide"
-                src="https://images.unsplash.com/photo-1585577685870-4c399b8c9e9c?w=900&q=80"
-                alt="Fachada"
-                width={900}
-                height={600}
-                sizes="(max-width: 768px) 100vw, 60vw"
-              />
-              <Image
-                src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=600&q=80"
-                alt="Interior"
-                width={600}
-                height={400}
-                sizes="(max-width: 768px) 100vw, 30vw"
-              />
-              <Image
-                src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&q=80"
-                alt="Auditório"
-                width={600}
-                height={400}
-                sizes="(max-width: 768px) 100vw, 30vw"
-              />
-              <Image
-                className="wide"
-                src="https://images.unsplash.com/photo-1531482615713-2afd69097998?w=900&q=80"
-                alt="Vista geral"
-                width={900}
-                height={600}
-                sizes="(max-width: 768px) 100vw, 60vw"
-              />
-              <Image
-                src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&q=80"
-                alt="Espaço"
-                width={600}
-                height={400}
-                sizes="(max-width: 768px) 100vw, 30vw"
-              />
-            </div>
+          <div className="cb-projects-grid">
+            <article className="cb-project-card">
+              <div className="cb-project-gallery">
+                <Image
+                  src="/templo/templo.jpeg"
+                  alt="Infraestrutura do templo - planta e planejamento"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+                <Image
+                  src="/templo/templo2.jpeg"
+                  alt="Infraestrutura do templo - estrutura externa"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+              </div>
+              <div className="cb-project-copy">
+                <h3>Infraestrutura do Templo</h3>
+                <p>
+                  Finalizacao do auditorio principal e areas comuns para
+                  celebração e comunhão.
+                </p>
+              </div>
+            </article>
+            <article className="cb-project-card">
+              <div className="cb-project-gallery">
+                <Image
+                  src="/nova-geracao/pic2.jpeg"
+                  alt="Projeto Nova Geracao - familias reunidas"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+                <Image
+                  src="/nova-geracao/pic3.jpeg"
+                  alt="Projeto Nova Geracao - criancas em atividade"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+                <Image
+                  src="/nova-geracao/pic4.jpeg"
+                  alt="Projeto Nova Geracao - adolescentes em sala"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+                <Image
+                  src="/nova-geracao/pic1.jpeg"
+                  alt="Projeto Nova Geracao - jovens em discipulado"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+              </div>
+              <div className="cb-project-copy">
+                <h3>Projeto Nova Geracao</h3>
+                <p>
+                  Espacos dedicados e seguros para o desenvolvimento de criancas,
+                  adolescentes e jovens.
+                </p>
+              </div>
+            </article>
+            <article className="cb-project-card">
+              <div className="cb-project-gallery">
+                <Image
+                  src="/acomodacao/pic1.jpeg"
+                  alt="Acomodacoes e chales - fachada principal"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+                <Image
+                  src="/acomodacao/pic2.jpeg"
+                  alt="Acomodacoes e chales - interior de quarto"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+                <Image
+                  src="/acomodacao/pic5.jpeg"
+                  alt="Acomodacoes e chales - area de convivencia"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+                <Image
+                  src="/acomodacao/pic6.jpeg"
+                  alt="Acomodacoes e chales - espaco de descanso"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+              </div>
+              <div className="cb-project-copy">
+                <h3>Acomodacões e Áreas Externas</h3>
+                <p>
+                  Áreas para receber irmãos e membros que vem de fora para
+                  retiros, eventos e celebrações.
+                </p>
+              </div>
+            </article>
+            <article className="cb-project-card">
+              <div className="cb-project-gallery">
+                <Image
+                  src="/getsemani/pic2.jpeg"
+                  alt="Jardim Getsemani - paisagem natural"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+                <Image
+                  src="/getsemani/pic4.jpeg"
+                  alt="Jardim Getsemani - area arborizada"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+                <Image
+                  src="/getsemani/pic5.jpeg"
+                  alt="Jardim Getsemani - trilha para oracao"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+                <Image
+                  src="/getsemani/pic9.jpeg"
+                  alt="Jardim Getsemani - ambiente de contemplacao"
+                  width={700}
+                  height={440}
+                  sizes="(max-width: 768px) 50vw, 24vw"
+                />
+              </div>
+              <div className="cb-project-copy">
+                <h3>Jardim Getsemani</h3>
+                <p>
+                  Área arborizada e tranquila dedicada a oração e contemplação.
+                </p>
+              </div>
+            </article>
           </div>
           </div>
         </section>
@@ -183,7 +310,7 @@ export default function CotasCampusPage() {
           <div className="cb-inner">
           <header className="cb-head">
             <span className="cb-eyebrow">Contribua</span>
-            <h2 className="cb-title">Contribua com esse sonho</h2>
+            <h2 className="cb-title">Escolha sua Cota de Participacao</h2>
             <div className="cb-rule" />
           </header>
 
@@ -210,8 +337,8 @@ export default function CotasCampusPage() {
                 </p>
               </div>
               <p className="period-note">
-                O período de doações do projeto é de 12 meses. Escolha abaixo
-                com qual valor mensal você deseja participar.
+                Plano de contribuicao em 12 meses. Os valores abaixo sao
+                referencia de participacao <strong>por mes</strong>.
               </p>
               <div className="cotas-grid">
                 {COTAS_DESC.map((label) => (
@@ -285,31 +412,39 @@ export default function CotasCampusPage() {
           <div className="cb-inner">
           <header className="cb-head">
             <span className="cb-eyebrow cb-eyebrow--light">Fale conosco</span>
-            <h2 className="cb-title">Entre em contato</h2>
+            <h2 className="cb-title">Fale Conosco</h2>
             <div className="cb-rule cb-rule--sky" />
           </header>
 
           <div className="cb-contact-grid">
             <div className="cb-contact-card">
               <p>
-                <strong>(11) 96452-8525 (WhatsApp)</strong>
-                De segunda a sexta, em horário comercial
+                <strong>WhatsApp: 5527998757008</strong>
+                Segunda a sexta, em horario comercial
+                <a
+                  href={`https://wa.me/5527998757008?text=${whatsappMessage}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Enviar mensagem automatica
+                </a>
               </p>
               <p>
                 <strong>Sugestões e dúvidas</strong>
-                <a href="mailto:projeto@visaodofuturo.com.br">
-                  projeto@visaodofuturo.com.br
+                <a href="mailto:secretariaibrejetiba@gmail.com">
+                  secretariaibrejetiba@gmail.com
                 </a>
               </p>
             </div>
             <div className="cb-contact-card">
               <p>
                 <strong>Endereço</strong>
-                São Paulo, SP — Brasil
+                End.: Rua Helmut Gums, 438, Virada, Santa Maria de Jetiba-ES,
+                Brasil - 29.646-290. Complemento: Campus Paraiso
               </p>
               <p>
                 <strong>Atendimento</strong>
-                Segunda a sexta, 9h às 18h
+                Segunda a sexta, das 8h as 17h
               </p>
             </div>
           </div>
@@ -328,10 +463,10 @@ export default function CotasCampusPage() {
                   <a href="#visao">A Visão</a>
                 </li>
                 <li>
-                  <a href="#projeto">Apresentação</a>
+                  <a href="#projetos">Projetos em atividade</a>
                 </li>
                 <li>
-                  <a href="#cotas">Cotas mensais</a>
+                  <a href="#cotas">Cotas por mes</a>
                 </li>
                 <li>
                   <a href="#pix">Pix</a>
@@ -357,7 +492,7 @@ export default function CotasCampusPage() {
               <ul>
                 <li>
                   <a
-                    href="https://wa.me/5511964528525"
+                    href={`https://wa.me/5527998757008?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -365,7 +500,7 @@ export default function CotasCampusPage() {
                   </a>
                 </li>
                 <li>
-                  <a href="mailto:projeto@visaodofuturo.com.br">E-mail</a>
+                  <a href="mailto:secretariaibrejetiba@gmail.com">E-mail</a>
                 </li>
               </ul>
             </div>
@@ -373,10 +508,10 @@ export default function CotasCampusPage() {
               <h4>Contato</h4>
               <ul>
                 <li>
-                  <a href="tel:+5511964528525">(11) 96452-8525</a>
+                  <a href="tel:+5527998757008">(27) 99875-7008</a>
                 </li>
                 <li>
-                  <span className="cb-footer-note">São Paulo, SP</span>
+                  <span className="cb-footer-note">Santa Maria de Jetiba, ES</span>
                 </li>
               </ul>
             </div>
@@ -384,10 +519,10 @@ export default function CotasCampusPage() {
 
           <div className="cb-footer-bottom">
             <a href="#top" className="nav-logo cb-footer-brand">
-              Visão<span className="cb-footer-dot">.</span>Futuro
+              Campus<span className="cb-footer-dot">.</span>Paraiso
             </a>
             <p>
-              © {new Date().getFullYear()} Visão do Futuro · Igreja Paraíso ·
+              © {new Date().getFullYear()} Campus Paraiso · Igreja Paraiso ·
               Todos os direitos reservados
             </p>
           </div>
