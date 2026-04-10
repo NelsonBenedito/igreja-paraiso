@@ -7,7 +7,7 @@ import "./campus.css";
 export const metadata: Metadata = {
   title: "Campus Paraíso | Projeto Cotas",
   description:
-    "Conheca o projeto do novo Campus Paraiso, acompanhe as frentes em atividade e participe com cotas mensais.",
+    "Conheca o projeto do novo Campus Paraíso, acompanhe as frentes em atividade e participe com cotas mensais.",
 };
 
 export default function CotasCampusPage() {
@@ -19,7 +19,7 @@ export default function CotasCampusPage() {
     <main className="campus-page">
       <nav id="top">
         <a href="#top" className="nav-logo">
-          Campus<span>.</span>Paraiso
+          Campus<span>.</span>Paraíso
         </a>
         <ul className="nav-links">
           <li>
@@ -58,7 +58,7 @@ export default function CotasCampusPage() {
             </video>
             <div className="cb-hero-overlay" aria-hidden />
             <div className="cb-hero-content">
-              <span className="cb-eyebrow cb-eyebrow--light">Cotas Campus Paraiso</span>
+              <span className="cb-eyebrow cb-eyebrow--light">Cotas Campus Paraíso</span>
               <Image
                 className="cb-hero-logo"
                 src="/paraiso_logo_branca.png"
@@ -67,7 +67,7 @@ export default function CotasCampusPage() {
                 height={288}
                 priority
               />
-              <h1 className="sr-only">Campus Paraiso</h1>
+              <h1 className="sr-only">Campus Paraíso</h1>
               <p className="cb-hero-subtitle">
                 Casa de Deus, minha família.
               </p>
@@ -126,7 +126,7 @@ export default function CotasCampusPage() {
                 />
                 <p className="cb-signature-name">PR. EVANDRO E PRA. RICELLE</p>
                 <p className="cb-signature-role">
-                  Pastores seniores da Igreja Paraiso
+                  Pastores seniores da Igreja Paraíso
                 </p>
               </div>
             </div>
@@ -373,19 +373,20 @@ export default function CotasCampusPage() {
 
             <div className="cb-contact-grid">
               <div className="cb-contact-card">
-                <p>
-                  <strong>WhatsApp: 5527998757008</strong>
-                  Segunda a sexta, em horario comercial
+                <div className="cb-contact-wa">
+                  <strong className="cb-contact-wa__label">Telefone</strong>
+                  <span className="cb-contact-wa__num">+55 (27) 99875-7008</span>
                   <a
+                    className="cb-contact-wa-btn"
                     href={`https://wa.me/5527998757008?text=${whatsappMessage}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Enviar mensagem automatica
+                    Conversar no WhatsApp
                   </a>
-                </p>
+                </div>
                 <p>
-                  <strong>Sugestões e dúvidas</strong>
+                  <strong>E-mail</strong>
                   <a href="mailto:secretariaibrejetiba@gmail.com">
                     secretariaibrejetiba@gmail.com
                   </a>
@@ -393,9 +394,9 @@ export default function CotasCampusPage() {
               </div>
               <div className="cb-contact-card">
                 <p>
-                  <strong>Endereço</strong>
-                  End.: Rua Helmut Gums, 438, Virada, Santa Maria de Jetiba-ES,
-                  Brasil - 29.646-290. Complemento: Campus Paraiso
+                  <strong>Endereço do Campus Paraíso</strong>
+                  Rua Helmut Gums, 438, Virada, Santa Maria de Jetiba-ES <br/>
+                  Brasil - 29.646-290 <br/>
                 </p>
                 <p>
                   <strong>Atendimento</strong>
@@ -474,10 +475,10 @@ export default function CotasCampusPage() {
 
           <div className="cb-footer-bottom">
             <a href="#top" className="nav-logo cb-footer-brand">
-              Campus<span className="cb-footer-dot">.</span>Paraiso
+              Campus<span className="cb-footer-dot">.</span>Paraíso
             </a>
             <p>
-              © {new Date().getFullYear()} Campus Paraiso · Igreja Paraiso ·
+              © {new Date().getFullYear()} Campus Paraíso · Igreja Paraíso ·
               Todos os direitos reservados
             </p>
           </div>

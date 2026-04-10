@@ -866,6 +866,55 @@
   text-decoration: underline;
 }
 
+.campus-page .cb-contact-wa {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+.campus-page .cb-contact-wa__label {
+  display: block;
+  color: var(--sky);
+  font-weight: 600;
+  font-size: 0.88rem;
+  margin: 0;
+}
+.campus-page .cb-contact-wa__num {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 0.02em;
+}
+.campus-page .cb-contact-wa__hours {
+  margin: 0.1rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.62);
+}
+.campus-page .cb-contact-wa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.35rem;
+  padding: 0.62rem 1.2rem;
+  background: #25d366;
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 0.87rem;
+  border-radius: 999px;
+  text-decoration: none !important;
+  box-shadow: 0 2px 14px rgba(37, 211, 102, 0.32);
+  transition: filter 0.2s, transform 0.15s ease, box-shadow 0.2s;
+}
+.campus-page .cb-contact-wa-btn:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 18px rgba(37, 211, 102, 0.42);
+}
+.campus-page .cb-contact-wa + p {
+  margin-top: 1rem;
+}
+
 .campus-page .cb-eyebrow--light {
   color: var(--sky) !important;
 }
