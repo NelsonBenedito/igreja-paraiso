@@ -816,6 +816,27 @@ html:has(.campus-page) {
 .campus-page .cb-outro-valor__input:disabled {
   opacity: 0.65;
 }
+.campus-page .cb-outro-valor__select {
+  font-family: var(--font-poppins), sans-serif;
+  width: 100%;
+  padding: 0.72rem 0.85rem;
+  font-size: 0.95rem;
+  border: 1px solid var(--cb-border);
+  border-radius: 0.5rem;
+  background: var(--white);
+  color: var(--text);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+.campus-page .cb-outro-valor__select:focus {
+  outline: none;
+  border-color: rgba(112, 136, 54, 0.55);
+  box-shadow: 0 0 0 3px rgba(112, 136, 54, 0.12);
+}
+.campus-page .cb-outro-valor__select:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
 .campus-page .cb-outro-valor__field-hint {
   font-size: 0.78rem;
   color: var(--muted);
@@ -849,6 +870,120 @@ html:has(.campus-page) {
 .campus-page .cb-outro-valor__submit:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+/* —— Outro valor: formulário simples (layout claro, tipografia = resto da página) —— */
+.campus-page .cb-outro-valor__aside--simple {
+  gap: clamp(0.85rem, 2.2vw, 1.15rem);
+  padding: 1rem 1.1rem;
+}
+.campus-page .cb-outro-valor__block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+}
+.campus-page .cb-outro-valor__step {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.85rem;
+  height: 1.85rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: var(--navy);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 0.88rem;
+  line-height: 1;
+  margin: 0 0 0.1rem;
+}
+.campus-page .cb-outro-valor__simple-label {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--navy);
+  line-height: 1.45;
+}
+.campus-page .cb-outro-valor__input--touch {
+  font-size: 0.95rem;
+  padding: 0.72rem 0.85rem;
+  border-radius: 0.5rem;
+  border-width: 1px;
+}
+.campus-page .cb-outro-valor__choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  width: 100%;
+}
+.campus-page .cb-outro-valor__choice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.2rem;
+  margin: 0;
+  min-height: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--cb-border);
+  background: var(--white);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.campus-page .cb-outro-valor__choice:hover {
+  border-color: rgba(112, 136, 54, 0.4);
+}
+.campus-page .cb-outro-valor__choice input {
+  position: absolute;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.campus-page .cb-outro-valor__choice-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--navy);
+}
+.campus-page .cb-outro-valor__choice-desc {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.45;
+  max-width: 24rem;
+}
+.campus-page .cb-outro-valor__choice.is-on {
+  border-color: var(--olive);
+  background: rgba(112, 136, 54, 0.12);
+  box-shadow: 0 0 0 1px rgba(112, 136, 54, 0.2);
+}
+.campus-page .cb-outro-valor__select--touch {
+  font-size: 0.95rem;
+  padding: 0.72rem 0.85rem;
+  border-radius: 0.5rem;
+  border-width: 1px;
+}
+.campus-page .cb-outro-valor__submit--touch {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.78rem 1.1rem;
+  margin-top: 0.2rem;
+  border-radius: 999px;
+}
+.campus-page .cb-prose--outro-valor-simple p {
+  margin-bottom: 0 !important;
+}
+.campus-page #outro-valor .cb-intro-grid--center {
+  gap: clamp(1rem, 3vw, 1.5rem);
 }
 
 /* —— Pix (legado / outras páginas) —— */

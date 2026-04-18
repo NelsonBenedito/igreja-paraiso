@@ -2,6 +2,8 @@
 export type CreatePublicPaymentLinkBody = {
   isMonthly: boolean;
   value?: number;
+  /** Duração da assinatura em meses (1–12), quando `isMonthly` é true. */
+  subscriptionMonths?: number;
 };
 
 /** Resposta `201` — redireccionar o browser para `url`. */

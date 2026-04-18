@@ -128,23 +128,19 @@ export default function CotasCampusPage() {
                 <span className="cb-eyebrow">Doação</span>
                 <h2 className="cb-title">Outro valor</h2>
                 <p className="cb-subtitle">
-                  Defina valor e periodicidade para a doação
+                  Digite o valor e escolha: uma vez só, ou um valor por mês
                 </p>
                 <div className="cb-rule cb-rule--center" />
               </header>
 
               <div className="cb-intro-grid cb-intro-grid--center">
-                <div className="cb-prose cb-prose--mission">
+                <div className="cb-prose cb-prose--mission cb-prose--outro-valor-simple">
                   <p>
-                    Aqui voce monta a sua doação: escolha se a
-                    doação é em <strong>uma vez só</strong> ou se vai{" "}
-                    <strong>se repetir por 12 meses consecutivos</strong>, informe o valor e abrimos o
-                    link seguro do parceiro (cartão, pix e outras opções disponíveis).
-                  </p>
-                  <p>
-                    No <strong>plano mensal</strong>, o valor que voce informar será lembrado todos os meses (12 vezes, uma por mês).
-                    No <strong>pagamento único</strong>, esse valor é pago uma vez
-                    só.
+                    Preencha o formulário abaixo: primeiro o <strong>valor</strong>,
+                    depois toque em <strong>uma vez só</strong> ou em{" "}
+                    <strong>Todos os meses</strong>. Se escolher todos os meses, diga por
+                    quantos meses (até 12). Por fim, toque no botão verde para ir
+                    ao pagamento seguro.
                   </p>
                 </div>
 

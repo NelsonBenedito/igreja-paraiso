@@ -39,6 +39,18 @@ function parseContribuirParams(
     }
   }
 
+  if (isMonthly) {
+    const rawMeses = searchParams.get("meses");
+    let meses = 12;
+    if (rawMeses != null && rawMeses !== "") {
+      const m = Number.parseInt(rawMeses, 10);
+      if (Number.isInteger(m) && m >= 1 && m <= 12) {
+        meses = m;
+      }
+    }
+    body.subscriptionMonths = meses;
+  }
+
   return body;
 }
 
@@ -162,7 +174,7 @@ export function ContribuirRedirectClient() {
             <h1 className="cotas-contribuir__title">Pagamento indisponível</h1>
             <p className="cotas-contribuir__error">{MSG_CONFIG}</p>
             <p className="cotas-contribuir__sub">
-              <Link href="/cotas/campus#outro-valor">Outro valor / pagamento único</Link>
+              <Link href="/cotas/campus#outro-valor">Outro valor / assinatura</Link>
               {" · "}
               <Link href="/cotas/campus#cotas">Voltar à campanha</Link>
             </p>
