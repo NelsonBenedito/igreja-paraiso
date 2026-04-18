@@ -8,8 +8,10 @@ export function getDonationsApiBase(): string | null {
   return raw.replace(/\/+$/, "");
 }
 
-/** Slug do tenant na API (igreja). */
+/** Slug do tenant na API (igreja). Preferir o nome com prefixo `DONATIONS` para alinhar com `NEXT_PUBLIC_DONATIONS_API_BASE`. */
 export function getDonationsTenantSlug(): string | null {
-  const s = process.env.NEXT_PUBLIC_TENANT_SLUG?.trim();
+  const s =
+    process.env.NEXT_PUBLIC_DONATIONS_TENANT_SLUG?.trim() ||
+    process.env.NEXT_PUBLIC_TENANT_SLUG?.trim();
   return s || null;
 }

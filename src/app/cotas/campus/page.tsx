@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { CircleArrowUp } from "lucide-react";
 import { CotasIntentPanel } from "./CotasIntentPanel";
 import { OutroValorUnicoPanel } from "./OutroValorUnicoPanel";
 import "./campus.css";
@@ -19,7 +20,14 @@ export default function CotasCampusPage() {
     <main className="campus-page">
       <nav id="top">
         <a href="#top" className="nav-logo">
-          Campus<span>.</span>Paraíso
+          <Image
+            className="nav-logo-img"
+            src="/paraiso_logo_branca.png"
+            alt="Campus Paraíso — início"
+            width={200}
+            height={113}
+            priority
+          />
         </a>
         <ul className="nav-links">
           <li>
@@ -58,7 +66,6 @@ export default function CotasCampusPage() {
             </video>
             <div className="cb-hero-overlay" aria-hidden />
             <div className="cb-hero-content">
-              <span className="cb-eyebrow cb-eyebrow--light">Cotas Campus Paraíso</span>
               <Image
                 className="cb-hero-logo"
                 src="/paraiso_logo_branca.png"
@@ -68,9 +75,6 @@ export default function CotasCampusPage() {
                 priority
               />
               <h1 className="sr-only">Campus Paraíso</h1>
-              <p className="cb-hero-subtitle">
-                Casa de Deus, minha família.
-              </p>
               <a href="#cotas" className="cb-hero-cta">
                 Quero participar das cotas
               </a>
@@ -78,6 +82,79 @@ export default function CotasCampusPage() {
           </div>
           <div className="cb-hero-bar" aria-hidden />
         </section>
+
+        <div className="cb-payment-region" id="pagamento">
+          {/* Grande bloco — Cotas */}
+          <section className="cb-slab" id="cotas">
+            <div className="cb-inner">
+              <header className="cb-head">
+                <span className="cb-eyebrow">Contribua</span>
+                <h2 className="cb-title">Escolha sua Cota de Participacao</h2>
+                <div className="cb-rule" />
+              </header>
+
+              <div className="cb-donate-split">
+                <figure className="cb-donate-split__figure">
+                  <Image
+                    src="/ConferenciaDeFamilias.jpg"
+                    alt="Novo campus"
+                    fill
+                    className="cb-donate-split__figure-img"
+                    sizes="(max-width: 768px) 100vw, 40vw"
+                  />
+                </figure>
+                <div className="contribute-text">
+                  <div className="cb-prose">
+                    <p>
+                      Ajude a construir o <strong>Novo Campus</strong> e deixe sua
+                      marca na realização deste sonho! Sua doação e fidelidade,
+                      independente do valor, é essencial para levarmos adiante este
+                      projeto de transformação de vidas. Você pode escolher o valor
+                      que deseja contribuir e a forma de pagamento que melhor se
+                      adapta a você, com toda a comodidade e segurança. Faça parte
+                      desta grande obra e ajude a impactar gerações!
+                    </p>
+                  </div>
+                  <CotasIntentPanel />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Grande bloco — Outro valor / pagamento único (padrão vertical como #visao) */}
+          <section className="cb-slab" id="outro-valor">
+            <div className="cb-inner">
+              <header className="cb-head cb-head--center">
+                <span className="cb-eyebrow">Doação</span>
+                <h2 className="cb-title">Outro valor</h2>
+                <p className="cb-subtitle">
+                  Defina valor e periodicidade para a doação
+                </p>
+                <div className="cb-rule cb-rule--center" />
+              </header>
+
+              <div className="cb-intro-grid cb-intro-grid--center">
+                <div className="cb-prose cb-prose--mission">
+                  <p>
+                    Aqui voce monta a sua doação: escolha se a
+                    doação é em <strong>uma vez só</strong> ou se vai{" "}
+                    <strong>se repetir por 12 meses consecutivos</strong>, informe o valor e abrimos o
+                    link seguro do parceiro (cartão, pix e outras opções disponíveis).
+                  </p>
+                  <p>
+                    No <strong>plano mensal</strong>, o valor que voce informar será lembrado todos os meses (12 vezes, uma por mês).
+                    No <strong>pagamento único</strong>, esse valor é pago uma vez
+                    só.
+                  </p>
+                </div>
+
+                <div className="cb-outro-valor__form-wrap">
+                  <OutroValorUnicoPanel />
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
 
         {/* Grande bloco — Visão */}
         <section className="cb-slab" id="visao">
@@ -132,7 +209,29 @@ export default function CotasCampusPage() {
             </div>
           </div>
         </section>
-
+        <div className="cb-slab cb-slab--pay-return">
+          <div className="cb-inner">
+            <div
+              className="cb-pay-return"
+              role="region"
+              aria-labelledby="pay-return-title"
+            >
+              <h2 id="pay-return-title" className="cb-pay-return__title">
+                Contribuir com as cotas
+              </h2>
+              <p className="cb-pay-return__hint">
+                <span>
+                  Tudo o que viveremos neste novo campus
+                  começa com o que o Senhor tem nos direcionado e nós assim o fazemos, juntos.
+                  Se você deseja fazer parte deste projeto, pode contribuir com o valor que Deus colocar em seu coração,
+                  é só clicar no botão abaixo.</span>
+              </p>
+              <a href="#cotas" className="cb-hero-cta cb-pay-return__cta">
+                Contribuir
+              </a>
+            </div>
+          </div>
+        </div>
         {/* Grande bloco — Projetos em atividade */}
         <section className="cb-slab" id="projetos">
           <div className="cb-inner">
@@ -291,76 +390,29 @@ export default function CotasCampusPage() {
           </div>
         </section>
 
-        {/* Grande bloco — Cotas */}
-        <section className="cb-slab" id="cotas">
+        <div className="cb-slab cb-slab--pay-return">
           <div className="cb-inner">
-            <header className="cb-head">
-              <span className="cb-eyebrow">Contribua</span>
-              <h2 className="cb-title">Escolha sua Cota de Participacao</h2>
-              <div className="cb-rule" />
-            </header>
-
-            <div className="cb-donate-split">
-              <figure className="cb-donate-split__figure">
-                <Image
-                  src="/ConferenciaDeFamilias.jpg"
-                  alt="Novo campus"
-                  fill
-                  className="cb-donate-split__figure-img"
-                  sizes="(max-width: 768px) 100vw, 40vw"
-                />
-              </figure>
-              <div className="contribute-text">
-                <div className="cb-prose">
-                  <p>
-                    Ajude a construir o <strong>Novo Campus</strong> e deixe sua
-                    marca na realização deste sonho! Sua doação e fidelidade,
-                    independente do valor, é essencial para levarmos adiante este
-                    projeto de transformação de vidas. Você pode escolher o valor
-                    que deseja contribuir e a forma de pagamento que melhor se
-                    adapta a você, com toda a comodidade e segurança. Faça parte
-                    desta grande obra e ajude a impactar gerações!
-                  </p>
-                </div>
-                <CotasIntentPanel />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Grande bloco — Outro valor / pagamento único (padrão vertical como #visao) */}
-        <section className="cb-slab" id="outro-valor">
-          <div className="cb-inner">
-            <header className="cb-head cb-head--center">
-              <span className="cb-eyebrow">Doação</span>
-              <h2 className="cb-title">Outro valor</h2>
-              <p className="cb-subtitle">
-                Defina valor e periodicidade para a doação
+            <div
+              className="cb-pay-return"
+              role="region"
+              aria-labelledby="pay-return-title"
+            >
+              <h2 id="pay-return-title" className="cb-pay-return__title">
+                Contribuir com as cotas
+              </h2>
+              <p className="cb-pay-return__hint">
+                <span>
+                  Tudo o que viveremos neste novo campus
+                  começa com o que o Senhor tem nos direcionado e nós assim o fazemos, juntos.
+                  Se você deseja fazer parte deste projeto, pode contribuir com o valor que Deus colocar em seu
+                  seu coração, é só clicar no botão abaixo.</span>
               </p>
-              <div className="cb-rule cb-rule--center" />
-            </header>
-
-            <div className="cb-intro-grid cb-intro-grid--center">
-             <div className="cb-prose cb-prose--mission">
-                <p>
-                  Aqui voce monta a sua doação: escolha se a
-                  doação é em <strong>uma vez só</strong> ou se vai{" "}
-                  <strong>se repetir por 12 meses consecutivos</strong>, informe o valor e abrimos o
-                  link seguro do parceiro (cartão, pix e outras opções disponíveis).
-                </p>
-                <p>
-                  No <strong>plano mensal</strong>, o valor que voce informar será lembrado todos os meses (12 vezes, uma por mês).
-                  No <strong>pagamento único</strong>, esse valor é pago uma vez
-                  só. 
-                </p>
-              </div>
-
-              <div className="cb-outro-valor__form-wrap">
-                <OutroValorUnicoPanel />
-              </div>
+              <a href="#cotas" className="cb-hero-cta cb-pay-return__cta">
+                Contribuir
+              </a>
             </div>
           </div>
-        </section>
+        </div>
 
         {/* Grande bloco — Contato */}
         <section className="cb-slab cb-slab--navy" id="contato">
@@ -395,8 +447,8 @@ export default function CotasCampusPage() {
               <div className="cb-contact-card">
                 <p>
                   <strong>Endereço do Campus Paraíso</strong>
-                  Rua Helmut Gums, 438, Virada, Santa Maria de Jetiba-ES <br/>
-                  Brasil - 29.646-290 <br/>
+                  Rua Helmut Gums, 438, Virada, Santa Maria de Jetiba-ES <br />
+                  Brasil - 29.646-290 <br />
                 </p>
                 <p>
                   <strong>Atendimento</strong>

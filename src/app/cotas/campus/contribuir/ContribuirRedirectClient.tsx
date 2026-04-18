@@ -17,6 +17,9 @@ const FETCH_TIMEOUT_MS = 8000;
 const MSG_INSTABILITY =
   "Tivemos uma instabilidade temporária ao conectar com o sistema financeiro. Por favor, tente novamente em alguns instantes.";
 
+const MSG_TIMEOUT =
+  "A ligação ao sistema financeiro demorou demasiado. Verifique a rede e tente novamente.";
+
 const MSG_CONFIG =
   "O pagamento online não está disponível no momento. Tente mais tarde ou fale conosco pela página da campanha.";
 
@@ -47,6 +50,7 @@ export function ContribuirRedirectClient() {
   );
 
   const [phase, setPhase] = useState<"loading" | "error" | "config">("loading");
+  const [errorMessage, setErrorMessage] = useState(MSG_INSTABILITY);
   const runRef = useRef<AbortController | null>(null);
 
   const execute = useCallback(() => {
@@ -59,7 +63,7 @@ export function ContribuirRedirectClient() {
       if (process.env.NODE_ENV === "development") {
         // eslint-disable-next-line no-console -- diagnóstico local apenas
         console.warn(
-          "[cotas/contribuir] Defina NEXT_PUBLIC_DONATIONS_API_BASE e NEXT_PUBLIC_TENANT_SLUG",
+          "[cotas/contribuir] Defina NEXT_PUBLIC_DONATIONS_API_BASE e NEXT_PUBLIC_DONATIONS_TENANT_SLUG (ou NEXT_PUBLIC_TENANT_SLUG).",
         );
       }
       setPhase("config");
@@ -67,9 +71,14 @@ export function ContribuirRedirectClient() {
     }
 
     setPhase("loading");
+    setErrorMessage(MSG_INSTABILITY);
     const ac = new AbortController();
     runRef.current = ac;
-    const timeoutId = window.setTimeout(() => ac.abort(), FETCH_TIMEOUT_MS);
+    let timedOut = false;
+    const timeoutId = window.setTimeout(() => {
+      timedOut = true;
+      ac.abort();
+    }, FETCH_TIMEOUT_MS);
     const url = `${base}/api/public/tenants/${encodeURIComponent(tenantSlug)}/links`;
 
     void (async () => {
@@ -83,7 +92,12 @@ export function ContribuirRedirectClient() {
 
         window.clearTimeout(timeoutId);
 
-        if (ac.signal.aborted) return;
+        if (ac.signal.aborted && !timedOut) return;
+
+        if (res.status === 503 || res.status === 404) {
+          setPhase("config");
+          return;
+        }
 
         if (res.status === 201) {
           const data = (await res.json()) as CreatePublicPaymentLinkResponse;
@@ -93,10 +107,12 @@ export function ContribuirRedirectClient() {
           }
         }
 
+        setErrorMessage(MSG_INSTABILITY);
         setPhase("error");
       } catch {
         window.clearTimeout(timeoutId);
-        if (ac.signal.aborted) return;
+        if (ac.signal.aborted && !timedOut) return;
+        setErrorMessage(timedOut ? MSG_TIMEOUT : MSG_INSTABILITY);
         setPhase("error");
       }
     })();
@@ -127,7 +143,7 @@ export function ContribuirRedirectClient() {
         {phase === "error" && (
           <>
             <h1 className="cotas-contribuir__title">Algo correu mal</h1>
-            <p className="cotas-contribuir__error">{MSG_INSTABILITY}</p>
+            <p className="cotas-contribuir__error">{errorMessage}</p>
             <button
               type="button"
               className="cotas-contribuir__retry"

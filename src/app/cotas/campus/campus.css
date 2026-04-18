@@ -31,6 +31,11 @@
   color: var(--text);
 }
 
+/* Rolagem: âncoras respeitam a altura da nav fixa (sticky) */
+html:has(.campus-page) {
+  scroll-padding-top: clamp(3.5rem, 12vw, 5rem);
+}
+
 .campus-page,
 .campus-page * {
   box-sizing: border-box;
@@ -51,6 +56,9 @@
 
 /* —— Nav —— */
 .campus-page nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   padding: 0.75rem clamp(1rem, 4vw, 2.5rem);
   background: linear-gradient(180deg, var(--forest) 0%, #071f17 100%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -60,10 +68,18 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
 }
 .campus-page .nav-logo {
+  display: flex;
+  align-items: center;
   font-size: 1.1rem;
   font-weight: 600;
   color: var(--white);
   text-decoration: none;
+}
+.campus-page .nav-logo-img {
+  display: block;
+  height: clamp(28px, 5.5vw, 36px);
+  width: auto;
+  max-width: min(160px, 42vw);
 }
 .campus-page .nav-logo span {
   color: var(--olive);
@@ -112,6 +128,70 @@
   border: 1px solid var(--cb-border);
   padding: clamp(2rem, 5vw, 3.25rem) clamp(1.5rem, 5vw, 2.75rem);
   overflow: hidden;
+}
+
+.campus-page .cb-payment-region {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.1rem, 2.5vw, 1.65rem);
+}
+
+.campus-page .cb-slab--pay-return {
+  padding: clamp(1.5rem, 3.5vw, 2.25rem) clamp(1.5rem, 5vw, 2.75rem);
+}
+
+.campus-page .cb-pay-return {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: min(44rem, 100%);
+  margin-inline: auto;
+}
+
+.campus-page .cb-pay-return__title {
+  margin: 0;
+  font-size: clamp(1.2rem, 2.8vw, 1.45rem);
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.campus-page .cb-pay-return__hint {
+  margin: 0;
+  width: 100%;
+  max-width: min(40rem, 100%);
+  margin-inline: auto;
+  text-align: center;
+  font-size: clamp(0.9rem, 1.6vw, 1.02rem);
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.campus-page .cb-pay-return__hint strong {
+  color: var(--steel);
+  font-weight: 600;
+}
+
+.campus-page .cb-pay-return__arrow {
+  flex-shrink: 0;
+  margin-top: 0.08rem;
+  color: var(--olive);
+}
+
+.campus-page .cb-pay-return__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+
+.campus-page .cb-pay-return__cta-icon {
+  flex-shrink: 0;
+  opacity: 0.95;
 }
 
 .campus-page .cb-slab--hero {
