@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
-const MESES_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1);
+const MESES_MAX_CAMPUS = 12;
 
 function parseValorReais(raw: string): number | null {
   const t = raw.trim().replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
@@ -16,7 +16,7 @@ function parseValorReais(raw: string): number | null {
 export function OutroValorUnicoPanel() {
   const router = useRouter();
   const [plano, setPlano] = useState<"assinatura" | "unico">("unico");
-  const [mesesAssinatura, setMesesAssinatura] = useState(12);
+  const [mesesStr, setMesesStr] = useState("12");
   const [valorTexto, setValorTexto] = useState("");
   const [busy, setBusy] = useState(false);
   const [erro, setErro] = useState("");
@@ -33,13 +33,21 @@ export function OutroValorUnicoPanel() {
       );
       return;
     }
+    if (plano === "assinatura") {
+      const m = Number.parseInt(mesesStr, 10);
+      if (!Number.isInteger(m) || m < 1 || m > MESES_MAX_CAMPUS) {
+        setErro(`Indique um número de meses entre 1 e ${MESES_MAX_CAMPUS}.`);
+        return;
+      }
+    }
+
     setErro("");
     setBusy(true);
     const params = new URLSearchParams();
     params.set("valor", String(v));
     if (plano === "assinatura") {
       params.set("mensal", "true");
-      params.set("meses", String(mesesAssinatura));
+      params.set("meses", String(Number.parseInt(mesesStr, 10)));
     } else {
       params.set("mensal", "false");
     }
@@ -137,25 +145,28 @@ export function OutroValorUnicoPanel() {
             className="cb-outro-valor__simple-label"
             htmlFor="outro-valor-meses"
           >
-            Por quantos meses?
+            Por quantos meses? (1 a {MESES_MAX_CAMPUS})
           </label>
-          <select
+          <input
             id="outro-valor-meses"
             name="meses"
-            className="cb-outro-valor__select cb-outro-valor__select--touch"
-            value={mesesAssinatura}
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={MESES_MAX_CAMPUS}
+            step={1}
+            className="cb-outro-valor__input cb-outro-valor__input--touch"
+            value={mesesStr}
             onChange={(e) => {
-              setMesesAssinatura(Number.parseInt(e.target.value, 10));
+              setMesesStr(e.target.value);
               setErro("");
             }}
             disabled={busy}
-          >
-            {MESES_OPTIONS.map((n) => (
-              <option key={n} value={n}>
-                {n} {n === 1 ? "mês" : "meses"}
-              </option>
-            ))}
-          </select>
+            aria-describedby="outro-valor-meses-hint"
+          />
+          <p id="outro-valor-meses-hint" className="cb-outro-valor__field-hint">
+            Duração total da assinatura em meses (valor cobrado cada mês).
+          </p>
         </div>
       ) : null}
 

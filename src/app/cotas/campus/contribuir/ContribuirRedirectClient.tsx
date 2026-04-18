@@ -23,6 +23,32 @@ const MSG_TIMEOUT =
 const MSG_CONFIG =
   "O pagamento online não está disponível no momento. Tente mais tarde ou fale conosco pela página da campanha.";
 
+const MSG_RATE_LIMIT =
+  "Foram feitas demasiadas tentativas a partir deste dispositivo. Aguarde cerca de um minuto e tente novamente.";
+
+const MSG_ASAAS_UPSTREAM =
+  "O serviço de pagamentos não respondeu como esperado. Tente novamente mais tarde ou fale conosco pela página da campanha.";
+
+const MSG_VALIDATION =
+  "Os dados do pedido não foram aceites. Verifique o valor e as opções e tente novamente.";
+
+function formatNestMessage(raw: unknown, maxLen: number): string | null {
+  if (raw == null) return null;
+  if (typeof raw === "string" && raw.trim()) {
+    const t = raw.trim();
+    return t.length > maxLen ? `${t.slice(0, maxLen)}…` : t;
+  }
+  if (Array.isArray(raw)) {
+    const parts = raw
+      .filter((x): x is string => typeof x === "string" && x.trim().length > 0)
+      .map((x) => x.trim());
+    if (parts.length === 0) return null;
+    const joined = parts.join(" ");
+    return joined.length > maxLen ? `${joined.slice(0, maxLen)}…` : joined;
+  }
+  return null;
+}
+
 function parseContribuirParams(
   searchParams: URLSearchParams,
 ): CreatePublicPaymentLinkBody {
@@ -44,11 +70,12 @@ function parseContribuirParams(
     let meses = 12;
     if (rawMeses != null && rawMeses !== "") {
       const m = Number.parseInt(rawMeses, 10);
-      if (Number.isInteger(m) && m >= 1 && m <= 12) {
-        meses = m;
+      if (Number.isInteger(m) && m >= 1) {
+        /* Campanha campus: no máximo 12 meses (a API Nest permite até 120). */
+        meses = Math.min(12, m);
       }
     }
-    body.subscriptionMonths = meses;
+    body.subscriptionDurationMonths = meses;
   }
 
   return body;
@@ -117,6 +144,31 @@ export function ContribuirRedirectClient() {
             window.location.href = data.url;
             return;
           }
+        }
+
+        if (res.status === 429) {
+          setErrorMessage(MSG_RATE_LIMIT);
+          setPhase("error");
+          return;
+        }
+
+        if (res.status === 502) {
+          setErrorMessage(MSG_ASAAS_UPSTREAM);
+          setPhase("error");
+          return;
+        }
+
+        if (res.status === 400) {
+          let detail: string | null = null;
+          try {
+            const json = (await res.json()) as { message?: unknown };
+            detail = formatNestMessage(json?.message, 280);
+          } catch {
+            /* ignore */
+          }
+          setErrorMessage(detail ?? MSG_VALIDATION);
+          setPhase("error");
+          return;
         }
 
         setErrorMessage(MSG_INSTABILITY);

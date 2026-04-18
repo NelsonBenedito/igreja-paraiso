@@ -139,7 +139,7 @@ export default function CotasCampusPage() {
                     Preencha o formulário abaixo: primeiro o <strong>valor</strong>,
                     depois toque em <strong>uma vez só</strong> ou em{" "}
                     <strong>Todos os meses</strong>. Se escolher todos os meses, diga por
-                    quantos meses (até 12). Por fim, toque no botão verde para ir
+                    quantos meses (de 1 a 12). Por fim, toque no botão verde para ir
                     ao pagamento seguro.
                   </p>
                 </div>
