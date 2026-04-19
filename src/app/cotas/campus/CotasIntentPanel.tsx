@@ -13,14 +13,12 @@ export function CotasIntentPanel() {
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
 
-  const pushContribuir = useCallback(
-    (valor: number, mensal: boolean) => {
+  const pushContribuirMensal12 = useCallback(
+    (valor: number) => {
       const params = new URLSearchParams();
       params.set("valor", String(valor));
-      params.set("mensal", mensal ? "true" : "false");
-      if (mensal) {
-        params.set("meses", "12");
-      }
+      params.set("mensal", "true");
+      params.set("meses", "12");
       router.push(`/cotas/campus/contribuir?${params.toString()}`);
     },
     [router],
@@ -29,16 +27,16 @@ export function CotasIntentPanel() {
   function handleValorMensal(value: number) {
     if (isNavigating) return;
     setIsNavigating(true);
-    pushContribuir(value, true);
+    pushContribuirMensal12(value);
   }
 
   return (
     <>
       <p className="period-note">
         Toque num valor para seguir com o <strong>plano mensal</strong> (12
-        meses). Para <strong>outro valor</strong>,{" "}
-        <strong>assinatura de 1 a 12 meses</strong> ou{" "}
-        <strong>pagamento único</strong>, <a href="#outro-valor">abaixo</a>.
+        meses). Para <strong>outro valor</strong> e{" "}
+        <strong>assinatura de 1 a 12 meses</strong>,{" "}
+        <a href="#outro-valor">veja abaixo</a>.
       </p>
       <div className="cotas-grid">
         {COTA_OPTIONS.map(({ label, value }) => (

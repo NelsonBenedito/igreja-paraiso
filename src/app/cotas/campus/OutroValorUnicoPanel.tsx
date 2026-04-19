@@ -15,8 +15,7 @@ function parseValorReais(raw: string): number | null {
 
 export function OutroValorUnicoPanel() {
   const router = useRouter();
-  const [plano, setPlano] = useState<"assinatura" | "unico">("unico");
-  const [mesesStr, setMesesStr] = useState("12");
+  const [mesesStr, setMesesStr] = useState("1");
   const [valorTexto, setValorTexto] = useState("");
   const [busy, setBusy] = useState(false);
   const [erro, setErro] = useState("");
@@ -33,24 +32,18 @@ export function OutroValorUnicoPanel() {
       );
       return;
     }
-    if (plano === "assinatura") {
-      const m = Number.parseInt(mesesStr, 10);
-      if (!Number.isInteger(m) || m < 1 || m > MESES_MAX_CAMPUS) {
-        setErro(`Indique um número de meses entre 1 e ${MESES_MAX_CAMPUS}.`);
-        return;
-      }
+    const m = Number.parseInt(mesesStr, 10);
+    if (!Number.isInteger(m) || m < 1 || m > MESES_MAX_CAMPUS) {
+      setErro(`Indique um número de meses entre 1 e ${MESES_MAX_CAMPUS}.`);
+      return;
     }
 
     setErro("");
     setBusy(true);
     const params = new URLSearchParams();
     params.set("valor", String(v));
-    if (plano === "assinatura") {
-      params.set("mensal", "true");
-      params.set("meses", String(Number.parseInt(mesesStr, 10)));
-    } else {
-      params.set("mensal", "false");
-    }
+    params.set("mensal", "true");
+    params.set("meses", String(m));
     router.push(`/cotas/campus/contribuir?${params.toString()}`);
   }
 
@@ -83,92 +76,34 @@ export function OutroValorUnicoPanel() {
 
       <div className="cb-outro-valor__block">
         <span className="cb-outro-valor__step">2</span>
-        <p className="cb-outro-valor__simple-label" id="outro-valor-tipo-label">
-          Como deseja pagar?
-        </p>
-        <div
-          className="cb-outro-valor__choices"
-          role="radiogroup"
-          aria-labelledby="outro-valor-tipo-label"
+        <label
+          className="cb-outro-valor__simple-label"
+          htmlFor="outro-valor-meses"
         >
-          <label
-            className={
-              plano === "unico"
-                ? "cb-outro-valor__choice is-on"
-                : "cb-outro-valor__choice"
-            }
-          >
-            <input
-              type="radio"
-              name="modo-outro-valor"
-              value="unico"
-              checked={plano === "unico"}
-              onChange={() => {
-                setPlano("unico");
-                setErro("");
-              }}
-            />
-            <span className="cb-outro-valor__choice-title">Uma vez só</span>
-            <span className="cb-outro-valor__choice-desc">
-              Paga uma única vez o valor acima
-            </span>
-          </label>
-          <label
-            className={
-              plano === "assinatura"
-                ? "cb-outro-valor__choice is-on"
-                : "cb-outro-valor__choice"
-            }
-          >
-            <input
-              type="radio"
-              name="modo-outro-valor"
-              value="assinatura"
-              checked={plano === "assinatura"}
-              onChange={() => {
-                setPlano("assinatura");
-                setErro("");
-              }}
-            />
-            <span className="cb-outro-valor__choice-title">Todos os meses</span>
-            <span className="cb-outro-valor__choice-desc">
-              O mesmo valor, todos os meses (você escolhe quantos meses)
-            </span>
-          </label>
-        </div>
+          Por quantos meses? (de 1 a {MESES_MAX_CAMPUS})
+        </label>
+        <input
+          id="outro-valor-meses"
+          name="meses"
+          type="number"
+          inputMode="numeric"
+          min={1}
+          max={MESES_MAX_CAMPUS}
+          step={1}
+          className="cb-outro-valor__input cb-outro-valor__input--touch"
+          value={mesesStr}
+          onChange={(e) => {
+            setMesesStr(e.target.value);
+            setErro("");
+          }}
+          disabled={busy}
+          aria-describedby="outro-valor-meses-hint"
+        />
+        <p id="outro-valor-meses-hint" className="cb-outro-valor__field-hint">
+          Cada mês, o mesmo valor que indicou acima. Escolha só 1 mês para pagamento único ou recorrência
+          mensal até {MESES_MAX_CAMPUS}.
+        </p>
       </div>
-
-      {plano === "assinatura" ? (
-        <div className="cb-outro-valor__block">
-          <span className="cb-outro-valor__step">3</span>
-          <label
-            className="cb-outro-valor__simple-label"
-            htmlFor="outro-valor-meses"
-          >
-            Por quantos meses? (1 a {MESES_MAX_CAMPUS})
-          </label>
-          <input
-            id="outro-valor-meses"
-            name="meses"
-            type="number"
-            inputMode="numeric"
-            min={1}
-            max={MESES_MAX_CAMPUS}
-            step={1}
-            className="cb-outro-valor__input cb-outro-valor__input--touch"
-            value={mesesStr}
-            onChange={(e) => {
-              setMesesStr(e.target.value);
-              setErro("");
-            }}
-            disabled={busy}
-            aria-describedby="outro-valor-meses-hint"
-          />
-          <p id="outro-valor-meses-hint" className="cb-outro-valor__field-hint">
-            Duração total da assinatura em meses (valor cobrado cada mês).
-          </p>
-        </div>
-      ) : null}
 
       {erro ? (
         <p className="cb-outro-valor__erro" role="alert">

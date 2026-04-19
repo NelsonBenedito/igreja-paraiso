@@ -121,14 +121,14 @@ export default function CotasCampusPage() {
             </div>
           </section>
 
-          {/* Grande bloco — Outro valor / pagamento único (padrão vertical como #visao) */}
+          {/* Grande bloco — Outro valor / assinatura mensal (padrão vertical como #visao) */}
           <section className="cb-slab" id="outro-valor">
             <div className="cb-inner">
               <header className="cb-head cb-head--center">
                 <span className="cb-eyebrow">Doação</span>
                 <h2 className="cb-title">Outro valor</h2>
                 <p className="cb-subtitle">
-                  Digite o valor e escolha: uma vez só, ou um valor por mês
+                  Digite o valor mensal e por quantos meses deseja contribuir
                 </p>
                 <div className="cb-rule cb-rule--center" />
               </header>
@@ -136,11 +136,10 @@ export default function CotasCampusPage() {
               <div className="cb-intro-grid cb-intro-grid--center">
                 <div className="cb-prose cb-prose--mission cb-prose--outro-valor-simple">
                   <p>
-                    Preencha o formulário abaixo: primeiro o <strong>valor</strong>,
-                    depois toque em <strong>uma vez só</strong> ou em{" "}
-                    <strong>Todos os meses</strong>. Se escolher todos os meses, diga por
-                    quantos meses (de 1 a 12). Por fim, toque no botão verde para ir
-                    ao pagamento seguro.
+                    Preencha o formulário abaixo: indique o <strong>valor</strong> em
+                    reais e, em seguida, por <strong>quantos meses</strong> (de 1 a 12)
+                    quer manter a assinatura mensal com esse valor. Por fim, clique no
+                    botão verde para ir ao pagamento seguro.
                   </p>
                 </div>
 
