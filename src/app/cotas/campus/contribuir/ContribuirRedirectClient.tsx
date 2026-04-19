@@ -7,6 +7,7 @@ import {
   getDonationsApiBase,
   getDonationsTenantSlug,
 } from "@/lib/donations/env";
+import { MIN_PAYMENT_LINK_VALUE_BRL } from "@/lib/donations/minPaymentValue";
 import type {
   CreatePublicPaymentLinkBody,
   CreatePublicPaymentLinkResponse,
@@ -31,6 +32,8 @@ const MSG_ASAAS_UPSTREAM =
 
 const MSG_VALIDATION =
   "Os dados do pedido não foram aceites. Verifique o valor e as opções e tente novamente.";
+
+const MSG_VALOR_MINIMO = `O valor mínimo para gerar o link de pagamento é R$ ${MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")}. Ajuste o valor e tente novamente.`;
 
 function formatNestMessage(raw: unknown, maxLen: number): string | null {
   if (raw == null) return null;
@@ -106,6 +109,15 @@ export function ContribuirRedirectClient() {
         );
       }
       setPhase("config");
+      return;
+    }
+
+    if (
+      requestBody.value !== undefined &&
+      requestBody.value < MIN_PAYMENT_LINK_VALUE_BRL
+    ) {
+      setErrorMessage(MSG_VALOR_MINIMO);
+      setPhase("error");
       return;
     }
 

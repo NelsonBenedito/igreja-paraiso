@@ -1,6 +1,10 @@
 /** Corpo público `POST /api/public/tenants/:slug/links` (Nest). */
 export type CreatePublicPaymentLinkBody = {
   isMonthly: boolean;
+  /**
+   * Quando presente, deve ser >= 5 (reais); caso contrário a API responde 400.
+   * Omitir permite valor livre na página do Asaas, conforme configuração do tenant.
+   */
   value?: number;
   /**
    * Obrigatório no servidor quando `isMonthly` é true. A API aceita 1–120 meses;

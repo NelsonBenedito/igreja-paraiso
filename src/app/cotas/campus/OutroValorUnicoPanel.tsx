@@ -1,5 +1,6 @@
 "use client";
 
+import { MIN_PAYMENT_LINK_VALUE_BRL } from "@/lib/donations/minPaymentValue";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
@@ -29,6 +30,12 @@ export function OutroValorUnicoPanel() {
         valorTexto.trim() === ""
           ? "Digite um valor em reais."
           : "Valor não reconhecido. Ex.: 100 ou 1500,50",
+      );
+      return;
+    }
+    if (v < MIN_PAYMENT_LINK_VALUE_BRL) {
+      setErro(
+        `O valor mínimo por mês é R$ ${MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")} (exigência do parceiro de pagamentos).`,
       );
       return;
     }
@@ -71,7 +78,12 @@ export function OutroValorUnicoPanel() {
             setErro("");
           }}
           disabled={busy}
+          aria-describedby="outro-valor-min-hint"
         />
+        <p id="outro-valor-min-hint" className="cb-outro-valor__field-hint">
+          Mínimo R$ {MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")} por mês
+          (limite do sistema de pagamentos).
+        </p>
       </div>
 
       <div className="cb-outro-valor__block">
