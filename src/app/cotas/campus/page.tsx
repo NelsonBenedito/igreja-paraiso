@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { CircleArrowUp } from "lucide-react";
+import { Suspense } from "react";
 import { CotasIntentPanel } from "./CotasIntentPanel";
+import { CampusPagamentoObrigado } from "./CampusPagamentoObrigado";
 import { OutroValorUnicoPanel } from "./OutroValorUnicoPanel";
 import "./campus.css";
 
@@ -49,6 +50,10 @@ export default function CotasCampusPage() {
           </li>
         </ul>
       </nav>
+
+      <Suspense fallback={null}>
+        <CampusPagamentoObrigado />
+      </Suspense>
 
       <div className="cb-shell">
         <section className="cb-slab cb-slab--hero" aria-label="Destaque do projeto">
@@ -390,9 +395,12 @@ export default function CotasCampusPage() {
             <div
               className="cb-pay-return"
               role="region"
-              aria-labelledby="pay-return-title"
+              aria-labelledby="pay-return-title-after-projetos"
             >
-              <h2 id="pay-return-title" className="cb-pay-return__title">
+              <h2
+                id="pay-return-title-after-projetos"
+                className="cb-pay-return__title"
+              >
                 Contribuir com as cotas
               </h2>
               <p className="cb-pay-return__hint">
