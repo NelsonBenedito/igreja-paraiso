@@ -1,8 +1,9 @@
 "use client";
 
+import { Info } from "lucide-react";
 import { MIN_PAYMENT_LINK_VALUE_BRL } from "@/lib/donations/minPaymentValue";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 
 const MESES_MAX_CAMPUS = 12;
 
@@ -54,16 +55,37 @@ export function OutroValorUnicoPanel() {
     router.push(`/cotas/campus/contribuir?${params.toString()}`);
   }
 
+  const valorParsed = useMemo(() => parseValorReais(valorTexto), [valorTexto]);
+  const abaixoDoMinimo =
+    valorParsed !== null && valorParsed < MIN_PAYMENT_LINK_VALUE_BRL;
+
+  const valorFieldDescribedBy = [
+    "outro-valor-aviso",
+    "outro-valor-min-hint",
+    ...(abaixoDoMinimo ? ["outro-valor-abaixo-msg"] : []),
+  ].join(" ");
+
   return (
     <form
       className="cb-outro-valor__aside cb-outro-valor__aside--simple"
       onSubmit={handleGerarLink}
+      noValidate
     >
       <div className="cb-outro-valor__block">
         <span className="cb-outro-valor__step">1</span>
         <label className="cb-outro-valor__simple-label" htmlFor="outro-valor-campo">
           Valor em reais (R$)
         </label>
+        <div className="cb-outro-valor__aviso" id="outro-valor-aviso" role="note">
+          <Info className="cb-outro-valor__aviso-icon" aria-hidden strokeWidth={2} />
+          <p className="cb-outro-valor__aviso-text">
+            Para <strong>gerar o link de pagamento</strong>, indique pelo menos{" "}
+            <strong>
+              R$ {MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")} por mês
+            </strong>{" "}
+            (exigência do sistema de pagamentos).
+          </p>
+        </div>
         <input
           id="outro-valor-campo"
           name="valor"
@@ -71,18 +93,32 @@ export function OutroValorUnicoPanel() {
           inputMode="decimal"
           autoComplete="off"
           placeholder="Ex.: 50 ou 200"
-          className="cb-outro-valor__input cb-outro-valor__input--touch"
+          className={
+            abaixoDoMinimo
+              ? "cb-outro-valor__input cb-outro-valor__input--touch cb-outro-valor__input--warn"
+              : "cb-outro-valor__input cb-outro-valor__input--touch"
+          }
           value={valorTexto}
           onChange={(e) => {
             setValorTexto(e.target.value);
             setErro("");
           }}
           disabled={busy}
-          aria-describedby="outro-valor-min-hint"
+          aria-invalid={abaixoDoMinimo}
+          aria-describedby={valorFieldDescribedBy}
         />
+        {abaixoDoMinimo ? (
+          <p
+            id="outro-valor-abaixo-msg"
+            className="cb-outro-valor__aviso-live"
+            role="status"
+          >
+            Este valor ainda não permite criar o link. Indique pelo menos{" "}
+            R$ {MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")} ou mais.
+          </p>
+        ) : null}
         <p id="outro-valor-min-hint" className="cb-outro-valor__field-hint">
-          Mínimo R$ {MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")} por mês
-          (limite do sistema de pagamentos).
+          Valores como 5, 10 ou 50 são aceites; centavos podem ser usados (ex.: 5,50).
         </p>
       </div>
 
@@ -126,7 +162,12 @@ export function OutroValorUnicoPanel() {
       <button
         type="submit"
         className="cb-outro-valor__submit cb-outro-valor__submit--touch"
-        disabled={busy}
+        disabled={busy || abaixoDoMinimo}
+        title={
+          abaixoDoMinimo
+            ? `Indique pelo menos R$ ${MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")} por mês para continuar`
+            : undefined
+        }
       >
         {busy ? "A abrir…" : "Continuar para pagar"}
       </button>

@@ -1,5 +1,6 @@
 "use client";
 
+import { AlertCircle, Info } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -30,10 +31,33 @@ const MSG_RATE_LIMIT =
 const MSG_ASAAS_UPSTREAM =
   "O serviço de pagamentos não respondeu como esperado. Tente novamente mais tarde ou fale conosco pela página da campanha.";
 
-const MSG_VALIDATION =
-  "Os dados do pedido não foram aceites. Verifique o valor e as opções e tente novamente.";
+/** Texto para o utilizador final — nunca mostrar mensagens cruas da API. */
+const MSG_VALOR_MINIMO = `O valor por mês precisa ser de pelo menos R$ ${MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")}. Corrija na campanha e abra o pagamento de novo.`;
 
-const MSG_VALOR_MINIMO = `O valor mínimo para gerar o link de pagamento é R$ ${MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")}. Ajuste o valor e tente novamente.`;
+const MSG_VALIDATION_AMIGAVEL =
+  "Não foi possível preparar o pagamento com estes dados. Volte à campanha, confira o valor e as opções, e tente novamente.";
+
+type ErrorVariant = "validation" | "system";
+
+/**
+ * Converte respostas 400 do Nest em texto legível. Nunca devolver jargão (value, Asaas, omitir…).
+ */
+function humanizarMensagem400(apiDetail: string | null): string {
+  if (!apiDetail?.trim()) return MSG_VALIDATION_AMIGAVEL;
+  const d = apiDetail.toLowerCase();
+  const falaMinimo =
+    (d.includes("mínimo") || d.includes("minimo")) &&
+    (d.includes("5") || d.includes("r$"));
+  const regraValor =
+    d.includes("value") ||
+    d.includes("asaas") ||
+    d.includes("omit") ||
+    d.includes("informado");
+  if (falaMinimo || (regraValor && d.includes("5"))) {
+    return MSG_VALOR_MINIMO;
+  }
+  return MSG_VALIDATION_AMIGAVEL;
+}
 
 function formatNestMessage(raw: unknown, maxLen: number): string | null {
   if (raw == null) return null;
@@ -93,6 +117,7 @@ export function ContribuirRedirectClient() {
 
   const [phase, setPhase] = useState<"loading" | "error" | "config">("loading");
   const [errorMessage, setErrorMessage] = useState(MSG_INSTABILITY);
+  const [errorVariant, setErrorVariant] = useState<ErrorVariant>("system");
   const runRef = useRef<AbortController | null>(null);
 
   const execute = useCallback(() => {
@@ -117,12 +142,14 @@ export function ContribuirRedirectClient() {
       requestBody.value < MIN_PAYMENT_LINK_VALUE_BRL
     ) {
       setErrorMessage(MSG_VALOR_MINIMO);
+      setErrorVariant("validation");
       setPhase("error");
       return;
     }
 
     setPhase("loading");
     setErrorMessage(MSG_INSTABILITY);
+    setErrorVariant("system");
     const ac = new AbortController();
     runRef.current = ac;
     let timedOut = false;
@@ -160,12 +187,14 @@ export function ContribuirRedirectClient() {
 
         if (res.status === 429) {
           setErrorMessage(MSG_RATE_LIMIT);
+          setErrorVariant("system");
           setPhase("error");
           return;
         }
 
         if (res.status === 502) {
           setErrorMessage(MSG_ASAAS_UPSTREAM);
+          setErrorVariant("system");
           setPhase("error");
           return;
         }
@@ -178,17 +207,20 @@ export function ContribuirRedirectClient() {
           } catch {
             /* ignore */
           }
-          setErrorMessage(detail ?? MSG_VALIDATION);
+          setErrorMessage(humanizarMensagem400(detail));
+          setErrorVariant("validation");
           setPhase("error");
           return;
         }
 
         setErrorMessage(MSG_INSTABILITY);
+        setErrorVariant("system");
         setPhase("error");
       } catch {
         window.clearTimeout(timeoutId);
         if (ac.signal.aborted && !timedOut) return;
         setErrorMessage(timedOut ? MSG_TIMEOUT : MSG_INSTABILITY);
+        setErrorVariant("system");
         setPhase("error");
       }
     })();
@@ -217,20 +249,60 @@ export function ContribuirRedirectClient() {
         )}
 
         {phase === "error" && (
-          <>
-            <h1 className="cotas-contribuir__title">Algo correu mal</h1>
-            <p className="cotas-contribuir__error">{errorMessage}</p>
-            <button
-              type="button"
-              className="cotas-contribuir__retry"
-              onClick={() => execute()}
+          <div className="cotas-contribuir__error-panel">
+            <div
+              className={
+                errorVariant === "validation"
+                  ? "cotas-contribuir__error-card cotas-contribuir__error-card--soft"
+                  : "cotas-contribuir__error-card"
+              }
+              role="alert"
             >
-              Tentar novamente
-            </button>
-            <p className="cotas-contribuir__sub" style={{ marginTop: "1.25rem" }}>
-              <Link href="/cotas/campus#cotas">Voltar à campanha</Link>
-            </p>
-          </>
+              {errorVariant === "validation" ? (
+                <Info
+                  className="cotas-contribuir__error-icon cotas-contribuir__error-icon--info"
+                  aria-hidden
+                  strokeWidth={2}
+                />
+              ) : (
+                <AlertCircle
+                  className="cotas-contribuir__error-icon"
+                  aria-hidden
+                  strokeWidth={2}
+                />
+              )}
+              <h1 className="cotas-contribuir__error-heading">
+                {errorVariant === "validation"
+                  ? "Não foi possível abrir o pagamento"
+                  : "Algo correu mal"}
+              </h1>
+              <p className="cotas-contribuir__error-body">{errorMessage}</p>
+              <div className="cotas-contribuir__error-actions">
+                {errorVariant === "validation" ? (
+                  <Link
+                    className="cotas-contribuir__cta-primary"
+                    href="/cotas/campus#outro-valor"
+                  >
+                    Corrigir valor na campanha
+                  </Link>
+                ) : (
+                  <button
+                    type="button"
+                    className="cotas-contribuir__retry"
+                    onClick={() => execute()}
+                  >
+                    Tentar novamente
+                  </button>
+                )}
+                <Link
+                  className="cotas-contribuir__cta-secondary"
+                  href="/cotas/campus#cotas"
+                >
+                  Voltar à campanha
+                </Link>
+              </div>
+            </div>
+          </div>
         )}
 
         {phase === "config" && (
