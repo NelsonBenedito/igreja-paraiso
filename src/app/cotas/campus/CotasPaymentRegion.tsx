@@ -1,10 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { CotasIntentPanel } from "./CotasIntentPanel";
 import { OutroValorUnicoPanel } from "./OutroValorUnicoPanel";
 
@@ -12,7 +9,7 @@ function onlyDigits(raw: string): string {
   return raw.replace(/\D/g, "");
 }
 
-function formatCpf(raw: string): string {
+function maskCpf(raw: string): string {
   const digits = onlyDigits(raw).slice(0, 11);
   if (digits.length <= 3) return digits;
   if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
@@ -44,53 +41,10 @@ export function CotasPaymentRegion() {
   const validName = donorName.length >= 3;
   const validCpf = isValidCpf(donorCpf);
   const isIdentityValid = validName && validCpf;
-
-  const identityHint = useMemo(() => {
-    if (isIdentityValid) return null;
-    if (!validName) return "Informe o nome completo para continuar.";
-    if (!validCpf) return "Informe um CPF valido para continuar.";
-    return null;
-  }, [isIdentityValid, validCpf, validName]);
+  const hasIdentityInput = name.length > 0 || cpf.length > 0;
 
   return (
-    <div className="cb-payment-region flex flex-col gap-6" id="pagamento">
-      <Card>
-        <CardHeader>
-          <CardTitle>Identificacao do contribuinte</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="grid gap-2">
-              <Label htmlFor="cotas-donor-name">Nome completo</Label>
-              <Input
-                id="cotas-donor-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                autoComplete="name"
-                placeholder="Ex.: Maria Silva"
-                aria-invalid={name.length > 0 && !validName}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="cotas-donor-cpf">CPF</Label>
-              <Input
-                id="cotas-donor-cpf"
-                value={cpf}
-                onChange={(e) => setCpf(formatCpf(e.target.value))}
-                inputMode="numeric"
-                placeholder="000.000.000-00"
-                aria-invalid={cpf.length > 0 && !validCpf}
-              />
-            </div>
-          </div>
-          {identityHint ? (
-            <p className="mt-3 text-sm text-muted-foreground" role="status">
-              {identityHint}
-            </p>
-          ) : null}
-        </CardContent>
-      </Card>
-
+    <div className="cb-payment-region" id="pagamento">
       <section className="cb-slab" id="cotas">
         <div className="cb-inner">
           <header className="cb-head">
@@ -157,6 +111,11 @@ export function CotasPaymentRegion() {
                 donorName={donorName}
                 donorCpf={donorCpf}
                 isIdentityValid={isIdentityValid}
+                hasIdentityInput={hasIdentityInput}
+                nameInputValue={name}
+                cpfInputValue={cpf}
+                onNameChange={setName}
+                onCpfChange={(next) => setCpf(maskCpf(next))}
               />
             </div>
           </div>

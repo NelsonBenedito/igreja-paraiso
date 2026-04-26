@@ -11,6 +11,11 @@ type OutroValorUnicoPanelProps = {
   donorName: string;
   donorCpf: string;
   isIdentityValid: boolean;
+  hasIdentityInput: boolean;
+  nameInputValue: string;
+  cpfInputValue: string;
+  onNameChange: (value: string) => void;
+  onCpfChange: (value: string) => void;
 };
 
 function parseValorReais(raw: string): number | null {
@@ -25,6 +30,11 @@ export function OutroValorUnicoPanel({
   donorName,
   donorCpf,
   isIdentityValid,
+  hasIdentityInput,
+  nameInputValue,
+  cpfInputValue,
+  onNameChange,
+  onCpfChange,
 }: OutroValorUnicoPanelProps) {
   const router = useRouter();
   const [mesesStr, setMesesStr] = useState("1");
@@ -89,6 +99,45 @@ export function OutroValorUnicoPanel({
     >
       <div className="cb-outro-valor__block">
         <span className="cb-outro-valor__step">1</span>
+        <label className="cb-outro-valor__simple-label" htmlFor="outro-valor-nome">
+          Nome completo
+        </label>
+        <input
+          id="outro-valor-nome"
+          name="name"
+          type="text"
+          autoComplete="name"
+          placeholder="Ex.: Maria Silva"
+          className="cb-outro-valor__input cb-outro-valor__input--touch"
+          value={nameInputValue}
+          onChange={(e) => {
+            onNameChange(e.target.value);
+            setErro("");
+          }}
+          disabled={busy}
+        />
+        <label className="cb-outro-valor__simple-label" htmlFor="outro-valor-cpf">
+          CPF
+        </label>
+        <input
+          id="outro-valor-cpf"
+          name="cpf"
+          type="text"
+          inputMode="numeric"
+          autoComplete="off"
+          placeholder="000.000.000-00"
+          className="cb-outro-valor__input cb-outro-valor__input--touch"
+          value={cpfInputValue}
+          onChange={(e) => {
+            onCpfChange(e.target.value);
+            setErro("");
+          }}
+          disabled={busy}
+        />
+      </div>
+
+      <div className="cb-outro-valor__block">
+        <span className="cb-outro-valor__step">2</span>
         <label className="cb-outro-valor__simple-label" htmlFor="outro-valor-campo">
           Valor em reais (R$)
         </label>
@@ -139,7 +188,7 @@ export function OutroValorUnicoPanel({
       </div>
 
       <div className="cb-outro-valor__block">
-        <span className="cb-outro-valor__step">2</span>
+        <span className="cb-outro-valor__step">3</span>
         <label
           className="cb-outro-valor__simple-label"
           htmlFor="outro-valor-meses"
@@ -172,6 +221,10 @@ export function OutroValorUnicoPanel({
       {erro ? (
         <p className="cb-outro-valor__erro" role="alert">
           {erro}
+        </p>
+      ) : hasIdentityInput && !isIdentityValid ? (
+        <p className="cb-outro-valor__erro" role="alert">
+          Preencha nome e CPF validos para continuar.
         </p>
       ) : null}
 
