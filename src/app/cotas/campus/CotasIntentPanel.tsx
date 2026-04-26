@@ -10,16 +10,10 @@ const COTA_OPTIONS = COTAS_DESC.map((label) => ({
 }));
 
 type CotasIntentPanelProps = {
-  donorName: string;
-  donorCpf: string;
-  isIdentityValid: boolean;
+  presetKey?: string;
 };
 
-export function CotasIntentPanel({
-  donorName,
-  donorCpf,
-  isIdentityValid,
-}: CotasIntentPanelProps) {
+export function CotasIntentPanel({ presetKey }: CotasIntentPanelProps) {
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
 
@@ -29,15 +23,16 @@ export function CotasIntentPanel({
       params.set("valor", String(valor));
       params.set("mensal", "true");
       params.set("meses", "12");
-      params.set("name", donorName);
-      params.set("cpf", donorCpf);
+      if (presetKey?.trim()) {
+        params.set("presetKey", presetKey.trim());
+      }
       router.push(`/cotas/campus/contribuir?${params.toString()}`);
     },
-    [donorCpf, donorName, router],
+    [presetKey, router],
   );
 
   function handleValorMensal(value: number) {
-    if (isNavigating || !isIdentityValid) return;
+    if (isNavigating) return;
     setIsNavigating(true);
     pushContribuirMensal12(value);
   }
@@ -57,17 +52,12 @@ export function CotasIntentPanel({
             type="button"
             className="cota-btn"
             onClick={() => handleValorMensal(value)}
-            disabled={isNavigating || !isIdentityValid}
+            disabled={isNavigating}
           >
             {label}
           </button>
         ))}
       </div>
-      {!isIdentityValid ? (
-        <p className="period-note" role="status">
-          Preencha nome e CPF para continuar.
-        </p>
-      ) : null}
     </>
   );
 }

@@ -101,13 +101,18 @@ function parseContribuirParams(
   const isMonthly = rawMensal === "true";
   const name = (searchParams.get("name") ?? "").trim();
   const cpf = onlyDigits(searchParams.get("cpf") ?? "");
+  const presetKey = (searchParams.get("presetKey") ?? "").trim();
 
-  const body: CreatePublicPaymentLinkBody = {
-    reuseMode: "cpf_custom",
-    isMonthly,
-    name,
-    cpf,
-  };
+  const body: CreatePublicPaymentLinkBody = { isMonthly };
+
+  if (name && cpf) {
+    body.reuseMode = "cpf_custom";
+    body.name = name;
+    body.cpf = cpf;
+  } else if (presetKey) {
+    body.reuseMode = "preset_global";
+    body.presetKey = presetKey;
+  }
 
   if (rawValor != null && rawValor !== "") {
     const v = Number.parseFloat(rawValor);
@@ -170,7 +175,13 @@ export function ContribuirRedirectClient() {
       return;
     }
 
-    if (!requestBody.name || requestBody.name.trim().length < 3 || !requestBody.cpf || !isValidCpf(requestBody.cpf)) {
+    if (
+      requestBody.reuseMode === "cpf_custom" &&
+      (!requestBody.name ||
+        requestBody.name.trim().length < 3 ||
+        !requestBody.cpf ||
+        !isValidCpf(requestBody.cpf))
+    ) {
       setErrorMessage("Nao foi possivel preparar o pagamento. Volte e informe nome e CPF validos.");
       setErrorVariant("validation");
       setPhase("error");

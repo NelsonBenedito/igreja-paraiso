@@ -75,11 +75,7 @@ export function CotasPaymentRegion() {
                   desta grande obra e ajude a impactar gerações!
                 </p>
               </div>
-              <CotasIntentPanel
-                donorName={donorName}
-                donorCpf={donorCpf}
-                isIdentityValid={isIdentityValid}
-              />
+              <CotasIntentPanel />
             </div>
           </div>
         </div>
