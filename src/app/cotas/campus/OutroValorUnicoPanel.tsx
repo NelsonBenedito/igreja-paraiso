@@ -84,10 +84,10 @@ export function OutroValorUnicoPanel({
   const valorParsed = useMemo(() => parseValorReais(valorTexto), [valorTexto]);
   const abaixoDoMinimo =
     valorParsed !== null && valorParsed < MIN_PAYMENT_LINK_VALUE_BRL;
+  const erroRelacionadaAValor = erro.length > 0 && (valorParsed === null || abaixoDoMinimo);
 
   const valorFieldDescribedBy = [
-    "outro-valor-aviso",
-    "outro-valor-min-hint",
+    ...(erroRelacionadaAValor ? ["outro-valor-min-hint"] : []),
     ...(abaixoDoMinimo ? ["outro-valor-abaixo-msg"] : []),
   ].join(" ");
 
@@ -141,16 +141,18 @@ export function OutroValorUnicoPanel({
         <label className="cb-outro-valor__simple-label" htmlFor="outro-valor-campo">
           Valor em reais (R$)
         </label>
-        <div className="cb-outro-valor__aviso" id="outro-valor-aviso" role="note">
-          <Info className="cb-outro-valor__aviso-icon" aria-hidden strokeWidth={2} />
-          <p className="cb-outro-valor__aviso-text">
-            Para <strong>gerar o link de pagamento</strong>, indique pelo menos{" "}
-            <strong>
-              R$ {MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")} por mês
-            </strong>{" "}
-            (exigência do sistema de pagamentos).
-          </p>
-        </div>
+        {erroRelacionadaAValor ? (
+          <div className="cb-outro-valor__aviso" role="note">
+            <Info className="cb-outro-valor__aviso-icon" aria-hidden strokeWidth={2} />
+            <p className="cb-outro-valor__aviso-text">
+              Para <strong>gerar o link de pagamento</strong>, indique pelo menos{" "}
+              <strong>
+                R$ {MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")} por mês
+              </strong>{" "}
+              (exigência do sistema de pagamentos).
+            </p>
+          </div>
+        ) : null}
         <input
           id="outro-valor-campo"
           name="valor"
@@ -182,9 +184,11 @@ export function OutroValorUnicoPanel({
             R$ {MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")} ou mais.
           </p>
         ) : null}
-        <p id="outro-valor-min-hint" className="cb-outro-valor__field-hint">
-          Valores como 5, 10 ou 50 são aceites; centavos podem ser usados (ex.: 5,50).
-        </p>
+        {erroRelacionadaAValor ? (
+          <p id="outro-valor-min-hint" className="cb-outro-valor__field-hint">
+            Valores como 5, 10 ou 50 são aceites; centavos podem ser usados (ex.: 5,50).
+          </p>
+        ) : null}
       </div>
 
       <div className="cb-outro-valor__block">
