@@ -7,6 +7,12 @@ import { FormEvent, useMemo, useState } from "react";
 
 const MESES_MAX_CAMPUS = 12;
 
+type OutroValorUnicoPanelProps = {
+  donorName: string;
+  donorCpf: string;
+  isIdentityValid: boolean;
+};
+
 function parseValorReais(raw: string): number | null {
   const t = raw.trim().replace(/\s/g, "").replace(/\./g, "").replace(",", ".");
   if (t === "") return null;
@@ -15,7 +21,11 @@ function parseValorReais(raw: string): number | null {
   return Math.round(n * 100) / 100;
 }
 
-export function OutroValorUnicoPanel() {
+export function OutroValorUnicoPanel({
+  donorName,
+  donorCpf,
+  isIdentityValid,
+}: OutroValorUnicoPanelProps) {
   const router = useRouter();
   const [mesesStr, setMesesStr] = useState("1");
   const [valorTexto, setValorTexto] = useState("");
@@ -25,6 +35,10 @@ export function OutroValorUnicoPanel() {
   function handleGerarLink(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
+    if (!isIdentityValid) {
+      setErro("Preencha nome e CPF validos para continuar.");
+      return;
+    }
     const v = parseValorReais(valorTexto);
     if (v === null) {
       setErro(
@@ -52,6 +66,8 @@ export function OutroValorUnicoPanel() {
     params.set("valor", String(v));
     params.set("mensal", "true");
     params.set("meses", String(m));
+    params.set("name", donorName);
+    params.set("cpf", donorCpf);
     router.push(`/cotas/campus/contribuir?${params.toString()}`);
   }
 
@@ -162,9 +178,11 @@ export function OutroValorUnicoPanel() {
       <button
         type="submit"
         className="cb-outro-valor__submit cb-outro-valor__submit--touch"
-        disabled={busy || abaixoDoMinimo}
+        disabled={busy || abaixoDoMinimo || !isIdentityValid}
         title={
-          abaixoDoMinimo
+          !isIdentityValid
+            ? "Preencha nome e CPF validos para continuar"
+            : abaixoDoMinimo
             ? `Indique pelo menos R$ ${MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")} por mês para continuar`
             : undefined
         }

@@ -76,14 +76,38 @@ function formatNestMessage(raw: unknown, maxLen: number): string | null {
   return null;
 }
 
+function onlyDigits(raw: string): string {
+  return raw.replace(/\D/g, "");
+}
+
+function isValidCpf(cpf: string): boolean {
+  const digits = onlyDigits(cpf);
+  if (digits.length !== 11 || /^(\d)\1{10}$/.test(digits)) return false;
+  const nums = digits.split("").map((c) => Number.parseInt(c, 10));
+  const calc = (size: number) => {
+    let sum = 0;
+    for (let i = 0; i < size; i += 1) sum += nums[i] * (size + 1 - i);
+    const mod = (sum * 10) % 11;
+    return mod === 10 ? 0 : mod;
+  };
+  return calc(9) === nums[9] && calc(10) === nums[10];
+}
+
 function parseContribuirParams(
   searchParams: URLSearchParams,
 ): CreatePublicPaymentLinkBody {
   const rawValor = searchParams.get("valor");
   const rawMensal = searchParams.get("mensal");
   const isMonthly = rawMensal === "true";
+  const name = (searchParams.get("name") ?? "").trim();
+  const cpf = onlyDigits(searchParams.get("cpf") ?? "");
 
-  const body: CreatePublicPaymentLinkBody = { isMonthly };
+  const body: CreatePublicPaymentLinkBody = {
+    reuseMode: "cpf_custom",
+    isMonthly,
+    name,
+    cpf,
+  };
 
   if (rawValor != null && rawValor !== "") {
     const v = Number.parseFloat(rawValor);
@@ -128,7 +152,6 @@ export function ContribuirRedirectClient() {
 
     if (!base || !tenantSlug) {
       if (process.env.NODE_ENV === "development") {
-        // eslint-disable-next-line no-console -- diagnóstico local apenas
         console.warn(
           "[cotas/contribuir] Defina NEXT_PUBLIC_DONATIONS_API_BASE e NEXT_PUBLIC_DONATIONS_TENANT_SLUG (ou NEXT_PUBLIC_TENANT_SLUG).",
         );
@@ -142,6 +165,13 @@ export function ContribuirRedirectClient() {
       requestBody.value < MIN_PAYMENT_LINK_VALUE_BRL
     ) {
       setErrorMessage(MSG_VALOR_MINIMO);
+      setErrorVariant("validation");
+      setPhase("error");
+      return;
+    }
+
+    if (!requestBody.name || requestBody.name.trim().length < 3 || !requestBody.cpf || !isValidCpf(requestBody.cpf)) {
+      setErrorMessage("Nao foi possivel preparar o pagamento. Volte e informe nome e CPF validos.");
       setErrorVariant("validation");
       setPhase("error");
       return;
@@ -227,8 +257,11 @@ export function ContribuirRedirectClient() {
   }, [requestBody]);
 
   useEffect(() => {
-    execute();
+    const id = window.setTimeout(() => {
+      execute();
+    }, 0);
     return () => {
+      window.clearTimeout(id);
       runRef.current?.abort();
     };
   }, [execute]);

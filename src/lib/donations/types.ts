@@ -1,5 +1,9 @@
 /** Corpo público `POST /api/public/tenants/:slug/links` (Nest). */
 export type CreatePublicPaymentLinkBody = {
+  reuseMode?: "preset_global" | "cpf_custom";
+  presetKey?: string;
+  cpf?: string;
+  name?: string;
   isMonthly: boolean;
   /**
    * Quando presente, deve ser >= 5 (reais); caso contrário a API responde 400.
