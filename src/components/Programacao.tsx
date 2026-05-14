@@ -30,26 +30,26 @@ const ProgramacaoSection: React.FC<ProgramacaoProps> = ({ schedules }) => {
     });
 
     return (
-        <section id="agenda" className="py-32 bg-slate-50 dark:bg-paraiso-blue-deep relative overflow-hidden">
+        <section id="agenda" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-12 py-20 px-6 lg:px-20 border border-slate-100 dark:border-white/5 relative">
             {/* Elemento Decorativo */}
-            <div className="absolute top-0 right-0 w-1/2 h-full bg-paraiso-blue/5 skew-x-12 translate-x-32"></div>
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-paraiso-blue/5 skew-x-12 translate-x-32 pointer-events-none"></div>
 
-            <div className="container bg-gray-100/50 dark:bg-gray-900/50 border mx-auto px-20 py-20 rounded-4xl flex flex-col lg:flex-row gap-24 relative z-10">
+            <div className="flex flex-col lg:flex-row gap-24 relative z-10">
                 <div className="lg:w-1/3">
                     <Reveal direction="left">
                         <div className="flex items-center gap-4 mb-6">
                             <Calendar className="text-paraiso-green" size={24} />
                             <span className="text-paraiso-green font-black uppercase tracking-widest text-xs">A Igreja em Movimento</span>
                         </div>
-                        <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-10 leading-[0.85] text-paraiso-blue dark:text-white">
+                        <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-8 leading-[0.85] text-paraiso-blue dark:text-white">
                             NOSSA <br />
                             <span className="text-paraiso-green italic font-serif lowercase">agenda</span>
                         </h2>
-                        <p className="text-slate-500 dark:text-slate-300 text-lg mb-12 leading-relaxed font-medium">
+                        <p className="text-slate-500 dark:text-slate-300 text-base mb-10 leading-relaxed font-medium">
                             Acreditamos que participar de uma comunidade é um dos melhores caminhos para encorajar o crescimento espiritual.
                         </p>
                         <button className="flex items-center gap-4 px-10 py-5 bg-paraiso-blue text-white rounded-full font-black uppercase tracking-widest text-xs hover:bg-paraiso-green transition-all group shadow-2xl">
-                            TODOS OS EVENTOS <ChevronRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                            TODA NOSSA AGENDA <ChevronRight size={18} className="group-hover:translate-x-2 transition-transform" />
                         </button>
                     </Reveal>
                 </div>

@@ -31,13 +31,13 @@ const CelulasSection: React.FC = () => {
     return (
         <section
             id="celulas"
-            className="py-10 bg-white dark:bg-paraiso-blue-deep relative overflow-hidden"
+            className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-12 py-20 px-6 lg:px-20 border border-slate-100 dark:border-white/5 relative"
         >
             {/* Decoração de fundo */}
             <div className="absolute -bottom-32 -left-32 w-[500px] h-[500px] bg-paraiso-green/5 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-paraiso-blue/5 rounded-full blur-3xl pointer-events-none" />
 
-            <div className="container px-20 py-20 bg-gray-100/50 dark:bg-gray-900/50 border mx-auto backdrop-blur-3xl rounded-4xl relative z-10">
+            <div className="relative z-10">
 
                 {/* Cabeçalho */}
                 <Reveal>
@@ -47,15 +47,15 @@ const CelulasSection: React.FC = () => {
                             <span className="inline-block px-4 py-1 bg-paraiso-green/10 text-paraiso-green text-[10px] font-black uppercase tracking-widest rounded-md mb-8">
                                 Grupos de Vida
                             </span>
-                            <h2 className="text-5xl md:text-6xl font-black uppercase tracking-tighter leading-tight mb-8 text-paraiso-blue dark:text-white">
+                            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-tight mb-8 text-paraiso-blue dark:text-white">
                                 A igreja{' '}
                                 <span className="text-paraiso-green italic">acontece</span>{' '}
                                 em células.
                             </h2>
-                            <p className="text-xl text-slate-500 dark:text-slate-300 font-medium leading-relaxed mb-6">
+                            <p className="text-base text-slate-500 dark:text-slate-300 font-medium leading-relaxed mb-6">
                                 Células são grupos pequenos onde a vida em comunidade realmente acontece. É onde você encontra amigos, cresce na fé e descobre o seu propósito — sem grandes palcos, só presença e verdade.
                             </p>
-                            <p className="text-xl text-slate-500 dark:text-slate-300 font-medium leading-relaxed">
+                            <p className="text-base text-slate-500 dark:text-slate-300 font-medium leading-relaxed">
                                 Acreditamos que{' '}
                                 <em className="text-paraiso-blue dark:text-white not-italic font-black">
                                     ninguém deveria seguir essa caminhada sozinho.
@@ -74,7 +74,7 @@ const CelulasSection: React.FC = () => {
                             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-paraiso-green/20 rounded-full blur-2xl" />
                             <div className="relative z-10">
                                 <span className="text-6xl font-black text-white/20 leading-none">"</span>
-                                <p className="text-2xl font-black italic leading-snug -mt-4 mb-6">
+                                <p className="text-xl font-black italic leading-snug -mt-4 mb-6">
                                     Onde dois ou três se reúnem em meu nome, ali estou eu no meio deles.
                                 </p>
                                 <p className="text-white/60 text-sm font-black uppercase tracking-widest">

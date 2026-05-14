@@ -23,9 +23,9 @@ const Footer: React.FC = () => {
                         </p>
                         <div className="flex gap-5">
                             {SOCIAL_LINKS.map((social, i) => (
-                                <a 
-                                    key={i} 
-                                    href={social.href} 
+                                <a
+                                    key={i}
+                                    href={social.href}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-paraiso-green transition-all transform hover:scale-110"
@@ -69,7 +69,7 @@ const Footer: React.FC = () => {
                 </div>
 
                 <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-slate-500">
-                    <p>© 2024 Igreja Paraíso. Feitos para a Eternidade.</p>
+                    <p>© 2026 Igreja Paraíso. Feitos para a Eternidade.</p>
                     <div className="flex gap-8 text-sm">
                         <a href="#" className="hover:text-paraiso-green transition-colors">Privacidade</a>
                         <a href="#" className="hover:text-paraiso-green transition-colors">Termos</a>

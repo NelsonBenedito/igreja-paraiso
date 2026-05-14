@@ -13,8 +13,8 @@ export default async function SiteLayout({
   const { data: { user } } = await supabase.auth.getUser();
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <ThemeHandler color="#ffffff" />
+    <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900 transition-colors">
+      <ThemeHandler color="#f1f5f9" />
 
       <Header user={user} />
       <main className="flex-1">{children}</main>
