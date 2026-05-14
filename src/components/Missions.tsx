@@ -22,9 +22,9 @@ const Missions: React.FC = () => {
     }, []);
 
     return (
-        <section id="missoes" className="py-32 bg-slate-50 dark:bg-paraiso-blue-deep relative overflow-hidden">
+        <section id="missoes" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-12 py-20 px-6 lg:px-12 border border-slate-100 dark:border-white/5 relative">
             {/* Background Element */}
-            <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cube-coat.png')] opacity-[0.03]"></div>
+            <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cube-coat.png')] opacity-[0.03] pointer-events-none"></div>
 
             <div className="container mx-auto px-6 relative z-10">
                 <Reveal>
@@ -32,11 +32,11 @@ const Missions: React.FC = () => {
                         <div className="inline-block px-4 py-1.5 bg-paraiso-green/10 text-paraiso-green text-[10px] font-black uppercase tracking-widest rounded-md mb-6">
                             Ide & Pregai
                         </div>
-                        <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
+                        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
                             NOSSAS <br />
                             <span className="text-paraiso-green-light italic font-serif lowercase">missões</span>
                         </h2>
-                        <p className="mt-8 text-slate-500 dark:text-slate-300 font-medium max-w-2xl text-lg">
+                        <p className="mt-8 text-slate-500 dark:text-slate-300 font-medium max-w-2xl text-base">
                             Conheça os líderes que cuidam das nossas igrejas filiais e missões, levando o amor de Deus a cada comunidade.
                         </p>
                     </div>
@@ -75,7 +75,7 @@ const Missions: React.FC = () => {
                                                 <User size={12} />
                                                 Líder
                                             </div>
-                                            <h3 className="text-2xl font-black text-white uppercase tracking-tight leading-none mb-1">
+                                            <h3 className="text-xl font-black text-white uppercase tracking-tight leading-none mb-1">
                                                 {m.name}
                                             </h3>
                                             <p className="text-paraiso-green-light font-bold text-sm tracking-wide mb-4">

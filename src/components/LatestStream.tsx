@@ -73,7 +73,7 @@ const LatestStream: React.FC = () => {
     if (!video && !loading) return null;
 
     return (
-        <section id="aovivo" className="py-24 bg-slate-50 dark:bg-paraiso-blue-deep relative overflow-hidden">
+        <section id="aovivo" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-12 py-20 px-6 lg:px-20 border border-slate-100 dark:border-white/5 relative">
             {/* Background Decorative */}
             <div className="absolute inset-0 bg-paraiso-blue/5"></div>
 
@@ -84,11 +84,11 @@ const LatestStream: React.FC = () => {
                             <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
                             <span className="text-red-600 font-black uppercase tracking-widest text-xs">Youtube</span>
                         </div>
-                        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none mb-6">
+                        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none mb-6">
                             Transmissões <br />
                             <span className="text-paraiso-green italic font-serif lowercase">online</span>
                         </h2>
-                        <p className="text-slate-500 dark:text-slate-300 font-medium max-w-2xl text-lg">
+                        <p className="text-slate-500 dark:text-slate-300 font-medium max-w-2xl text-base">
                             Acompanhe nossos cultos e mensagens onde você estiver.
                         </p>
                     </div>
@@ -114,7 +114,7 @@ const LatestStream: React.FC = () => {
                                 </div>
 
                                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/90 to-transparent">
-                                    <h3 className="text-white text-2xl font-bold line-clamp-2 md:text-3xl">{video.title}</h3>
+                                    <h3 className="text-white text-xl font-bold line-clamp-2 md:text-2xl">{video.title}</h3>
                                     <p className="text-slate-300 mt-2 font-medium text-sm line-clamp-1">Clique para assistir agora</p>
                                 </div>
                             </a>

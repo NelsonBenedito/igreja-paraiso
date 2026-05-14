@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Reveal from './Reveal';
 import { motion } from 'framer-motion';
 import { CalendarDays, MapPin, Clock, UserPlus, CheckCircle2 } from 'lucide-react';
-import EventRegistrationModal from './EventRegistrationModal';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 
 interface Event {
@@ -28,14 +28,10 @@ const formatDate = (d: string) =>
     new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
 const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = [] }) => {
-    const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+    const router = useRouter();
     const [registeredIds, setRegisteredIds] = useState<string[]>(registeredEventIds);
 
     const isRegistered = (id: string) => registeredIds.includes(id);
-
-    const handleSuccess = (eventId: string) => {
-        setRegisteredIds((prev) => [...prev, eventId]);
-    };
 
     // Hydration client-side: garante que as inscrições sejam buscadas
     // mesmo que o servidor não tenha conseguido via RLS
@@ -59,7 +55,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
     }, []);
 
     return (
-        <section id="mensagens" className="py-32 bg-white dark:bg-paraiso-blue-dark overflow-hidden">
+        <section id="eventos" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-12 py-20 px-6 lg:px-12 border border-slate-100 dark:border-white/5">
             <div className="container mx-auto px-20">
                 <Reveal>
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
@@ -68,11 +64,11 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
                                 <span className="w-12 h-[2px] bg-paraiso-green"></span>
                                 <span className="text-paraiso-green font-black uppercase tracking-widest text-xs">Novidades</span>
                             </div>
-                            <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
+                            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
                                 ACONTECE NA <br />PARAÍSO
                             </h2>
                         </div>
-                        <p className="text-slate-500 dark:text-slate-300 font-bold uppercase tracking-widest text-sm max-w-[200px] leading-tight">
+                        <p className="text-slate-500 dark:text-slate-300 font-bold uppercase tracking-widest text-xs max-w-[200px] leading-tight">
                             Fique por dentro de tudo que move nossa casa.
                         </p>
                     </div>
@@ -90,8 +86,11 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
                     <div className="grid lg:grid-cols-3 gap-12">
                         {events.map((item, idx) => (
                             <Reveal key={item.id} delay={idx * 0.2}>
-                                <div className="group cursor-pointer">
-                                    <div className="relative mb-8 overflow-hidden rounded-[2.5rem] h-[450px] shadow-2xl bg-slate-100 dark:bg-slate-800">
+                                <div
+                                    className="group cursor-pointer"
+                                    onClick={() => router.push(`/evento/${item.id}`)}
+                                >
+                                    <div className="relative mb-8 overflow-hidden rounded-[2.5rem] aspect-video shadow-2xl bg-slate-100 dark:bg-slate-800">
                                         {item.image_url ? (
                                             <motion.img
                                                 whileHover={{ scale: 1.05 }}
@@ -153,11 +152,11 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
                                         </div>
                                     </div>
 
-                                    <h3 className="text-3xl font-black uppercase tracking-tighter mb-4 group-hover:text-paraiso-green transition-colors text-paraiso-blue dark:text-white leading-tight">
+                                    <h3 className="text-2xl font-black uppercase tracking-tighter mb-4 group-hover:text-paraiso-green transition-colors text-paraiso-blue dark:text-white leading-tight">
                                         {item.title}
                                     </h3>
                                     {item.description && (
-                                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2 font-medium">
+                                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2 font-medium text-sm">
                                             {item.description}
                                         </p>
                                     )}
@@ -175,7 +174,10 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
                                             <motion.button
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
-                                                onClick={() => setSelectedEvent(item)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    router.push(`/evento/${item.id}`);
+                                                }}
                                                 className="flex items-center gap-2 px-5 py-2.5 bg-paraiso-green text-white font-black uppercase tracking-widest text-[10px] rounded-full hover:bg-paraiso-blue transition-all shadow-md"
                                             >
                                                 <UserPlus size={13} />
@@ -190,12 +192,6 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
                 )}
             </div>
 
-            {/* Modal de inscrição */}
-            <EventRegistrationModal
-                event={selectedEvent}
-                onClose={() => setSelectedEvent(null)}
-                onSuccess={handleSuccess}
-            />
         </section>
     );
 };

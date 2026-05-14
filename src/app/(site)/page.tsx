@@ -53,7 +53,7 @@ export default async function Home() {
       <Missions />
 
       {/* CTA de Localização Estilizado */}
-      <section id="onde" className="relative min-h-screen flex items-center justify-center overflow-hidden py-20">
+      <section id="onde" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-12 py-32 px-6 lg:px-20 border border-slate-100 dark:border-white/5 relative min-h-[80vh] flex items-center justify-center">
         <img
           src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2000"
           className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
@@ -63,7 +63,7 @@ export default async function Home() {
 
         <div className="container mx-auto px-6 relative z-10 text-center text-white">
           <Reveal>
-            <h2 className="text-6xl md:text-9xl font-black uppercase tracking-tighter mb-8 leading-none">
+            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-8 leading-none">
               VENHA NOS <br />
               <span className="text-paraiso-green-light italic font-serif lowercase">visitar</span>
             </h2>
@@ -72,9 +72,9 @@ export default async function Home() {
               <div className="bg-white/10 p-8 rounded-3xl backdrop-blur-md border border-white/10">
                 <div className="flex items-center gap-4 mb-4 text-paraiso-green-light">
                   <MapPin size={32} />
-                  <h3 className="text-xl font-black uppercase tracking-widest">Endereço</h3>
+                  <h3 className="text-lg font-black uppercase tracking-widest">Endereço</h3>
                 </div>
-                <p className="text-lg text-slate-200 font-medium leading-relaxed">
+                <p className="text-base text-slate-200 font-medium leading-relaxed">
                   Rua Helmut Gums, 438 - Virada<br />
                   Santa Maria de Jetibá - ES<br />
                   CEP 29645-000
@@ -84,11 +84,11 @@ export default async function Home() {
               <div className="bg-white/10 p-8 rounded-3xl backdrop-blur-md border border-white/10">
                 <div className="flex items-center gap-4 mb-4 text-paraiso-green-light">
                   <MapPin size={32} />
-                  <h3 className="text-xl font-black uppercase tracking-widest">Horários</h3>
+                  <h3 className="text-lg font-black uppercase tracking-widest">Horários</h3>
                 </div>
-                <p className="text-lg text-slate-200 font-medium leading-relaxed">
+                <p className="text-base text-slate-200 font-medium leading-relaxed">
                   Domingo: 09h e 18h<br />
-                  Quarta-feira: 19h30<br />
+                  Quinta-feira: 19h30<br />
                   Sábado: 19h30 (Juventude)
                 </p>
               </div>

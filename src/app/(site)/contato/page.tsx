@@ -71,7 +71,7 @@ export default function ContactPage() {
                                 <h3 className="font-bold text-lg mb-1">Horários de Culto</h3>
                                 <ul className="text-muted-foreground text-sm space-y-1">
                                     <li>Domingo: 18:00 - Culto de Celebração</li>
-                                    <li>Quarta: 19:30 - Estudo Bíblico</li>
+                                    <li>Quinta: 19:30 - Culto Maná</li>
                                     <li>Sexta: 06:00 - Oração</li>
                                 </ul>
                             </div>

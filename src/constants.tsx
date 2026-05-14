@@ -7,12 +7,15 @@ import {
 } from 'lucide-react';
 
 export const NAV_ITEMS: NavItem[] = [
-    { label: 'Início', href: '/' },
+    { label: 'Início', href: '#' },
     { label: 'A Igreja', href: '/#sobre' },
-    { label: 'Ao Vivo', href: '/#aovivo' },
+    /*     { label: 'Ao Vivo', href: '/#aovivo' }, */
+    { label: 'Eventos', href: '/#eventos' },
     { label: 'Agenda', href: '/#agenda' },
     { label: 'Missões', href: '/#missoes' },
-    { label: 'Localização', href: '/#onde' }
+    { label: 'Localização', href: '/#onde' },
+    { label: 'Cotas', href: '/cotas/campus' }
+
 ];
 
 export const NEWS_ITEMS = [
@@ -46,7 +49,7 @@ export const SERVICE_TIMES: ServiceTime[] = [
 ];
 
 export const PROGRAMACAO = [
-    { day: 'Quarta-feira', time: '20h', title: 'Campanha da Vitória', location: 'Templo Principal' },
+    { day: 'Quinta-feira', time: '19h', title: 'Campanha da Vitória', location: 'Templo Principal' },
     { day: 'Sábado', time: '19h', title: 'Juventude Eleve', location: 'Templo Principal' },
     { day: 'Domingo', time: '10h', title: 'Celebração Dominical (Manhã)', location: 'Templo Principal' },
     { day: 'Domingo', time: '18h', title: 'Celebração Dominical (Noite)', location: 'Templo Principal' }

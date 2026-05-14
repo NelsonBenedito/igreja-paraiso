@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, MapPin, Tag, UserPlus, CheckCircle2, X, Loader2, AlertCircle, User, Mail, Phone, MessageSquare } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 
 interface Event {
@@ -31,6 +32,7 @@ type ErrorDetail = { code?: string; message?: string } | null;
 
 export default function MembrosEventosClient({ events, registeredEventIds }: Props) {
     const supabase = createClient();
+    const router = useRouter();
 
     // Mantém localmente quais eventos já estão inscritos (inicia com o que virou do server)
     const [registeredIds, setRegisteredIds] = useState<string[]>(registeredEventIds);
@@ -124,7 +126,8 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
                         return (
                             <div
                                 key={event.id}
-                                className="group bg-white dark:bg-paraiso-blue rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl border border-slate-100 dark:border-white/10 hover:-translate-y-1 transition-all duration-300 flex flex-col"
+                                onClick={() => router.push(`/evento/${event.id}`)}
+                                className="group cursor-pointer bg-white dark:bg-paraiso-blue rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl border border-slate-100 dark:border-white/10 hover:-translate-y-1 transition-all duration-300 flex flex-col"
                             >
                                 {/* Imagem */}
                                 <div className="relative h-52 w-full overflow-hidden">
@@ -200,7 +203,10 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
                                         <motion.button
                                             whileHover={{ scale: 1.02 }}
                                             whileTap={{ scale: 0.98 }}
-                                            onClick={() => openModal(event)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                router.push(`/evento/${event.id}`);
+                                            }}
                                             className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-paraiso-green text-white font-black text-xs uppercase tracking-widest hover:bg-paraiso-blue transition-all shadow-md mt-auto"
                                         >
                                             <UserPlus size={15} />
