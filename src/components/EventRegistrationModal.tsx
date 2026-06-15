@@ -3,25 +3,15 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, CheckCircle2, AlertCircle, User, Mail, Phone, MessageSquare } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
-
-interface Event {
-    id: string;
-    title: string;
-    date: string;
-    time_start: string | null;
-    location: string | null;
-    image_url: string | null;
-    tag: string | null;
-}
+import { submitEventRegistration } from '@/lib/events/data-client';
+import type { SiteEvent } from '@/lib/events/types';
+import { formatEventDate } from '@/lib/events/display';
 
 interface Props {
-    event: Event | null;
+    event: SiteEvent | null;
     onClose: () => void;
     onSuccess?: (eventId: string) => void;
 }
-
-const formatDate = (d: string) =>
-    new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 
 type Status = 'idle' | 'loading' | 'success' | 'duplicate' | 'error';
 
@@ -36,26 +26,22 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
         e.preventDefault();
         setStatus('loading');
 
-        // Pega o user_id para matching confiável mesmo que o e-mail digitado seja diferente
         const { data: { user } } = await supabase.auth.getUser();
 
-        const { error } = await supabase.from('event_registrations').insert({
-            event_id: event.id,
+        const result = await submitEventRegistration(event.id, {
             name: form.name.trim(),
             email: form.email.trim().toLowerCase(),
             phone: form.phone.trim() || null,
             message: form.message.trim() || null,
-            user_id: user?.id ?? null,
+            userId: user?.id ?? null,
         });
 
-        if (!error) {
+        if (result.ok) {
             setStatus('success');
-            onSuccess?.(event.id); // notifica o pai
-        } else if (error.code === '23505') {
-            // unique constraint: e-mail já inscrito nesse evento
+            onSuccess?.(event.id);
+        } else if (result.reason === 'duplicate') {
             setStatus('duplicate');
         } else {
-            console.error('[Supabase error]', { code: error.code, message: error.message, details: error.details, hint: error.hint });
             setStatus('error');
         }
     };
@@ -105,7 +91,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                     )}
                                     <h2 className="text-xl font-black text-white leading-tight">{event.title}</h2>
                                     <p className="text-white/70 text-xs mt-1">
-                                        {formatDate(event.date)}
+                                        {formatEventDate(event.date)}
                                         {event.time_start && ` · ${event.time_start.slice(0, 5)}`}
                                         {event.location && ` · ${event.location}`}
                                     </p>

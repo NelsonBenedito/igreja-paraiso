@@ -1,37 +1,22 @@
+import { getPublicEventById, isUserRegisteredForEvent } from '@/lib/events/data';
 import { createClient } from '@/utils/supabase/server';
 import { notFound } from 'next/navigation';
 import EventoClient from './EventoClient';
 
 export default async function EventoPage({ params }: { params: Promise<{ id: string }> }) {
-    const supabase = await createClient();
     const { id } = await params;
-    
-    // Buscar os dados do evento
-    const { data: event, error } = await supabase
-        .from('events')
-        .select('*')
-        .eq('id', id)
-        .single();
+    const event = await getPublicEventById(id);
 
-    if (error || !event) {
+    if (!event) {
         return notFound();
     }
 
-    // Verificar se o usuário está logado e já inscrito
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     let isRegistered = false;
-    
+
     if (user?.email) {
-        const { data: registration } = await supabase
-            .from('event_registrations')
-            .select('id')
-            .eq('event_id', event.id)
-            .eq('email', user.email.toLowerCase())
-            .single();
-            
-        if (registration) {
-            isRegistered = true;
-        }
+        isRegistered = await isUserRegisteredForEvent(event.id, user.email);
     }
 
     return (

@@ -4,19 +4,10 @@ import Reveal from './Reveal';
 import { ChevronRight, Calendar, ListChecks } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-interface Schedule {
-    id: string;
-    title: string;
-    day_of_week: string;
-    time_start: string;
-    location: string | null;
-    description: string | null;
-    active: boolean;
-    sort_order: number;
-}
+import type { SiteSchedule } from '@/lib/events/types';
 
 interface ProgramacaoProps {
-    schedules: Schedule[];
+    schedules: SiteSchedule[];
 }
 
 const DAYS_ORDER = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];

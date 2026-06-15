@@ -5,26 +5,13 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, MapPin, Tag, ChevronLeft, UserPlus, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import EventRegistrationModal from '@/components/EventRegistrationModal';
-
-interface Event {
-    id: string;
-    title: string;
-    description: string | null;
-    date: string;
-    time_start: string | null;
-    time_end: string | null;
-    location: string | null;
-    image_url: string | null;
-    tag: string | null;
-}
+import type { SiteEvent } from '@/lib/events/types';
+import { formatEventDate } from '@/lib/events/display';
 
 interface Props {
-    event: Event;
+    event: SiteEvent;
     isRegisteredServer: boolean;
 }
-
-const formatDate = (d: string) =>
-    new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
 
 export default function EventoClient({ event, isRegisteredServer }: Props) {
     const [isRegistered, setIsRegistered] = useState(isRegisteredServer);
@@ -70,7 +57,7 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
                             <div className="flex flex-wrap items-center gap-6 text-white/80 font-bold">
                                 <div className="flex items-center gap-2">
                                     <Calendar size={18} className="text-paraiso-green" />
-                                    <span>{formatDate(event.date)}</span>
+                                    <span>{formatEventDate(event.date)}</span>
                                 </div>
                                 {event.time_start && (
                                     <div className="flex items-center gap-2">

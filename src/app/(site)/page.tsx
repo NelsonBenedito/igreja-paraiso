@@ -7,52 +7,47 @@ import Reveal from "@/components/Reveal";
 import MissionSection from "@/components/MissionSection";
 import CelulasSection from "@/components/CelulasSection";
 import { createClient } from "@/utils/supabase/server";
+import {
+  getActiveSchedules,
+  getPublicEvents,
+  getRegisteredEventIdsForUser,
+} from "@/lib/events/data";
 import { MapPin } from 'lucide-react';
 
 export default async function Home() {
+  const [events, schedules] = await Promise.all([
+    getPublicEvents({ upcomingOnly: true }),
+    getActiveSchedules(),
+  ]);
+
   const supabase = await createClient();
-
-  const { data: events } = await supabase
-    .from('events')
-    .select('*')
-    .eq('published', true)
-    .order('date', { ascending: true });
-
-  const { data: schedules } = await supabase
-    .from('schedules')
-    .select('*')
-    .eq('active', true)
-    .order('sort_order', { ascending: true });
-
-  // Verifica se há usuário logado e busca suas inscrições
   const { data: { user } } = await supabase.auth.getUser();
   let registeredEventIds: string[] = [];
   if (user?.email) {
-    const { data: registrations } = await supabase
-      .from('event_registrations')
-      .select('event_id')
-      .eq('email', user.email.toLowerCase());
-    registeredEventIds = (registrations ?? []).map((r) => r.event_id);
+    registeredEventIds = await getRegisteredEventIdsForUser(
+      user.email,
+      user.id,
+    );
   }
 
   return (
     <>
       <Hero />
 
-      {/* Seção de Texto Impactante - Estilo Igreja da Cidade */}
       <MissionSection />
 
       <CelulasSection />
 
       <LatestStream />
 
-      <NewsSection events={events ?? []} registeredEventIds={registeredEventIds} />
+      {events.length > 0 && (
+        <NewsSection events={events} registeredEventIds={registeredEventIds} />
+      )}
 
-      <ProgramacaoSection schedules={schedules ?? []} />
+      <ProgramacaoSection schedules={schedules} />
 
       <Missions />
 
-      {/* CTA de Localização Estilizado */}
       <section id="onde" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-12 py-32 px-6 lg:px-20 border border-slate-100 dark:border-white/5 relative min-h-[80vh] flex items-center justify-center">
         <img
           src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2000"

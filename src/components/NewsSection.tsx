@@ -5,22 +5,11 @@ import { motion } from 'framer-motion';
 import { CalendarDays, MapPin, Clock, UserPlus, CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-
-interface Event {
-    id: string;
-    title: string;
-    description: string | null;
-    date: string;
-    time_start: string | null;
-    time_end: string | null;
-    location: string | null;
-    image_url: string | null;
-    tag: string | null;
-    published: boolean;
-}
+import { loadRegisteredEventIdsClient } from '@/lib/events/data-client';
+import type { SiteEvent } from '@/lib/events/types';
 
 interface NewsSectionProps {
-    events: Event[];
+    events: SiteEvent[];
     registeredEventIds?: string[];
 }
 
@@ -39,16 +28,11 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
         const fetchMyRegistrations = async () => {
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            if (!user?.email) return;
 
-            // Busca por user_id (mais confiável) com fallback por email
-            const { data } = await supabase
-                .from('event_registrations')
-                .select('event_id')
-                .or(`user_id.eq.${user.id},email.eq.${user.email?.toLowerCase() ?? ''}`);
-
-            if (data && data.length > 0) {
-                setRegisteredIds(data.map((r) => r.event_id));
+            const ids = await loadRegisteredEventIdsClient(user.email, user.id);
+            if (ids.length > 0) {
+                setRegisteredIds(ids);
             }
         };
         fetchMyRegistrations();
@@ -62,7 +46,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
                         <div>
                             <div className="flex items-center gap-4 mb-4">
                                 <span className="w-12 h-[2px] bg-paraiso-green"></span>
-                                <span className="text-paraiso-green font-black uppercase tracking-widest text-xs">Novidades</span>
+                                <span className="text-paraiso-green font-black uppercase tracking-widest text-xs">Eventos</span>
                             </div>
                             <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
                                 ACONTECE NA <br />PARAÍSO
