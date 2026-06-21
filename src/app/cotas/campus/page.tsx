@@ -8,7 +8,7 @@ import "./campus.css";
 export const metadata: Metadata = {
   title: "Campus Paraíso | Projeto Cotas",
   description:
-    "Conheca o projeto do novo Campus Paraíso, acompanhe as frentes em atividade e participe com cotas mensais.",
+    "Conheça o projeto do novo Campus Paraíso, acompanhe as frentes em atividade e participe com cotas mensais.",
 };
 
 export default function CotasCampusPage() {
@@ -93,47 +93,47 @@ export default function CotasCampusPage() {
         <section className="cb-slab" id="visao">
           <div className="cb-inner">
             <header className="cb-head cb-head--center">
-              <span className="cb-eyebrow">Nossa missao</span>
-              <h2 className="cb-title">Nossa Missao: Um Lugar para Todos</h2>
+              <span className="cb-eyebrow">Nossa missão</span>
+              <h2 className="cb-title">Nossa Missão: Um Lugar para Todos</h2>
               <div className="cb-rule cb-rule--center" />
             </header>
 
             <div className="cb-intro-grid cb-intro-grid--center">
               <div className="cb-prose cb-prose--mission">
                 <p>
-                  Nossa igreja recebeu a missao de expandir o Reino de Deus por
-                  meio desta visao. Queremos anunciar a salvacao em Cristo,
-                  cuidar de pessoas e fortalecer familias com amor e
+                  Nossa igreja recebeu a missão de expandir o Reino de Deus por
+                  meio desta visão. Queremos anunciar a salvação em Cristo,
+                  cuidar de pessoas e fortalecer famílias com amor e
                   compromisso.
                 </p>
                 <p>
-                  Com o novo campus, teremos melhores condicoes para realizar
-                  missoes, acoes sociais, discipulado e servico com mais
+                  Com o novo campus, teremos melhores condições para realizar
+                  missões, ações sociais, discipulado e serviço com mais
                   qualidade, estrutura e alcance.
                 </p>
                 <p>
                   Cremos que Deus levanta semeadores para esta obra, e cada
-                  contribuicao voluntaria e um ato de fidelidade que nos faz avançar
+                  contribuição voluntária é um ato de fidelidade que nos faz avançar
                   mais perto do nosso objetivo, servir com mais excelência!
                 </p>
                 <p>
                   <strong>
-                    Nosso grande desafio e concluir a reforma e construção do
+                    Nosso grande desafio é concluir a reforma e construção do
                     novo campus, preparado para receber mais almas e gerar um
-                    legado espiritual para as proximas geracoes.
+                    legado espiritual para as próximas gerações.
                   </strong>
                 </p>
                 <p>Entramos como igreja nessa missão. E isto é apenas o começo.</p>
               </div>
 
               <div className="cb-signature">
-                <Image
+                {/* <Image
                   className="cb-signature-photo"
                   src="/prevandro_praricele_without.png"
                   alt="Pr. Evandro e Pra. Ricelle"
                   width={992}
                   height={992}
-                />
+                /> */}
                 <p className="cb-signature-name">PR. EVANDRO E PRA. RICELLE</p>
                 <p className="cb-signature-role">
                   Pastores seniores da Igreja Paraíso
@@ -172,7 +172,7 @@ export default function CotasCampusPage() {
               <span className="cb-eyebrow">Projetos</span>
               <h2 className="cb-title">Projetos em atividade</h2>
               <p className="cb-subtitle">
-                Quatro frentes prioritarias para conclusao do campus
+                Quatro frentes prioritárias para conclusão do campus
               </p>
               <div className="cb-rule" />
             </header>
@@ -198,7 +198,7 @@ export default function CotasCampusPage() {
                 <div className="cb-project-copy">
                   <h3>Infraestrutura do Templo</h3>
                   <p>
-                    Finalizacao do auditorio principal e areas comuns para
+                    Finalização do auditório principal e áreas comuns para
                     celebração e comunhão.
                   </p>
                 </div>
@@ -207,37 +207,37 @@ export default function CotasCampusPage() {
                 <div className="cb-project-gallery">
                   <Image
                     src="/nova-geracao/pic2.jpeg"
-                    alt="Projeto Nova Geracao - familias reunidas"
+                    alt="Área Geracional - famílias reunidas"
                     width={700}
                     height={440}
                     sizes="(max-width: 768px) 50vw, 24vw"
                   />
                   <Image
-                    src="/nova-geracao/pic3.jpeg"
-                    alt="Projeto Nova Geracao - criancas em atividade"
+                    src="/nova-geracao/pic5.jpeg"
+                    alt="Área Geracional - crianças em atividade"
                     width={700}
                     height={440}
                     sizes="(max-width: 768px) 50vw, 24vw"
                   />
                   <Image
                     src="/nova-geracao/pic4.jpeg"
-                    alt="Projeto Nova Geracao - adolescentes em sala"
+                    alt="Área Geracional - adolescentes em sala"
                     width={700}
                     height={440}
                     sizes="(max-width: 768px) 50vw, 24vw"
                   />
                   <Image
                     src="/nova-geracao/pic1.jpeg"
-                    alt="Projeto Nova Geracao - jovens em discipulado"
+                    alt="Área Geracional - jovens em discipulado"
                     width={700}
                     height={440}
                     sizes="(max-width: 768px) 50vw, 24vw"
                   />
                 </div>
                 <div className="cb-project-copy">
-                  <h3>Projeto Nova Geracao</h3>
+                  <h3>Área Geracional</h3>
                   <p>
-                    Espacos dedicados e seguros para o desenvolvimento de criancas,
+                    Espaços dedicados e seguros para o desenvolvimento de crianças,
                     adolescentes e jovens.
                   </p>
                 </div>
@@ -246,37 +246,37 @@ export default function CotasCampusPage() {
                 <div className="cb-project-gallery">
                   <Image
                     src="/acomodacao/pic1.jpeg"
-                    alt="Acomodacoes e chales - fachada principal"
+                    alt="Acomodações e chalés - fachada principal"
                     width={700}
                     height={440}
                     sizes="(max-width: 768px) 50vw, 24vw"
                   />
                   <Image
                     src="/acomodacao/pic2.jpeg"
-                    alt="Acomodacoes e chales - interior de quarto"
+                    alt="Acomodações e chalés - interior de quarto"
                     width={700}
                     height={440}
                     sizes="(max-width: 768px) 50vw, 24vw"
                   />
                   <Image
                     src="/acomodacao/pic5.jpeg"
-                    alt="Acomodacoes e chales - area de convivencia"
+                    alt="Acomodações e chalés - área de convivência"
                     width={700}
                     height={440}
                     sizes="(max-width: 768px) 50vw, 24vw"
                   />
                   <Image
                     src="/acomodacao/pic6.jpeg"
-                    alt="Acomodacoes e chales - espaco de descanso"
+                    alt="Acomodações e chalés - espaço de descanso"
                     width={700}
                     height={440}
                     sizes="(max-width: 768px) 50vw, 24vw"
                   />
                 </div>
                 <div className="cb-project-copy">
-                  <h3>Acomodacões e Áreas Externas</h3>
+                  <h3>Acomodações e Áreas Externas</h3>
                   <p>
-                    Áreas para receber irmãos e membros que vem de fora para
+                    Áreas para receber irmãos e membros que vêm de fora para
                     retiros, eventos e celebrações.
                   </p>
                 </div>
@@ -383,12 +383,12 @@ export default function CotasCampusPage() {
               <div className="cb-contact-card">
                 <p>
                   <strong>Endereço do Campus Paraíso</strong>
-                  Rua Helmut Gums, 438, Virada, Santa Maria de Jetiba-ES <br />
+                  Rua Helmut Gums, 438, Virada, Santa Maria de Jetibá-ES <br />
                   Brasil - 29.646-290 <br />
                 </p>
                 <p>
                   <strong>Atendimento</strong>
-                  Segunda a sexta, das 8h as 17h
+                  Segunda a sexta, das 8h às 17h
                 </p>
               </div>
             </div>
@@ -410,7 +410,7 @@ export default function CotasCampusPage() {
                   <a href="#projetos">Projetos em atividade</a>
                 </li>
                 <li>
-                  <a href="#cotas">Cotas por mes</a>
+                  <a href="#cotas">Cotas por mês</a>
                 </li>
                 <li>
                   <a href="#outro-valor">Outro valor</a>
