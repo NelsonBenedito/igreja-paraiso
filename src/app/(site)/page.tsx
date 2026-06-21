@@ -6,13 +6,15 @@ import LatestStream from "@/components/LatestStream";
 import Reveal from "@/components/Reveal";
 import MissionSection from "@/components/MissionSection";
 import CelulasSection from "@/components/CelulasSection";
+import OfertorioSection from "@/components/OfertorioSection";
 import { createClient } from "@/utils/supabase/server";
 import {
   getActiveSchedules,
   getPublicEvents,
   getRegisteredEventIdsForUser,
 } from "@/lib/events/data";
-import { MapPin } from 'lucide-react';
+import { MapPin, Info } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function Home() {
   const [eventsResult, schedulesResult] = await Promise.allSettled([
@@ -39,19 +41,13 @@ export default async function Home() {
 
       <MissionSection />
 
-      <CelulasSection />
-
-      <LatestStream />
-
-      {events.length > 0 && (
-        <NewsSection events={events} registeredEventIds={registeredEventIds} />
-      )}
-
       <ProgramacaoSection schedules={schedules} />
 
-      <Missions />
+      <CelulasSection />
 
-      <section id="onde" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-12 py-32 px-6 lg:px-20 border border-slate-100 dark:border-white/5 relative min-h-[80vh] flex items-center justify-center">
+      <OfertorioSection />
+
+      <section id="onde" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-6 md:my-10 py-20 md:py-28 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative min-h-[60vh] flex items-center justify-center">
         <img
           src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2000"
           className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
@@ -70,7 +66,7 @@ export default async function Home() {
               <div className="bg-white/10 p-8 rounded-3xl backdrop-blur-md border border-white/10">
                 <div className="flex items-center gap-4 mb-4 text-paraiso-green-light">
                   <MapPin size={32} />
-                  <h3 className="text-lg font-black uppercase tracking-widest">Endereço</h3>
+                  <h3 className="text-lg font-black uppercase tracking-widest">Endereço (Sede)</h3>
                 </div>
                 <p className="text-base text-slate-200 font-medium leading-relaxed">
                   Rua Helmut Gums, 438 - Virada<br />
@@ -85,25 +81,42 @@ export default async function Home() {
                   <h3 className="text-lg font-black uppercase tracking-widest">Horários</h3>
                 </div>
                 <p className="text-base text-slate-200 font-medium leading-relaxed">
-                  Domingo: 09h e 18h<br />
-                  Quinta-feira: 19h30<br />
-                  Sábado: 19h30 (Juventude)
+                  Domingo: 09h e 18h30<br />
+                  Terça-feira: 20h00 (Doutrina e Oração)<br />
+                  Sábado: 19h00 (Juventude Eleve)
                 </p>
               </div>
             </div>
 
-            <a
-              href="https://maps.app.goo.gl/UsxnnZ69miAvFzvs6"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-12 py-5 bg-white text-paraiso-blue rounded-full font-black uppercase tracking-widest text-sm hover:bg-paraiso-green hover:text-white transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)]"
-            >
-              <MapPin size={18} />
-              Ver no Mapa
-            </a>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href="https://maps.app.goo.gl/UsxnnZ69miAvFzvs6"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-white text-paraiso-blue rounded-full font-black uppercase tracking-widest text-xs hover:bg-paraiso-green hover:text-white transition-all shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+              >
+                <MapPin size={16} />
+                Como Chegar (Sede)
+              </a>
+              <Link
+                href="/nossas-igrejas"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-transparent border-2 border-white hover:bg-white hover:text-paraiso-blue text-white rounded-full font-black uppercase tracking-widest text-xs transition-all"
+              >
+                <Info size={16} />
+                Nossas Filiais
+              </Link>
+            </div>
           </Reveal>
         </div>
       </section>
+
+      {events.length > 0 && (
+        <NewsSection events={events} registeredEventIds={registeredEventIds} />
+      )}
+
+      <LatestStream />
+
+      <Missions />
     </>
   );
 }
