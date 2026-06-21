@@ -48,6 +48,15 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
     const selectedTicket = tickets.find(t => t.id === selectedTicketId);
     const isPaid = selectedTicket ? (selectedTicket.priceCents + selectedTicket.feeCents > 0) : false;
 
+    useEffect(() => {
+        if (selectedTicket && isPaid) {
+            const allowed = selectedTicket.allowedBillingTypes ?? [];
+            if (allowed.length > 0 && !allowed.includes(form.billingType)) {
+                setForm(f => ({ ...f, billingType: allowed[0] as 'PIX' | 'BOLETO' | 'CREDIT_CARD' }));
+            }
+        }
+    }, [selectedTicketId]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const formatCurrency = (cents: number) => {
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
     };
@@ -289,17 +298,20 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                     Selecione o Ingresso
                                                 </label>
                                                 <div className="space-y-2">
-                                                    {tickets.map(ticket => {
+                                                    {tickets.filter(t => t.visibility !== 'PRIVATE').map(ticket => {
                                                         const price = ticket.priceCents + ticket.feeCents;
                                                         const isSelected = selectedTicketId === ticket.id;
+                                                        const soldOut = ticket.isSoldOut;
                                                         return (
-                                                            <div 
+                                                            <div
                                                                 key={ticket.id}
-                                                                onClick={() => setSelectedTicketId(ticket.id)}
-                                                                className={`cursor-pointer border p-4 rounded-2xl flex items-center justify-between transition-all ${
-                                                                    isSelected 
-                                                                    ? 'border-paraiso-green bg-paraiso-green/5 dark:bg-paraiso-green/10' 
-                                                                    : 'border-slate-200 dark:border-white/10 hover:border-paraiso-green/50'
+                                                                onClick={() => !soldOut && setSelectedTicketId(ticket.id)}
+                                                                className={`border p-4 rounded-2xl flex items-center justify-between transition-all ${
+                                                                    soldOut
+                                                                    ? 'opacity-50 cursor-not-allowed border-slate-200 dark:border-white/10'
+                                                                    : isSelected
+                                                                    ? 'cursor-pointer border-paraiso-green bg-paraiso-green/5 dark:bg-paraiso-green/10'
+                                                                    : 'cursor-pointer border-slate-200 dark:border-white/10 hover:border-paraiso-green/50'
                                                                 }`}
                                                             >
                                                                 <div className="flex items-center gap-3">
@@ -307,9 +319,17 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                                         {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-paraiso-green" />}
                                                                     </div>
                                                                     <div>
-                                                                        <h4 className={`font-bold text-sm ${isSelected ? 'text-paraiso-green' : 'text-slate-700 dark:text-white'}`}>{ticket.name}</h4>
+                                                                        <h4 className={`font-bold text-sm ${isSelected ? 'text-paraiso-green' : 'text-slate-700 dark:text-white'}`}>
+                                                                            {ticket.name}
+                                                                            {soldOut && <span className="ml-2 text-xs text-red-500 font-bold">Esgotado</span>}
+                                                                        </h4>
                                                                         {ticket.description && (
                                                                             <p className="text-xs text-slate-500 line-clamp-1">{ticket.description}</p>
+                                                                        )}
+                                                                        {ticket.quantityRemaining != null && !soldOut && (
+                                                                            <p className="text-[10px] text-slate-400 mt-0.5">
+                                                                                {ticket.quantityRemaining} restante{ticket.quantityRemaining !== 1 ? 's' : ''}
+                                                                            </p>
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -386,46 +406,39 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                     </div>
 
                                                     {/* Forma de Pagamento */}
-                                                    <div className="space-y-2">
-                                                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                                                            Forma de Pagamento
-                                                        </label>
-                                                        <div className="grid grid-cols-3 gap-2">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setForm({ ...form, billingType: 'PIX' })}
-                                                                className={`py-3 px-2 rounded-xl border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                                                                    form.billingType === 'PIX' 
-                                                                    ? 'border-paraiso-green bg-paraiso-green/10 text-paraiso-green' 
-                                                                    : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-paraiso-green/50'
-                                                                }`}
-                                                            >
-                                                                <QrCode size={16} /> PIX
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setForm({ ...form, billingType: 'BOLETO' })}
-                                                                className={`py-3 px-2 rounded-xl border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                                                                    form.billingType === 'BOLETO' 
-                                                                    ? 'border-paraiso-green bg-paraiso-green/10 text-paraiso-green' 
-                                                                    : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-paraiso-green/50'
-                                                                }`}
-                                                            >
-                                                                <Ticket size={16} /> Boleto
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setForm({ ...form, billingType: 'CREDIT_CARD' })}
-                                                                className={`py-3 px-2 rounded-xl border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                                                                    form.billingType === 'CREDIT_CARD' 
-                                                                    ? 'border-paraiso-green bg-paraiso-green/10 text-paraiso-green' 
-                                                                    : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-paraiso-green/50'
-                                                                }`}
-                                                            >
-                                                                <CreditCard size={16} /> Cartão
-                                                            </button>
-                                                        </div>
-                                                    </div>
+                                                    {(() => {
+                                                        const allowed = selectedTicket?.allowedBillingTypes ?? [];
+                                                        const allOptions = [
+                                                            { key: 'PIX' as const, label: 'PIX', icon: <QrCode size={16} /> },
+                                                            { key: 'BOLETO' as const, label: 'Boleto', icon: <Ticket size={16} /> },
+                                                            { key: 'CREDIT_CARD' as const, label: 'Cartão', icon: <CreditCard size={16} /> },
+                                                        ];
+                                                        const options = allowed.length === 0 ? allOptions : allOptions.filter(o => allowed.includes(o.key));
+
+                                                        return options.length > 0 ? (
+                                                            <div className="space-y-2">
+                                                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                                                    Forma de Pagamento
+                                                                </label>
+                                                                <div className={`grid gap-2 ${options.length === 1 ? 'grid-cols-1' : options.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                                                                    {options.map(opt => (
+                                                                        <button
+                                                                            key={opt.key}
+                                                                            type="button"
+                                                                            onClick={() => setForm({ ...form, billingType: opt.key })}
+                                                                            className={`py-3 px-2 rounded-xl border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                                                                                form.billingType === opt.key
+                                                                                ? 'border-paraiso-green bg-paraiso-green/10 text-paraiso-green'
+                                                                                : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-paraiso-green/50'
+                                                                            }`}
+                                                                        >
+                                                                            {opt.icon} {opt.label}
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        ) : null;
+                                                    })()}
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>

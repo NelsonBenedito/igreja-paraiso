@@ -25,13 +25,23 @@ export function toSiteEvent(dto: PublicEventDto): SiteEvent {
     id: dto.id,
     title: dto.title,
     description: dto.description,
+    short_description: dto.shortDescription ?? null,
+    details_html: dto.detailsHtml ?? null,
+    format: dto.format ?? 'IN_PERSON',
+    online_url: dto.onlineUrl ?? null,
+    video_url: dto.videoUrl ?? null,
     date: dto.date,
     time_start: dto.timeStart,
     time_end: dto.timeEnd,
     location: dto.location,
     image_url: dto.imageUrl,
+    cover_image_url: dto.coverImageUrl ?? null,
     tag: dto.tag,
+    tags: dto.tags ?? [],
     published: dto.published,
+    registration_closes_at: dto.registrationClosesAt ?? null,
+    terms_url: dto.termsUrl ?? null,
+    currency: dto.currency ?? null,
   };
 }
 

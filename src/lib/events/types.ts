@@ -1,15 +1,29 @@
 /** DTOs da API Nest — espelham events-public-api-reference.md */
 
+export interface PublicEventTagDto {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 export interface PublicEventDto {
   id: string;
   title: string;
   description: string | null;
+  format: 'IN_PERSON' | 'ONLINE' | 'HYBRID';
+  onlineUrl: string | null;
+  shortDescription: string | null;
+  detailsHtml: string | null;
+  videoUrl: string | null;
+  coverImageUrl: string | null;
+  mediaMeta: any | null;
   date: string;
   timeStart: string | null;
   timeEnd: string | null;
   location: string | null;
   imageUrl: string | null;
   tag: string | null;
+  tags: PublicEventTagDto[];
   published: boolean;
   slug: string | null;
   timezone: string | null;
@@ -25,6 +39,15 @@ export interface PublicEventListResponse {
   nextCursor: string | null;
 }
 
+export interface PublicTicketFieldDto {
+  fieldId: string;
+  key: string;
+  label: string;
+  type: 'TEXT' | 'EMAIL' | 'PHONE' | 'CPF' | 'TEXTAREA' | 'SELECT' | 'CHECKBOX';
+  options: string[] | null;
+  required: boolean;
+}
+
 export interface PublicTicketTypeDto {
   id: string;
   name: string;
@@ -37,7 +60,13 @@ export interface PublicTicketTypeDto {
   maxPerOrder: number;
   salesOpensAt: string | null;
   salesClosesAt: string | null;
+  visibility: 'PUBLIC' | 'PRIVATE';
+  allowGuestRegistration: boolean;
+  communityLink: string | null;
+  allowedBillingTypes: string[];
+  maxInstallments: number | null;
   isSoldOut: boolean;
+  fields: PublicTicketFieldDto[];
 }
 
 export interface PublicTicketsResponse {
@@ -103,13 +132,23 @@ export interface SiteEvent {
   id: string;
   title: string;
   description: string | null;
+  short_description: string | null;
+  details_html: string | null;
+  format: 'IN_PERSON' | 'ONLINE' | 'HYBRID';
+  online_url: string | null;
+  video_url: string | null;
   date: string;
   time_start: string | null;
   time_end: string | null;
   location: string | null;
   image_url: string | null;
+  cover_image_url: string | null;
   tag: string | null;
+  tags: PublicEventTagDto[];
   published: boolean;
+  registration_closes_at: string | null;
+  terms_url: string | null;
+  currency: string | null;
 }
 
 export interface SiteSchedule {
