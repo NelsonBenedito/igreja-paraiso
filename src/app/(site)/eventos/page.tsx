@@ -3,7 +3,10 @@ import { formatEventDate } from "@/lib/events/display";
 import { Calendar, Clock, MapPin, Tag } from "lucide-react";
 
 export default async function EventsPage() {
-    const events = await getPublicEvents({ upcomingOnly: true });
+    const events = await getPublicEvents({ upcomingOnly: true }).catch((error) => {
+        console.error("[events/page] API indisponível, renderizando lista vazia:", error);
+        return [];
+    });
 
     return (
         <div className="bg-slate-50 min-h-screen pb-20 pt-24">

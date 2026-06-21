@@ -11,7 +11,10 @@ export default async function MembersEventsPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
-    const events = await getPublicEvents({ upcomingOnly: true })
+    const events = await getPublicEvents({ upcomingOnly: true }).catch((error) => {
+        console.error("[membros/eventos] API indisponível, renderizando lista vazia:", error)
+        return []
+    })
 
     let registeredEventIds: string[] = []
     if (user.email) {

@@ -52,6 +52,7 @@ export interface EventRegistrationRequest {
   phone?: string | null;
   message?: string | null;
   userId?: string | null;
+  ticketTypeId?: string | null;
 }
 
 export interface EventRegistrationDto {
@@ -120,4 +121,39 @@ export interface SiteSchedule {
   description: string | null;
   active: boolean;
   sort_order: number;
+}
+
+export interface EventCheckoutLineRequest {
+  ticketTypeId: string;
+  quantity: number;
+}
+
+export interface EventCheckoutRequest {
+  payer: {
+    cpf: string;
+    name: string;
+    email: string;
+    phone?: string;
+  };
+  lines: EventCheckoutLineRequest[];
+  billingType: 'PIX' | 'BOLETO' | 'CREDIT_CARD' | 'UNDEFINED';
+  installmentCount?: number;
+}
+
+export interface EventCheckoutResponse {
+  orderId: string;
+  eventId: string;
+  transactionId: string;
+  asaasPaymentId: string | null;
+  status: string;
+  billingType: string | null;
+  value: number;
+  dueDate: string | null;
+  invoiceUrl: string | null;
+  bankSlipUrl: string | null;
+  pix: {
+    encodedImage: string;
+    payload: string;
+    expirationDate: string;
+  } | null;
 }

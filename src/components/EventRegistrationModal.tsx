@@ -1,10 +1,11 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, CheckCircle2, AlertCircle, User, Mail, Phone, MessageSquare } from 'lucide-react';
+import { X, Loader2, CheckCircle2, AlertCircle, User, Mail, Phone, MessageSquare, Ticket, CreditCard, Copy, ExternalLink, QrCode } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
-import { submitEventRegistration } from '@/lib/events/data-client';
-import type { SiteEvent } from '@/lib/events/types';
+import { submitEventRegistration, submitEventCheckout } from '@/lib/events/data-client';
+import { fetchEventTickets } from '@/lib/events/client';
+import type { SiteEvent, PublicTicketTypeDto, EventCheckoutResponse } from '@/lib/events/types';
 import { formatEventDate } from '@/lib/events/display';
 
 interface Props {
@@ -17,10 +18,44 @@ type Status = 'idle' | 'loading' | 'success' | 'duplicate' | 'error';
 
 const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) => {
     const supabase = createClient();
-    const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+    const [form, setForm] = useState({ 
+        name: '', email: '', phone: '', message: '',
+        cpf: '', billingType: 'PIX' as 'PIX' | 'BOLETO' | 'CREDIT_CARD'
+    });
     const [status, setStatus] = useState<Status>('idle');
+    const [tickets, setTickets] = useState<PublicTicketTypeDto[]>([]);
+    const [isLoadingTickets, setIsLoadingTickets] = useState(false);
+    const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+    const [checkoutResponse, setCheckoutResponse] = useState<EventCheckoutResponse | null>(null);
+
+    useEffect(() => {
+        if (event) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setIsLoadingTickets(true);
+            fetchEventTickets(event.id)
+                .then(res => {
+                    const t = res.ticketTypes || [];
+                    setTickets(t);
+                    if (t.length > 0) setSelectedTicketId(t[0].id);
+                })
+                .catch(() => setTickets([]))
+                .finally(() => setIsLoadingTickets(false));
+        }
+    }, [event]);
 
     if (!event) return null;
+
+    const selectedTicket = tickets.find(t => t.id === selectedTicketId);
+    const isPaid = selectedTicket ? (selectedTicket.priceCents + selectedTicket.feeCents > 0) : false;
+
+    const formatCurrency = (cents: number) => {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
+    };
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        alert("Copiado para a área de transferência!");
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,27 +63,57 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
 
         const { data: { user } } = await supabase.auth.getUser();
 
-        const result = await submitEventRegistration(event.id, {
-            name: form.name.trim(),
-            email: form.email.trim().toLowerCase(),
-            phone: form.phone.trim() || null,
-            message: form.message.trim() || null,
-            userId: user?.id ?? null,
-        });
+        if (isPaid && selectedTicketId) {
+            const cpfDigits = form.cpf.replace(/\D/g, '');
+            if (cpfDigits.length !== 11) {
+                alert("Por favor, informe um CPF válido com 11 dígitos.");
+                setStatus('idle');
+                return;
+            }
 
-        if (result.ok) {
-            setStatus('success');
-            onSuccess?.(event.id);
-        } else if (result.reason === 'duplicate') {
-            setStatus('duplicate');
+            const result = await submitEventCheckout(event.id, {
+                payer: {
+                    name: form.name.trim(),
+                    email: form.email.trim().toLowerCase(),
+                    phone: form.phone.trim() || undefined,
+                    cpf: cpfDigits,
+                },
+                lines: [{ ticketTypeId: selectedTicketId, quantity: 1 }],
+                billingType: form.billingType,
+            });
+
+            if (result.ok) {
+                setCheckoutResponse(result.data);
+                setStatus('success');
+                onSuccess?.(event.id);
+            } else {
+                setStatus('error');
+            }
         } else {
-            setStatus('error');
+            const result = await submitEventRegistration(event.id, {
+                name: form.name.trim(),
+                email: form.email.trim().toLowerCase(),
+                phone: form.phone.trim() || null,
+                message: form.message.trim() || null,
+                userId: user?.id ?? null,
+                ticketTypeId: selectedTicketId,
+            });
+
+            if (result.ok) {
+                setStatus('success');
+                onSuccess?.(event.id);
+            } else if (result.reason === 'duplicate') {
+                setStatus('duplicate');
+            } else {
+                setStatus('error');
+            }
         }
     };
 
     const reset = () => {
-        setForm({ name: '', email: '', phone: '', message: '' });
+        setForm({ ...form, cpf: '', billingType: 'PIX' });
         setStatus('idle');
+        setCheckoutResponse(null);
     };
 
     return (
@@ -72,11 +137,11 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                         className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
                     >
-                        <div className="relative w-full max-w-lg bg-white dark:bg-[#0f1a2a] rounded-3xl shadow-2xl overflow-hidden pointer-events-auto">
+                        <div className="relative w-full max-w-lg bg-white dark:bg-[#0f1a2a] rounded-3xl shadow-2xl overflow-hidden pointer-events-auto max-h-[90vh] overflow-y-auto">
 
-                            {/* Header com imagem */}
+                            {/* Header */}
                             <div
-                                className="relative h-36 flex items-end p-6"
+                                className="relative h-36 flex items-end p-6 shrink-0"
                                 style={{
                                     background: event.image_url
                                         ? `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%), url(${event.image_url}) center/cover`
@@ -92,8 +157,6 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                     <h2 className="text-xl font-black text-white leading-tight">{event.title}</h2>
                                     <p className="text-white/70 text-xs mt-1">
                                         {formatEventDate(event.date)}
-                                        {event.time_start && ` · ${event.time_start.slice(0, 5)}`}
-                                        {event.location && ` · ${event.location}`}
                                     </p>
                                 </div>
                                 <button
@@ -111,21 +174,54 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="text-center py-6 space-y-4"
+                                        className="text-center py-6 space-y-6"
                                     >
                                         <CheckCircle2 className="w-16 h-16 text-paraiso-green mx-auto" />
                                         <div>
                                             <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">
                                                 Inscrição confirmada!
                                             </h3>
-                                            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">
                                                 Sua inscrição para <strong>{event.title}</strong> foi realizada com sucesso.
-                                                Fique de olho no seu e-mail!
                                             </p>
+
+                                            {/* Pagamento PIX */}
+                                            {checkoutResponse?.pix && (
+                                                <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 space-y-4">
+                                                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2">
+                                                        <QrCode size={18} /> Pague via PIX
+                                                    </p>
+                                                    <img 
+                                                        src={`data:image/jpeg;base64,${checkoutResponse.pix.encodedImage}`} 
+                                                        alt="QR Code PIX" 
+                                                        className="w-48 h-48 mx-auto rounded-lg"
+                                                    />
+                                                    <button 
+                                                        onClick={() => copyToClipboard(checkoutResponse.pix!.payload)}
+                                                        className="w-full py-3 bg-white dark:bg-white/10 text-paraiso-blue dark:text-white text-sm font-bold rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+                                                    >
+                                                        <Copy size={16} /> Copiar Código PIX
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            {/* Link Boleto ou Cartão */}
+                                            {(checkoutResponse?.bankSlipUrl || checkoutResponse?.invoiceUrl) && !checkoutResponse?.pix && (
+                                                <div className="mt-4">
+                                                    <a 
+                                                        href={checkoutResponse.bankSlipUrl || checkoutResponse.invoiceUrl || '#'} 
+                                                        target="_blank" 
+                                                        rel="noreferrer"
+                                                        className="w-full py-4 bg-paraiso-blue text-white font-black text-sm rounded-xl flex items-center justify-center gap-2 hover:bg-paraiso-blue-dark transition-all"
+                                                    >
+                                                        <ExternalLink size={18} /> Acessar Cobrança
+                                                    </a>
+                                                </div>
+                                            )}
                                         </div>
                                         <button
                                             onClick={onClose}
-                                            className="px-8 py-3 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-paraiso-blue transition-all"
+                                            className="px-8 py-3 w-full bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-paraiso-blue transition-all"
                                         >
                                             Fechar
                                         </button>
@@ -151,9 +247,6 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                         <div className="flex gap-3 justify-center">
                                             <button onClick={reset} className="px-6 py-3 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-full hover:border-paraiso-green transition-all">
                                                 Tentar outro e-mail
-                                            </button>
-                                            <button onClick={onClose} className="px-6 py-3 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-paraiso-blue transition-all">
-                                                Fechar
                                             </button>
                                         </div>
                                     </motion.div>
@@ -183,8 +276,54 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                 {(status === 'idle' || status === 'loading') && (
                                     <form onSubmit={handleSubmit} className="space-y-4">
                                         <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
-                                            Preencha seus dados para garantir sua vaga neste evento.
+                                            Preencha seus dados para garantir sua vaga.
                                         </p>
+
+                                        {isLoadingTickets ? (
+                                            <div className="flex items-center justify-center py-4">
+                                                <Loader2 size={24} className="animate-spin text-paraiso-green" />
+                                            </div>
+                                        ) : tickets.length > 0 ? (
+                                            <div className="space-y-2 mb-6">
+                                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                                    Selecione o Ingresso
+                                                </label>
+                                                <div className="space-y-2">
+                                                    {tickets.map(ticket => {
+                                                        const price = ticket.priceCents + ticket.feeCents;
+                                                        const isSelected = selectedTicketId === ticket.id;
+                                                        return (
+                                                            <div 
+                                                                key={ticket.id}
+                                                                onClick={() => setSelectedTicketId(ticket.id)}
+                                                                className={`cursor-pointer border p-4 rounded-2xl flex items-center justify-between transition-all ${
+                                                                    isSelected 
+                                                                    ? 'border-paraiso-green bg-paraiso-green/5 dark:bg-paraiso-green/10' 
+                                                                    : 'border-slate-200 dark:border-white/10 hover:border-paraiso-green/50'
+                                                                }`}
+                                                            >
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-paraiso-green' : 'border-slate-300'}`}>
+                                                                        {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-paraiso-green" />}
+                                                                    </div>
+                                                                    <div>
+                                                                        <h4 className={`font-bold text-sm ${isSelected ? 'text-paraiso-green' : 'text-slate-700 dark:text-white'}`}>{ticket.name}</h4>
+                                                                        {ticket.description && (
+                                                                            <p className="text-xs text-slate-500 line-clamp-1">{ticket.description}</p>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <span className="font-black text-slate-800 dark:text-white">
+                                                                        {price > 0 ? formatCurrency(price) : 'Grátis'}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        ) : null}
 
                                         {/* Nome */}
                                         <div className="relative">
@@ -224,8 +363,75 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                             />
                                         </div>
 
+                                        <AnimatePresence>
+                                            {isPaid && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: 'auto' }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    className="space-y-4 overflow-hidden"
+                                                >
+                                                    {/* CPF */}
+                                                    <div className="relative mt-4">
+                                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                        <input
+                                                            required={isPaid}
+                                                            type="text"
+                                                            placeholder="CPF (Obrigatório para eventos pagos)"
+                                                            value={form.cpf}
+                                                            onChange={(e) => setForm({ ...form, cpf: e.target.value })}
+                                                            className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-paraiso-green transition-colors"
+                                                            maxLength={14}
+                                                        />
+                                                    </div>
+
+                                                    {/* Forma de Pagamento */}
+                                                    <div className="space-y-2">
+                                                        <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                                            Forma de Pagamento
+                                                        </label>
+                                                        <div className="grid grid-cols-3 gap-2">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setForm({ ...form, billingType: 'PIX' })}
+                                                                className={`py-3 px-2 rounded-xl border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                                                                    form.billingType === 'PIX' 
+                                                                    ? 'border-paraiso-green bg-paraiso-green/10 text-paraiso-green' 
+                                                                    : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-paraiso-green/50'
+                                                                }`}
+                                                            >
+                                                                <QrCode size={16} /> PIX
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setForm({ ...form, billingType: 'BOLETO' })}
+                                                                className={`py-3 px-2 rounded-xl border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                                                                    form.billingType === 'BOLETO' 
+                                                                    ? 'border-paraiso-green bg-paraiso-green/10 text-paraiso-green' 
+                                                                    : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-paraiso-green/50'
+                                                                }`}
+                                                            >
+                                                                <Ticket size={16} /> Boleto
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setForm({ ...form, billingType: 'CREDIT_CARD' })}
+                                                                className={`py-3 px-2 rounded-xl border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                                                                    form.billingType === 'CREDIT_CARD' 
+                                                                    ? 'border-paraiso-green bg-paraiso-green/10 text-paraiso-green' 
+                                                                    : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-paraiso-green/50'
+                                                                }`}
+                                                            >
+                                                                <CreditCard size={16} /> Cartão
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+
                                         {/* Mensagem */}
-                                        <div className="relative">
+                                        <div className="relative mt-4">
                                             <MessageSquare className="absolute left-4 top-3.5 w-4 h-4 text-slate-400" />
                                             <textarea
                                                 rows={2}
@@ -238,16 +444,16 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
 
                                         <button
                                             type="submit"
-                                            disabled={status === 'loading'}
-                                            className="w-full py-4 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-paraiso-blue transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg"
+                                            disabled={status === 'loading' || isLoadingTickets || (tickets.length > 0 && !selectedTicketId)}
+                                            className="w-full py-4 mt-4 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-paraiso-blue transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg"
                                         >
                                             {status === 'loading' ? (
                                                 <>
                                                     <Loader2 size={16} className="animate-spin" />
-                                                    Confirmando inscrição...
+                                                    Processando...
                                                 </>
                                             ) : (
-                                                'Confirmar Inscrição'
+                                                isPaid ? 'Finalizar Inscrição' : 'Confirmar Inscrição'
                                             )}
                                         </button>
                                     </form>

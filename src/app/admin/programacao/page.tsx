@@ -1,9 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { Plus, Pencil, Trash2, Loader2, X, Check, ListChecks, ChevronLeft, GripVertical } from 'lucide-react'
+import { useState, useEffect, useTransition } from 'react'
+import { Plus, Pencil, Trash2, Loader2, X, Check, ListChecks, ChevronLeft, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
+import {
+    fetchAdminSchedulesAction,
+    createScheduleAction,
+    updateScheduleAction,
+    deleteScheduleAction,
+} from './actions'
 
 interface Schedule {
     id: string
@@ -41,8 +46,54 @@ const DAY_ORDER: Record<string, number> = {
     'Quarta-feira': 3, 'Quinta-feira': 4, 'Sexta-feira': 5, 'Sábado': 6,
 }
 
+function mapDayOfWeekFromApi(day: string): string {
+    const normalized = day.trim().toLowerCase();
+    const fromEnglish: Record<string, string> = {
+        sunday: "Domingo",
+        monday: "Segunda-feira",
+        tuesday: "Terça-feira",
+        wednesday: "Quarta-feira",
+        thursday: "Quinta-feira",
+        friday: "Sexta-feira",
+        saturday: "Sábado",
+    };
+    if (fromEnglish[normalized]) return fromEnglish[normalized];
+
+    const fromPortugueseShort: Record<string, string> = {
+        domingo: "Domingo",
+        segunda: "Segunda-feira",
+        terça: "Terça-feira",
+        quarta: "Quarta-feira",
+        quinta: "Quinta-feira",
+        sexta: "Sexta-feira",
+        sábado: "Sábado",
+        sabado: "Sábado",
+    };
+    return fromPortugueseShort[normalized] ?? day;
+}
+
+function mapDayOfWeekToApi(day: string): string {
+    const normalized = day.trim().toLowerCase();
+    const toPortugueseShort: Record<string, string> = {
+        domingo: "Domingo",
+        "segunda-feira": "Segunda",
+        segunda: "Segunda",
+        "terça-feira": "Terça",
+        terça: "Terça",
+        terca: "Terça",
+        "quarta-feira": "Quarta",
+        quarta: "Quarta",
+        "quinta-feira": "Quinta",
+        quinta: "Quinta",
+        "sexta-feira": "Sexta",
+        sexta: "Sexta",
+        sábado: "Sábado",
+        sabado: "Sábado",
+    };
+    return toPortugueseShort[normalized] ?? "Domingo";
+}
+
 export default function AdminProgramacaoPage() {
-    const supabase = createClient()
     const [schedules, setSchedules] = useState<Schedule[]>([])
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
@@ -51,14 +102,27 @@ export default function AdminProgramacaoPage() {
     const [showForm, setShowForm] = useState(false)
     const [form, setForm] = useState(EMPTY_FORM)
     const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
+    const [apiError, setApiError] = useState<string | null>(null)
+    const [, startTransition] = useTransition()
 
     const load = async () => {
         setLoading(true)
-        const { data } = await supabase
-            .from('schedules')
-            .select('*')
-            .order('sort_order', { ascending: true })
-        setSchedules(data ?? [])
+        setApiError(null)
+        const result = await fetchAdminSchedulesAction()
+        if (result.useFallback && result.error) {
+            setApiError('A API admin não está configurada ou indisponível. Configure CHURCHMANAGER_ADMIN_TOKEN.')
+        }
+        const mapped: Schedule[] = (result.items ?? []).map((item) => ({
+            id: item.id,
+            title: item.title,
+            day_of_week: mapDayOfWeekFromApi(item.dayOfWeek),
+            time_start: item.timeStart,
+            location: item.location,
+            description: item.description,
+            active: item.active,
+            sort_order: item.sortOrder,
+        }))
+        setSchedules(mapped)
         setLoading(false)
     }
 
@@ -101,34 +165,61 @@ export default function AdminProgramacaoPage() {
         e.preventDefault()
         setSaving(true)
         const payload = {
-            ...form,
-            location: form.location || null,
-            description: form.description || null,
-            sort_order: form.sort_order || DAY_ORDER[form.day_of_week] * 10,
+            title: form.title.trim(),
+            dayOfWeek: mapDayOfWeekToApi(form.day_of_week),
+            timeStart: form.time_start,
+            location: form.location ? form.location.trim() || null : null,
+            description: form.description ? form.description.trim() || null : null,
+            active: form.active,
+            sortOrder: form.sort_order || DAY_ORDER[form.day_of_week] * 10,
         }
 
-        if (editing) {
-            await supabase.from('schedules').update(payload).eq('id', editing.id)
-        } else {
-            await supabase.from('schedules').insert(payload)
-        }
-
-        setSaving(false)
-        closeForm()
-        await load()
+        startTransition(async () => {
+            try {
+                if (editing) {
+                    await updateScheduleAction(editing.id, payload)
+                } else {
+                    await createScheduleAction(payload)
+                }
+                closeForm()
+                await load()
+            } catch (error) {
+                console.error('[schedules/save]', error)
+                alert('Erro ao salvar item.')
+            } finally {
+                setSaving(false)
+            }
+        })
     }
 
     const handleDelete = async (id: string) => {
         setDeleting(id)
-        await supabase.from('schedules').delete().eq('id', id)
-        setDeleting(null)
-        setConfirmDelete(null)
-        await load()
+        startTransition(async () => {
+            try {
+                await deleteScheduleAction(id)
+                setConfirmDelete(null)
+                await load()
+            } catch (error) {
+                console.error('[schedules/delete]', error)
+                alert('Erro ao excluir item.')
+            } finally {
+                setDeleting(null)
+            }
+        })
     }
 
     const toggleActive = async (s: Schedule) => {
-        await supabase.from('schedules').update({ active: !s.active }).eq('id', s.id)
-        await load()
+        const payload = {
+            active: !s.active
+        }
+        startTransition(async () => {
+            try {
+                await updateScheduleAction(s.id, payload)
+                await load()
+            } catch (error) {
+                console.error('[schedules/toggle]', error)
+            }
+        })
     }
 
     return (
@@ -155,8 +246,16 @@ export default function AdminProgramacaoPage() {
                     </button>
                 </div>
 
+                {apiError && (
+                    <div className="mb-8 p-4 rounded-[2rem] bg-red-500/10 border border-red-500/20 text-red-500 flex items-center gap-3 text-sm font-medium">
+                        <AlertCircle size={18} className="shrink-0" />
+                        <span>{apiError}</span>
+                    </div>
+                )}
+
                 {/* Grouped schedule */}
                 {loading ? (
+
                     <div className="flex justify-center py-20">
                         <Loader2 className="animate-spin text-emerald-400" size={36} />
                     </div>

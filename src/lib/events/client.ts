@@ -8,6 +8,8 @@ import type {
   PublicScheduleListResponse,
   PublicTicketsResponse,
   RegistrationCheckResponse,
+  EventCheckoutRequest,
+  EventCheckoutResponse,
 } from "./types";
 
 export class EventsApiNotConfiguredError extends Error {
@@ -41,14 +43,24 @@ type FetchOptions = RequestInit & { next?: { revalidate?: number | false; tags?:
 
 async function publicFetch<T>(path: string, init?: FetchOptions): Promise<T> {
   const url = `${tenantBasePath()}${path}`;
-  const res = await fetch(url, {
-    ...init,
-    headers: {
-      Accept: "application/json",
-      ...(init?.body ? { "Content-Type": "application/json" } : {}),
-      ...init?.headers,
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...init,
+      headers: {
+        Accept: "application/json",
+        ...(init?.body ? { "Content-Type": "application/json" } : {}),
+        ...init?.headers,
+      },
+    });
+  } catch (networkError) {
+    // Converte falhas de rede (ex: "fetch failed", ECONNREFUSED) em EventsApiError
+    const message =
+      networkError instanceof Error
+        ? networkError.message
+        : "Falha de conexão com a API";
+    throw new EventsApiError(0, `[network] ${message}`, networkError);
+  }
 
   if (!res.ok) {
     let body: unknown;
@@ -129,6 +141,26 @@ export async function createEventRegistration(
   );
 }
 
+export async function createEventCheckout(
+  eventId: string,
+  body: EventCheckoutRequest,
+): Promise<EventCheckoutResponse> {
+  return publicFetch<EventCheckoutResponse>(
+    `/events/${encodeURIComponent(eventId)}/checkout`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        ...body,
+        payer: {
+          ...body.payer,
+          email: body.payer.email.trim().toLowerCase(),
+        },
+      }),
+      cache: "no-store",
+    },
+  );
+}
+
 export async function checkEventRegistration(
   eventId: string,
   params: { email?: string; userId?: string },
@@ -162,6 +194,13 @@ export async function createEventRegistrationClient(
   body: EventRegistrationRequest,
 ): Promise<EventRegistrationDto> {
   return createEventRegistration(eventId, body);
+}
+
+export async function createEventCheckoutClient(
+  eventId: string,
+  body: EventCheckoutRequest,
+): Promise<EventCheckoutResponse> {
+  return createEventCheckout(eventId, body);
 }
 
 export async function fetchMyRegistrationsClient(params: {

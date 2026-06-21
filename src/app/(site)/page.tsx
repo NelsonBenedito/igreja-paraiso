@@ -15,10 +15,13 @@ import {
 import { MapPin } from 'lucide-react';
 
 export default async function Home() {
-  const [events, schedules] = await Promise.all([
+  const [eventsResult, schedulesResult] = await Promise.allSettled([
     getPublicEvents({ upcomingOnly: true }),
     getActiveSchedules(),
   ]);
+
+  const events = eventsResult.status === "fulfilled" ? eventsResult.value : [];
+  const schedules = schedulesResult.status === "fulfilled" ? schedulesResult.value : [];
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
