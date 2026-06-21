@@ -64,6 +64,16 @@ export interface Mission {
     image: string;
 }
 
+export interface MissionChurch {
+    id: string;
+    name: string;
+    location: string;
+    address: string;
+    image: string;
+    mapsUrl: string;
+    pastor: string;
+}
+
 export interface Sermon {
     id: string;
     title: string;
