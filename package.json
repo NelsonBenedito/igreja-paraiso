@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "verify:asaas": "node scripts/verify-asaas-setup.mjs",
+    "test:event-payment": "node scripts/test-event-payment-flow.mjs"
   },
   "dependencies": {
     "@google/genai": "^1.42.0",

@@ -16,6 +16,7 @@ interface Event {
     image_url: string | null
     tag: string | null
     published: boolean
+    registration_price: number | null
 }
 
 const EMPTY_FORM: Omit<Event, 'id'> = {
@@ -28,6 +29,7 @@ const EMPTY_FORM: Omit<Event, 'id'> = {
     image_url: '',
     tag: '',
     published: true,
+    registration_price: null,
 }
 
 const TAGS = ['Especial', 'Família', 'Jovens', 'Crianças', 'Missões', 'Casais', 'Conferência', 'Retiro', 'Culto']
@@ -75,6 +77,7 @@ export default function AdminEventosPage() {
             image_url: event.image_url ?? '',
             tag: event.tag ?? '',
             published: event.published,
+            registration_price: event.registration_price ?? null,
         })
         setShowForm(true)
     }
@@ -88,6 +91,12 @@ export default function AdminEventosPage() {
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault()
         setSaving(true)
+        const rawPrice = form.registration_price
+        const registration_price =
+            rawPrice === null || rawPrice === undefined || Number(rawPrice) <= 0
+                ? null
+                : Math.round(Number(rawPrice) * 100) / 100
+
         const payload = {
             ...form,
             time_start: form.time_start || null,
@@ -96,6 +105,7 @@ export default function AdminEventosPage() {
             location: form.location || null,
             image_url: form.image_url || null,
             tag: form.tag || null,
+            registration_price,
         }
 
         if (editing) {
@@ -193,6 +203,9 @@ export default function AdminEventosPage() {
                                         {event.time_start && ` · ${event.time_start.slice(0, 5)}`}
                                         {event.time_end && `–${event.time_end.slice(0, 5)}`}
                                         {event.location && ` · ${event.location}`}
+                                        {event.registration_price != null && event.registration_price > 0 && (
+                                            <> · R$ {event.registration_price.toFixed(2).replace('.', ',')}</>
+                                        )}
                                     </p>
                                 </div>
 
@@ -324,6 +337,27 @@ export default function AdminEventosPage() {
                                         placeholder="Ex: Templo Principal"
                                         className="input-dark"
                                     />
+                                </Field>
+
+                                <Field label="Valor da inscrição (R$)">
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        step={0.01}
+                                        value={form.registration_price ?? ''}
+                                        onChange={(e) => {
+                                            const v = e.target.value
+                                            setForm({
+                                                ...form,
+                                                registration_price: v === '' ? null : Number.parseFloat(v),
+                                            })
+                                        }}
+                                        placeholder="Deixe vazio para inscrição gratuita"
+                                        className="input-dark"
+                                    />
+                                    <p className="text-xs text-slate-500 mt-1.5">
+                                        Com valor definido, o inscrito é redirecionado ao pagamento Asaas após o cadastro.
+                                    </p>
                                 </Field>
 
                                 <Field label="URL da imagem">

@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
+import { isRegistrationConfirmed } from '@/lib/events/types'
 import { ChevronLeft } from "lucide-react"
 import Link from 'next/link'
 import MembrosEventosClient from './MembrosEventosClient'
@@ -23,10 +24,12 @@ export default async function MembersEventsPage() {
     if (user?.email) {
         const { data: registrations } = await supabase
             .from('event_registrations')
-            .select('event_id')
+            .select('event_id, payment_status')
             .eq('email', user.email.toLowerCase())
 
-        registeredEventIds = (registrations ?? []).map((r) => r.event_id)
+        registeredEventIds = (registrations ?? [])
+            .filter((r) => isRegistrationConfirmed(r.payment_status))
+            .map((r) => r.event_id)
     }
 
     return (

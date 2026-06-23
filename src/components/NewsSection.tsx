@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { CalendarDays, MapPin, Clock, UserPlus, CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
+import { isRegistrationConfirmed } from '@/lib/events/types';
 
 interface Event {
     id: string;
@@ -17,6 +18,7 @@ interface Event {
     image_url: string | null;
     tag: string | null;
     published: boolean;
+    registration_price?: number | null;
 }
 
 interface NewsSectionProps {
@@ -44,11 +46,15 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
             // Busca por user_id (mais confiável) com fallback por email
             const { data } = await supabase
                 .from('event_registrations')
-                .select('event_id')
+                .select('event_id, payment_status')
                 .or(`user_id.eq.${user.id},email.eq.${user.email?.toLowerCase() ?? ''}`);
 
             if (data && data.length > 0) {
-                setRegisteredIds(data.map((r) => r.event_id));
+                setRegisteredIds(
+                    data
+                        .filter((r) => isRegistrationConfirmed(r.payment_status))
+                        .map((r) => r.event_id),
+                );
             }
         };
         fetchMyRegistrations();

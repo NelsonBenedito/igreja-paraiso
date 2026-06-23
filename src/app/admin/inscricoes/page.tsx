@@ -5,6 +5,13 @@ import { createClient } from '@/utils/supabase/client'
 import { Users, ChevronLeft, Loader2, Download, Search, CalendarDays, Mail, Phone } from 'lucide-react'
 import Link from 'next/link'
 
+const PAYMENT_LABELS: Record<string, string> = {
+    free: 'Gratuita',
+    pending: 'Aguardando pagamento',
+    paid: 'Paga',
+    cancelled: 'Cancelada',
+}
+
 interface Registration {
     id: string
     name: string
@@ -13,6 +20,7 @@ interface Registration {
     message: string | null
     created_at: string
     event_id: string
+    payment_status?: string | null
     events: {
         title: string
         date: string
@@ -146,6 +154,7 @@ export default function AdminInscricoesPage() {
                                         <th className="text-left px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Nome</th>
                                         <th className="text-left px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Contato</th>
                                         <th className="text-left px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Evento</th>
+                                        <th className="text-left px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Pagamento</th>
                                         <th className="text-left px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Inscrição</th>
                                         <th className="text-left px-6 py-4 text-xs font-black uppercase tracking-widest text-slate-400">Obs.</th>
                                     </tr>
@@ -184,6 +193,19 @@ export default function AdminInscricoesPage() {
                                                         {r.events.tag}
                                                     </span>
                                                 )}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span
+                                                    className={`inline-block px-2 py-0.5 text-[10px] font-black uppercase tracking-widest rounded-full ${
+                                                        r.payment_status === 'paid'
+                                                            ? 'bg-green-500/15 text-green-600 dark:text-green-400'
+                                                            : r.payment_status === 'pending'
+                                                              ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                                                              : 'bg-slate-500/10 text-slate-500'
+                                                    }`}
+                                                >
+                                                    {PAYMENT_LABELS[r.payment_status ?? 'free'] ?? r.payment_status ?? '—'}
+                                                </span>
                                             </td>
                                             <td className="px-6 py-4 text-slate-400 text-xs whitespace-nowrap">
                                                 {formatDateTime(r.created_at)}

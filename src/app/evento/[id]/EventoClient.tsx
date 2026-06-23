@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Calendar, Clock, MapPin, Tag, ChevronLeft, UserPlus, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, Clock, MapPin, ChevronLeft, CheckCircle2, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import EventRegistrationModal from '@/components/EventRegistrationModal';
+import { eventRequiresPayment, formatEventPriceBrl } from '@/lib/events/types';
 
 interface Event {
     id: string;
@@ -16,22 +16,30 @@ interface Event {
     location: string | null;
     image_url: string | null;
     tag: string | null;
+    registration_price?: number | null;
 }
 
 interface Props {
     event: Event;
     isRegisteredServer: boolean;
+    paymentReturnOk?: boolean;
 }
 
 const formatDate = (d: string) =>
     new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
 
-export default function EventoClient({ event, isRegisteredServer }: Props) {
+export default function EventoClient({ event, isRegisteredServer, paymentReturnOk = false }: Props) {
     const [isRegistered, setIsRegistered] = useState(isRegisteredServer);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const requiresPayment = eventRequiresPayment(event.registration_price);
 
-    const handleSuccess = (eventId: string) => {
+    useEffect(() => {
+        if (paymentReturnOk) setIsRegistered(true);
+    }, [paymentReturnOk]);
+
+    const handleSuccess = () => {
         setIsRegistered(true);
+        setShowModal(false);
     };
 
     return (
@@ -108,21 +116,29 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
                             </div>
 
                             <div className="pt-8 border-t border-slate-200 dark:border-white/10">
+                                {paymentReturnOk && (
+                                    <div className="mb-6 p-4 rounded-2xl bg-paraiso-green/10 border border-paraiso-green/30 text-paraiso-green text-xs font-bold leading-relaxed">
+                                        Obrigado! Se o pagamento foi concluído, sua inscrição será confirmada em instantes.
+                                    </div>
+                                )}
+                                {requiresPayment && !isRegistered && (
+                                    <p className="text-sm font-bold text-slate-600 dark:text-slate-300 mb-4">
+                                        Inscrição: {formatEventPriceBrl(event.registration_price!)}
+                                    </p>
+                                )}
                                 {isRegistered ? (
                                     <div className="w-full flex items-center justify-center gap-2 py-4 rounded-full bg-paraiso-green/10 text-paraiso-green font-black uppercase tracking-widest text-xs border border-paraiso-green/30">
                                         <CheckCircle2 size={16} />
                                         Inscrição Confirmada
                                     </div>
                                 ) : (
-                                    <motion.button
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                        onClick={() => setIsModalOpen(true)}
-                                        className="w-full flex items-center justify-center gap-3 py-4 rounded-full bg-paraiso-green text-white font-black uppercase tracking-widest text-sm hover:bg-paraiso-blue transition-all shadow-xl"
+                                    <button
+                                        onClick={() => setShowModal(true)}
+                                        className="w-full flex items-center justify-center gap-2 py-4 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-paraiso-blue transition-all shadow-md"
                                     >
-                                        <UserPlus size={18} />
-                                        Inscrever-se Agora
-                                    </motion.button>
+                                        <UserPlus size={16} />
+                                        Inscrever-se
+                                    </button>
                                 )}
                             </div>
                         </div>
@@ -130,14 +146,12 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
                 </div>
             </div>
 
-            {/* Modal de Inscrição */}
-            {isModalOpen && (
-                <EventRegistrationModal
-                    event={event}
-                    onClose={() => setIsModalOpen(false)}
-                    onSuccess={handleSuccess}
-                />
-            )}
+            {/* Modal multi-step de inscrição */}
+            <EventRegistrationModal
+                event={showModal ? event : null}
+                onClose={() => setShowModal(false)}
+                onSuccess={handleSuccess}
+            />
         </div>
     );
 }

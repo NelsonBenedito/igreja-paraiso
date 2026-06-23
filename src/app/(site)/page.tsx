@@ -7,6 +7,7 @@ import Reveal from "@/components/Reveal";
 import MissionSection from "@/components/MissionSection";
 import CelulasSection from "@/components/CelulasSection";
 import { createClient } from "@/utils/supabase/server";
+import { isRegistrationConfirmed } from "@/lib/events/types";
 import { MapPin } from 'lucide-react';
 
 export default async function Home() {
@@ -30,9 +31,11 @@ export default async function Home() {
   if (user?.email) {
     const { data: registrations } = await supabase
       .from('event_registrations')
-      .select('event_id')
+      .select('event_id, payment_status')
       .eq('email', user.email.toLowerCase());
-    registeredEventIds = (registrations ?? []).map((r) => r.event_id);
+    registeredEventIds = (registrations ?? [])
+      .filter((r) => isRegistrationConfirmed(r.payment_status))
+      .map((r) => r.event_id);
   }
 
   return (
@@ -61,7 +64,7 @@ export default async function Home() {
         />
         <div className="absolute inset-0 bg-paraiso-blue/90 backdrop-blur-[2px]"></div>
 
-        <div className="container mx-auto px-6 relative z-10 text-center text-white">
+        <div className="container items-center justify-center flex mx-auto px-6 relative z-10 text-center text-white">
           <Reveal>
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-8 leading-none">
               VENHA NOS <br />

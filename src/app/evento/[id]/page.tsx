@@ -2,9 +2,17 @@ import { createClient } from '@/utils/supabase/server';
 import { notFound } from 'next/navigation';
 import EventoClient from './EventoClient';
 
-export default async function EventoPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EventoPage({
+    params,
+    searchParams,
+}: {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ pagamento?: string }>;
+}) {
     const supabase = await createClient();
     const { id } = await params;
+    const { pagamento } = await searchParams;
+    const paymentReturnOk = pagamento === 'ok';
     
     // Buscar os dados do evento
     const { data: event, error } = await supabase
@@ -24,17 +32,26 @@ export default async function EventoPage({ params }: { params: Promise<{ id: str
     if (user?.email) {
         const { data: registration } = await supabase
             .from('event_registrations')
-            .select('id')
+            .select('id, payment_status')
             .eq('event_id', event.id)
             .eq('email', user.email.toLowerCase())
-            .single();
-            
-        if (registration) {
+            .maybeSingle();
+
+        if (
+            registration &&
+            (!registration.payment_status ||
+                registration.payment_status === 'free' ||
+                registration.payment_status === 'paid')
+        ) {
             isRegistered = true;
         }
     }
 
     return (
-        <EventoClient event={event} isRegisteredServer={isRegistered} />
+        <EventoClient
+            event={event}
+            isRegisteredServer={isRegistered}
+            paymentReturnOk={paymentReturnOk}
+        />
     );
 }

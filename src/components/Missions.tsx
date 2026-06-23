@@ -28,11 +28,11 @@ const Missions: React.FC = () => {
 
             <div className="container mx-auto px-6 relative z-10">
                 <Reveal>
-                    <div className="flex flex-col items-center text-center mb-20">
+                    <div className="flex flex-col items-start text-start mb-20">
                         <div className="inline-block px-4 py-1.5 bg-paraiso-green/10 text-paraiso-green text-[10px] font-black uppercase tracking-widest rounded-md mb-6">
                             Ide & Pregai
                         </div>
-                        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
+                        <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
                             NOSSAS <br />
                             <span className="text-paraiso-green-light italic font-serif lowercase">missões</span>
                         </h2>
