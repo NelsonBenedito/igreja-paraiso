@@ -5,29 +5,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Clock, MapPin, Tag, UserPlus, CheckCircle2, X, Loader2, AlertCircle, User, Mail, Phone, MessageSquare } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-
-interface Event {
-    id: string;
-    title: string;
-    description: string | null;
-    date: string;
-    time_start: string | null;
-    time_end: string | null;
-    location: string | null;
-    image_url: string | null;
-    tag: string | null;
-}
+import { loadRegisteredEventIdsClient, submitEventRegistration } from '@/lib/events/data-client';
+import type { SiteEvent } from '@/lib/events/types';
 
 interface Props {
-    events: Event[];
-    /** IDs dos eventos em que o usuário já está inscrito */
+    events: SiteEvent[];
     registeredEventIds: string[];
 }
 
 const formatDate = (d: string) =>
     new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
 
-type ModalStatus = 'idle' | 'loading' | 'success' | 'duplicate' | 'table_missing' | 'error';
+type ModalStatus = 'idle' | 'loading' | 'success' | 'duplicate' | 'error';
 type ErrorDetail = { code?: string; message?: string } | null;
 
 export default function MembrosEventosClient({ events, registeredEventIds }: Props) {
@@ -38,7 +27,7 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
     const [registeredIds, setRegisteredIds] = useState<string[]>(registeredEventIds);
 
     // Modal
-    const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+    const [selectedEvent, setSelectedEvent] = useState<SiteEvent | null>(null);
     const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
     const [status, setStatus] = useState<ModalStatus>('idle');
     const [errorDetail, setErrorDetail] = useState<ErrorDetail>(null);
@@ -49,21 +38,17 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
     useEffect(() => {
         const fetchMyRegistrations = async () => {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            if (!user?.email) return;
 
-            const { data } = await supabase
-                .from('event_registrations')
-                .select('event_id')
-                .or(`user_id.eq.${user.id},email.eq.${user.email?.toLowerCase() ?? ''}`);
-
-            if (data && data.length > 0) {
-                setRegisteredIds(data.map((r) => r.event_id));
+            const ids = await loadRegisteredEventIdsClient(user.email, user.id);
+            if (ids.length > 0) {
+                setRegisteredIds(ids);
             }
         };
         fetchMyRegistrations();
     }, []);
 
-    const openModal = (event: Event) => {
+    const openModal = (event: SiteEvent) => {
         setSelectedEvent(event);
         setForm({ name: '', email: '', phone: '', message: '' });
         setStatus('idle');
@@ -81,29 +66,23 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
         if (!selectedEvent) return;
         setStatus('loading');
 
-        const { error } = await supabase.from('event_registrations').insert({
-            event_id: selectedEvent.id,
+        const { data: { user } } = await supabase.auth.getUser();
+
+        const result = await submitEventRegistration(selectedEvent.id, {
             name: form.name.trim(),
             email: form.email.trim().toLowerCase(),
             phone: form.phone.trim() || null,
             message: form.message.trim() || null,
-            user_id: (await supabase.auth.getUser()).data.user?.id ?? null,
+            userId: user?.id ?? null,
         });
 
-        if (!error) {
+        if (result.ok) {
             setStatus('success');
             setRegisteredIds((prev) => [...prev, selectedEvent.id]);
-        } else if (error.code === '23505') {
-            // Unique constraint: e-mail já inscrito nesse evento
+        } else if (result.reason === 'duplicate') {
             setStatus('duplicate');
-        } else if (error.code === '42P01') {
-            // Tabela não existe ainda — precisa rodar o SQL no Supabase
-            console.error('[Supabase] Tabela event_registrations não encontrada. Execute supabase/event_registrations.sql no Supabase.');
-            setStatus('table_missing');
         } else {
-            // Exibe as propriedades reais do PostgrestError
-            console.error('[Supabase error]', { code: error.code, message: error.message, details: error.details, hint: error.hint });
-            setErrorDetail({ code: error.code, message: error.message });
+            setErrorDetail({ message: result.message });
             setStatus('error');
         }
     };
@@ -299,23 +278,6 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
                                                 <p className="text-slate-500 dark:text-slate-400 text-sm">Este e-mail já foi cadastrado para este evento.</p>
                                             </div>
                                             <button onClick={closeModal} className="px-8 py-3 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full">
-                                                Fechar
-                                            </button>
-                                        </motion.div>
-                                    )}
-
-                                    {/* Tabela inexistente */}
-                                    {status === 'table_missing' && (
-                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
-                                            <AlertCircle className="w-16 h-16 text-orange-500 mx-auto" />
-                                            <div>
-                                                <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Configuração pendente</h3>
-                                                <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-                                                    A tabela de inscrições ainda não foi criada no banco de dados.<br />
-                                                    <span className="font-bold text-orange-500">Execute o arquivo <code>supabase/event_registrations.sql</code> no Supabase.</span>
-                                                </p>
-                                            </div>
-                                            <button onClick={() => setStatus('idle')} className="px-8 py-3 bg-slate-500 text-white font-black uppercase tracking-widest text-xs rounded-full">
                                                 Fechar
                                             </button>
                                         </motion.div>
