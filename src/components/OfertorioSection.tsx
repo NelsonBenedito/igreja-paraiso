@@ -18,7 +18,7 @@ const OfertorioSection: React.FC = () => {
     return (
         <section
             id="ofertorio"
-            className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-slate-50 dark:bg-paraiso-blue-dark/50 rounded-[2.5rem] shadow-sm overflow-hidden my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative"
+            className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-360 mx-auto bg-slate-50 dark:bg-paraiso-blue-dark/50 rounded-[2.5rem] shadow-sm overflow-hidden my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative"
         >
             <div className="absolute -top-32 -left-32 w-[400px] h-[400px] bg-paraiso-green/5 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -bottom-32 -right-32 w-[400px] h-[400px] bg-paraiso-blue/5 rounded-full blur-3xl pointer-events-none" />
@@ -40,10 +40,10 @@ const OfertorioSection: React.FC = () => {
                     </div>
                 </Reveal>
 
-                <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-14">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mx-auto mb-14">
                     {/* Card PIX */}
                     <Reveal>
-                        <div className="bg-white dark:bg-paraiso-blue-dark border border-slate-100 dark:border-white/5 rounded-3xl p-8 shadow-md relative overflow-hidden h-full flex flex-col justify-between">
+                        <div className="bg-white dark:bg-paraiso-blue-dark border border-slate-100 dark:border-white/5 rounded-3xl p-8 shadow-md relative overflow-hidden h-full justify-between">
                             <div className="absolute -right-10 -top-10 w-32 h-32 bg-paraiso-green/5 rounded-full blur-xl pointer-events-none" />
                             <div>
                                 <div className="w-12 h-12 rounded-2xl bg-paraiso-green/10 flex items-center justify-center mb-6">
@@ -56,7 +56,7 @@ const OfertorioSection: React.FC = () => {
                                     Ideal para ofertas voluntárias, dízimos e contribuições rápidas de qualquer valor. Use a chave PIX abaixo ou copie o endereço.
                                 </p>
                             </div>
-                            
+
                             <div className="bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl p-4 flex items-center justify-between gap-4 mt-auto">
                                 <div className="overflow-hidden">
                                     <span className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider block">Chave E-mail</span>
@@ -107,7 +107,7 @@ const OfertorioSection: React.FC = () => {
                                 <div className="flex justify-between pb-1">
                                     <span className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-xs">Favorecido / CNPJ</span>
                                     <span className="font-black text-slate-800 dark:text-white text-right">
-                                        Igreja Paraíso<br/>
+                                        Igreja Paraíso<br />
                                         <span className="text-[10px] text-slate-400 font-normal">CNPJ: 12.345.678/0001-90</span>
                                     </span>
                                 </div>
@@ -116,34 +116,34 @@ const OfertorioSection: React.FC = () => {
                     </Reveal>
                 </div>
 
-                <Reveal>
-                    <div className="bg-gradient-to-r from-paraiso-blue to-paraiso-green/80 text-white rounded-[2rem] p-8 md:p-10 shadow-xl max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-                        <div className="absolute -right-24 -bottom-24 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none" />
-                        <div className="space-y-3 max-w-2xl text-center md:text-left">
-                            <span className="inline-block px-3 py-1 bg-white/10 text-white text-[10px] font-black uppercase tracking-widest rounded-md">
-                                Projeto de Expansão
-                            </span>
-                            <h3 className="text-2xl font-black uppercase tracking-tight leading-tight">
-                                Campanha de Cotas do Novo Campus
-                            </h3>
-                            <p className="text-white/80 text-sm md:text-base font-medium leading-relaxed">
-                                Faça parte de algo maior! Ajude a edificar a nova estrutura da nossa sede e áreas geracionais. Adquira ou apoie através das cotas exclusivas de expansão.
-                            </p>
-                        </div>
-                        <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="shrink-0"
-                        >
-                            <Link
-                                href="/cotas/campus"
-                                className="inline-flex items-center gap-2 px-6 py-4 bg-white text-paraiso-blue hover:text-white hover:bg-paraiso-blue-dark rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-md"
-                            >
-                                <HelpCircle size={14} /> Conhecer Campanha
-                            </Link>
-                        </motion.div>
+
+                <div className="bg-linear-to-r from-paraiso-blue to-paraiso-green/80 text-white rounded-[2rem] p-8 md:p-10 shadow-xl  mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                    <div className="absolute -right-24 -bottom-24 w-64 h-64 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+                    <div className="space-y-3 max-w-2xl text-center md:text-left">
+                        <span className="inline-block px-3 py-1 bg-white/10 text-white text-[10px] font-black uppercase tracking-widest rounded-md">
+                            Projeto de Expansão
+                        </span>
+                        <h3 className="text-2xl font-black uppercase tracking-tight leading-tight">
+                            Campanha de Cotas do Novo Campus
+                        </h3>
+                        <p className="text-white/80 text-sm md:text-base font-medium leading-relaxed">
+                            Faça parte de algo maior! Ajude a edificar a nova estrutura da nossa sede e áreas geracionais. Adquira ou apoie através das cotas exclusivas de expansão.
+                        </p>
                     </div>
-                </Reveal>
+                    <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="shrink-0"
+                    >
+                        <Link
+                            href="/cotas/campus"
+                            className="inline-flex items-center gap-2 px-6 py-4 bg-white text-paraiso-blue hover:text-white hover:bg-paraiso-blue-dark rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-md"
+                        >
+                            <HelpCircle size={14} /> Conhecer Campanha
+                        </Link>
+                    </motion.div>
+                </div>
+
             </div>
         </section>
     );

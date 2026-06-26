@@ -47,7 +47,7 @@ export default async function Home() {
 
       <OfertorioSection />
 
-      <section id="onde" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-6 md:my-10 py-20 md:py-28 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative min-h-[60vh] flex items-center justify-center">
+      <section id="onde" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-360 mx-auto bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-6 md:my-10 py-20 md:py-28 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative min-h-[60vh] flex items-center justify-center">
         <img
           src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2000"
           className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
@@ -55,7 +55,7 @@ export default async function Home() {
         />
         <div className="absolute inset-0 bg-paraiso-blue/90 backdrop-blur-[2px]"></div>
 
-        <div className="container mx-auto px-6 relative z-10 text-center text-white">
+        <div className="flex justify-start text-left w-full px-6 relative z-10 text-white">
           <Reveal>
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-8 leading-none">
               VENHA NOS <br />
@@ -88,7 +88,7 @@ export default async function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex sm:flex-row gap-4">
               <a
                 href="https://maps.app.goo.gl/UsxnnZ69miAvFzvs6"
                 target="_blank"
@@ -103,7 +103,7 @@ export default async function Home() {
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-transparent border-2 border-white hover:bg-white hover:text-paraiso-blue text-white rounded-full font-black uppercase tracking-widest text-xs transition-all"
               >
                 <Info size={16} />
-                Nossas Filiais
+                Nossas Igrejas
               </Link>
             </div>
           </Reveal>

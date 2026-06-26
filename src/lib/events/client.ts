@@ -71,9 +71,9 @@ async function publicFetch<T>(path: string, init?: FetchOptions): Promise<T> {
     }
     const message =
       typeof body === "object" &&
-      body !== null &&
-      "message" in body &&
-      typeof (body as { message: unknown }).message === "string"
+        body !== null &&
+        "message" in body &&
+        typeof (body as { message: unknown }).message === "string"
         ? (body as { message: string }).message
         : `Erro ${res.status}`;
     throw new EventsApiError(res.status, message, body);

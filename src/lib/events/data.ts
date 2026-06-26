@@ -1,3 +1,4 @@
+import { isPublicApiConfigured } from "@/lib/public-api/env";
 import { toSiteEvent, toSiteSchedule } from "./adapters";
 import {
   checkEventRegistration,
@@ -12,6 +13,10 @@ import type { SiteEvent, SiteSchedule } from "./types";
 export async function getPublicEvents(options: {
   upcomingOnly?: boolean;
 } = {}): Promise<SiteEvent[]> {
+  if (!isPublicApiConfigured()) {
+    console.warn("[events] API Nest não configurada.");
+    return [];
+  }
   const { items } = await fetchPublicEvents({
     upcomingOnly: options.upcomingOnly ?? true,
   });
@@ -20,6 +25,10 @@ export async function getPublicEvents(options: {
 
 /** Detalhe de um evento publicado. */
 export async function getPublicEventById(eventId: string): Promise<SiteEvent | null> {
+  if (!isPublicApiConfigured()) {
+    console.warn("[events] API Nest não configurada.");
+    return null;
+  }
   try {
     const dto = await fetchPublicEventById(eventId);
     return toSiteEvent(dto);
@@ -33,6 +42,10 @@ export async function getPublicEventById(eventId: string): Promise<SiteEvent | n
 
 /** Programação semanal activa. */
 export async function getActiveSchedules(): Promise<SiteSchedule[]> {
+  if (!isPublicApiConfigured()) {
+    console.warn("[schedules] API Nest não configurada.");
+    return [];
+  }
   const { items } = await fetchPublicSchedules();
   return items.filter((s) => s.active).map(toSiteSchedule);
 }
@@ -42,6 +55,10 @@ export async function getRegisteredEventIdsForUser(
   email: string,
   userId?: string | null,
 ): Promise<string[]> {
+  if (!isPublicApiConfigured()) {
+    console.warn("[registrations] API Nest não configurada.");
+    return [];
+  }
   const { items } = await fetchMyRegistrations({ email, userId });
   return items.map((r) => r.eventId);
 }
@@ -51,6 +68,10 @@ export async function isUserRegisteredForEvent(
   eventId: string,
   email: string,
 ): Promise<boolean> {
+  if (!isPublicApiConfigured()) {
+    console.warn("[registrations] API Nest não configurada.");
+    return false;
+  }
   const { registered } = await checkEventRegistration(eventId, { email });
   return registered;
 }
