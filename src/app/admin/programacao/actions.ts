@@ -11,6 +11,11 @@ import {
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 
+/**
+ * Verifica se há um usuário autenticado via Supabase Auth.
+ * Nota: autenticação (auth) continua no Supabase; dados de programação
+ * são gerenciados exclusivamente pelo ChurchManager.
+ */
 async function assertAdmin() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

@@ -9,17 +9,11 @@ import {
     updateScheduleAction,
     deleteScheduleAction,
 } from './actions'
+import { mapDayOfWeekFromApi, mapDayOfWeekToApi } from '@/lib/events/adapters'
+import type { SiteSchedule } from '@/lib/events/types'
 
-interface Schedule {
-    id: string
-    title: string
-    day_of_week: string
-    time_start: string
-    location: string | null
-    description: string | null
-    active: boolean
-    sort_order: number
-}
+// Reutiliza SiteSchedule de @/lib/events/types (mesma forma que o site público usa)
+type Schedule = SiteSchedule
 
 const EMPTY_FORM: Omit<Schedule, 'id'> = {
     title: '',
@@ -44,53 +38,6 @@ const DAYS = [
 const DAY_ORDER: Record<string, number> = {
     'Domingo': 0, 'Segunda-feira': 1, 'Terça-feira': 2,
     'Quarta-feira': 3, 'Quinta-feira': 4, 'Sexta-feira': 5, 'Sábado': 6,
-}
-
-function mapDayOfWeekFromApi(day: string): string {
-    const normalized = day.trim().toLowerCase();
-    const fromEnglish: Record<string, string> = {
-        sunday: "Domingo",
-        monday: "Segunda-feira",
-        tuesday: "Terça-feira",
-        wednesday: "Quarta-feira",
-        thursday: "Quinta-feira",
-        friday: "Sexta-feira",
-        saturday: "Sábado",
-    };
-    if (fromEnglish[normalized]) return fromEnglish[normalized];
-
-    const fromPortugueseShort: Record<string, string> = {
-        domingo: "Domingo",
-        segunda: "Segunda-feira",
-        terça: "Terça-feira",
-        quarta: "Quarta-feira",
-        quinta: "Quinta-feira",
-        sexta: "Sexta-feira",
-        sábado: "Sábado",
-        sabado: "Sábado",
-    };
-    return fromPortugueseShort[normalized] ?? day;
-}
-
-function mapDayOfWeekToApi(day: string): string {
-    const normalized = day.trim().toLowerCase();
-    const toPortugueseShort: Record<string, string> = {
-        domingo: "Domingo",
-        "segunda-feira": "Segunda",
-        segunda: "Segunda",
-        "terça-feira": "Terça",
-        terça: "Terça",
-        terca: "Terça",
-        "quarta-feira": "Quarta",
-        quarta: "Quarta",
-        "quinta-feira": "Quinta",
-        quinta: "Quinta",
-        "sexta-feira": "Sexta",
-        sexta: "Sexta",
-        sábado: "Sábado",
-        sabado: "Sábado",
-    };
-    return toPortugueseShort[normalized] ?? "Domingo";
 }
 
 export default function AdminProgramacaoPage() {
@@ -171,7 +118,8 @@ export default function AdminProgramacaoPage() {
             location: form.location ? form.location.trim() || null : null,
             description: form.description ? form.description.trim() || null : null,
             active: form.active,
-            sortOrder: form.sort_order || DAY_ORDER[form.day_of_week] * 10,
+            // Usa sort_order explícito se > 0, senão deriva da posição do dia na semana
+            sortOrder: form.sort_order > 0 ? form.sort_order : DAY_ORDER[form.day_of_week] * 10,
         }
 
         startTransition(async () => {

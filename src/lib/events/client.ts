@@ -43,10 +43,15 @@ type FetchOptions = RequestInit & { next?: { revalidate?: number | false; tags?:
 
 async function publicFetch<T>(path: string, init?: FetchOptions): Promise<T> {
   const url = `${tenantBasePath()}${path}`;
+  const { cache, ...restOfInit } = init || {};
   let res: Response;
   try {
     res = await fetch(url, {
-      ...init,
+      ...restOfInit,
+      // 💡 Adiciona cache de 30 segundos para evitar sobrecarregar o Throttler do Nest.js
+      next: {
+        revalidate: 30
+      },
       headers: {
         Accept: "application/json",
         ...(init?.body ? { "Content-Type": "application/json" } : {}),

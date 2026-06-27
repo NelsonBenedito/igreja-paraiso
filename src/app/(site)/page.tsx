@@ -17,23 +17,24 @@ import { MapPin, Info } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function Home() {
-  const [eventsResult, schedulesResult] = await Promise.allSettled([
-    getPublicEvents({ upcomingOnly: true }),
-    getActiveSchedules(),
-  ]);
-
-  const events = eventsResult.status === "fulfilled" ? eventsResult.value : [];
-  const schedules = schedulesResult.status === "fulfilled" ? schedulesResult.value : [];
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  let registeredEventIds: string[] = [];
-  if (user?.email) {
-    registeredEventIds = await getRegisteredEventIdsForUser(
-      user.email,
-      user.id,
-    );
-  }
+
+
+  const [eventsResult, schedulesResult, registeredResult] = await Promise.allSettled([
+    getPublicEvents({ upcomingOnly: true }),
+    getActiveSchedules(),
+
+    user?.email
+      ? getRegisteredEventIdsForUser(user.email, user.id)
+      : Promise.resolve([] as string[])
+  ]);
+
+
+  const events = eventsResult.status === "fulfilled" ? eventsResult.value : [];
+  const schedules = schedulesResult.status === "fulfilled" ? schedulesResult.value : [];
+  const registeredEventIds = registeredResult.status === "fulfilled" ? registeredResult.value : [];
 
   return (
     <>

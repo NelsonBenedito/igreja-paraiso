@@ -1,7 +1,11 @@
 /**
  * Cliente servidor para os endpoints autenticados do ChurchManager (admin).
- * Usa o token CHURCHMANAGER_ADMIN_TOKEN — nunca exposto ao browser.
+ * Autentica dinamicamente usando credenciais administrativas — nunca exposto ao browser.
  */
+
+// Variáveis em memória global do servidor para controle de cache do JWT
+let cachedAdminToken: string | null = null;
+let tokenExpirationTime: number = 0;
 
 function getAdminBase(): string {
   const base = process.env.NEXT_PUBLIC_DONATIONS_API_BASE;
@@ -9,14 +13,59 @@ function getAdminBase(): string {
   return base.replace(/\/+$/, "");
 }
 
-function getAdminToken(): string {
-  const token = process.env.CHURCHMANAGER_ADMIN_TOKEN;
-  if (!token?.trim()) throw new Error("CHURCHMANAGER_ADMIN_TOKEN não configurado.");
-  return token.trim();
+/**
+ * Realiza o login dinâmico na API do ChurchManager para obter um JWT válido
+ */
+async function authenticateAdminDynamic(): Promise<string> {
+  // Se o token em cache ainda for válido (com margem de 60 segundos), reutiliza ele
+  if (cachedAdminToken && Date.now() < tokenExpirationTime - 60000) {
+    return cachedAdminToken;
+  }
+
+  const email = process.env.CHURCHMANAGER_ADMIN_EMAIL;
+  const password = process.env.CHURCHMANAGER_ADMIN_PASSWORD;
+
+  if (!email || !password) {
+    throw new Error("CHURCHMANAGER_ADMIN_EMAIL ou CHURCHMANAGER_ADMIN_PASSWORD não configurados no .env");
+  }
+
+  const url = `${getAdminBase()}/api/auth/login`;
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({ email, password }),
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Falha na autenticação dinâmica. Status: ${res.status}`);
+    }
+
+    const data = await res.json() as { accessToken: string; expiresIn?: number };
+
+    // Atualiza o cache local do servidor
+    cachedAdminToken = data.accessToken;
+    // Define tempo de expiração (usa o retornado pela API ou assume 1 hora por padrão)
+    tokenExpirationTime = Date.now() + (data.expiresIn ? data.expiresIn * 1000 : 3600000);
+
+    return cachedAdminToken;
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "Erro desconhecido";
+    throw new Error(`[admin-api auth-error] Não foi possível autenticar dinamicamente: ${msg}`);
+  }
 }
 
 async function adminFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const url = `${getAdminBase()}/api${path}`;
+
+  // Obtém o token ativo dinamicamente (seja do cache ou gerando um novo)
+  const dynamicToken = await authenticateAdminDynamic();
+
   let res: Response;
   try {
     res = await fetch(url, {
@@ -24,7 +73,7 @@ async function adminFetch<T>(path: string, init?: RequestInit): Promise<T> {
       cache: "no-store",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${getAdminToken()}`,
+        Authorization: `Bearer ${dynamicToken}`,
         ...(init?.body ? { "Content-Type": "application/json" } : {}),
         ...init?.headers,
       },
@@ -48,11 +97,12 @@ async function adminFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-/** Verifica se a API admin está configurada */
+/** Verifica se a API admin está configurada dinamicamente */
 export function isAdminApiConfigured(): boolean {
   return !!(
     process.env.NEXT_PUBLIC_DONATIONS_API_BASE?.trim() &&
-    process.env.CHURCHMANAGER_ADMIN_TOKEN?.trim()
+    process.env.CHURCHMANAGER_ADMIN_EMAIL?.trim() &&
+    process.env.CHURCHMANAGER_ADMIN_PASSWORD?.trim()
   );
 }
 
@@ -131,13 +181,17 @@ export async function adminUploadEventCover(file: File): Promise<{ url: string }
   formData.append("file", file);
 
   const url = `${getAdminBase()}/api/admin/tenants/me/events/upload-cover`;
+
+  // Busca o token válido para a requisição multipart isolada
+  const dynamicToken = await authenticateAdminDynamic();
+
   let res: Response;
   try {
     res = await fetch(url, {
       method: "POST",
       cache: "no-store",
       headers: {
-        Authorization: `Bearer ${getAdminToken()}`,
+        Authorization: `Bearer ${dynamicToken}`,
       },
       body: formData,
     });
@@ -229,4 +283,3 @@ export async function adminUpdateSchedule(id: string, body: Partial<CreateAdminS
 export async function adminDeleteSchedule(id: string): Promise<void> {
   return adminFetch<void>(`/admin/tenants/me/schedules/${id}`, { method: "DELETE" });
 }
-

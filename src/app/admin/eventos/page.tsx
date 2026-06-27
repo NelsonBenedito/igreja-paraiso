@@ -83,7 +83,7 @@ export default function AdminEventosPage() {
       time_end: event.timeEnd ?? '',
       location: event.location ?? '',
       image_url: event.imageUrl ?? '',
-      tag: event.tags?.[0] ?? '',
+      tag: event.tag?.[0] ?? '',
       published: event.published,
     })
     setShowForm(true)
@@ -223,11 +223,11 @@ export default function AdminEventosPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <p className="font-black text-slate-900 dark:text-white truncate">{event.title}</p>
-                    {event.tags?.map(tag => (
-                      <span key={tag} className="text-[10px] font-black uppercase tracking-widest bg-blue-600/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-600/30">
-                        {tag}
+                    {event.tag ? (
+                      <span className="text-[10px] font-black uppercase tracking-widest bg-blue-600/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-600/30">
+                        {event.tag}
                       </span>
-                    ))}
+                    ) : null}
                     {!event.published && (
                       <span className="text-[10px] font-black uppercase tracking-widest bg-orange-600/20 text-orange-400 px-2 py-0.5 rounded-full border border-orange-600/30">
                         Rascunho
