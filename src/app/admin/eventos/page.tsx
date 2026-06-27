@@ -83,7 +83,7 @@ export default function AdminEventosPage() {
       time_end: event.timeEnd ?? '',
       location: event.location ?? '',
       image_url: event.imageUrl ?? '',
-      tag: event.tags?.[0] ?? '',
+      tag: event.tag?.[0] ?? '',
       published: event.published,
     })
     setShowForm(true)

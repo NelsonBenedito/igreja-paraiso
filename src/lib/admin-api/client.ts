@@ -117,7 +117,7 @@ export interface AdminEventDto {
   timeEnd: string | null;
   location: string | null;
   imageUrl: string | null;
-  tags: string[];
+  tag: string;
   published: boolean;
   createdAt: string;
   updatedAt: string;
