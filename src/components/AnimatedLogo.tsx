@@ -171,7 +171,7 @@ const AnimatedLogo: React.FC<AnimatedLogoProps> = ({ className = "", size = 600 
                 transition={{ delay: 5.0, duration: 1.5 }}
             >
                 <div className="h-px flex-1 bg-linear-to-r from-transparent via-white/10 to-transparent" />
-                <span className="text-[10px] md:text-sm text-white/40 uppercase tracking-[0.4em] md:tracking-[0.8em] font-light whitespace-nowrap ml-[0.4em] md:ml-[0.8em]">
+                <span className="text-[10px] md:text-[10px] text-white/40 uppercase tracking-[0.4em] md:tracking-[1.0em] font-light whitespace-nowrap ml-[0.4em] md:ml-[0.8em]">
                     Apocalipse 22:1-2
                 </span>
                 <div className="h-px flex-1 bg-linear-to-l from-transparent via-white/10 to-transparent" />
