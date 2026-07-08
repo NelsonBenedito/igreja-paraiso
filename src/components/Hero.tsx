@@ -29,7 +29,7 @@ const Hero: React.FC = () => {
                     transition={{ duration: 1.2, delay: 0.5 }}
                 >
                     <div className="mb-20">
-                        <AnimatedLogo size={750} />
+                        <AnimatedLogo size={450} />
                     </div>
 
                 </motion.div>
