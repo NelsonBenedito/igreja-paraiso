@@ -40,7 +40,7 @@ const Hero: React.FC = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2.5, duration: 1 }}
-                className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
+                className="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
             >
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Descobrir</span>
 
