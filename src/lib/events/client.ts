@@ -7,6 +7,9 @@ import type {
   PublicEventListResponse,
   PublicScheduleListResponse,
   PublicTicketsResponse,
+  PublicTicketTypeDto,
+  PublicTicketDto,
+  OrderPaymentResponse,
   RegistrationCheckResponse,
   EventCheckoutRequest,
   EventCheckoutResponse,
@@ -43,15 +46,20 @@ type FetchOptions = RequestInit & { next?: { revalidate?: number | false; tags?:
 
 async function publicFetch<T>(path: string, init?: FetchOptions): Promise<T> {
   const url = `${tenantBasePath()}${path}`;
-  const { cache, ...restOfInit } = init || {};
+  // `cache` e `next` são mutuamente exclusivos no fetch do Next: passar ambos
+  // faz o Next ignorar um deles. Quem chama escolhe — `cache: "no-store"` para
+  // dados voláteis (stock, pagamentos), `next.revalidate` para conteúdo estável.
+  // Sem indicação, 30 s de revalidação para aliviar o Throttler do Nest.
+  const { cache, next, ...restOfInit } = init ?? {};
+  const cacheOptions: FetchOptions = cache
+    ? { cache }
+    : { next: next ?? { revalidate: 30 } };
+
   let res: Response;
   try {
     res = await fetch(url, {
       ...restOfInit,
-      // 💡 Adiciona cache de 30 segundos para evitar sobrecarregar o Throttler do Nest.js
-      next: {
-        revalidate: 30
-      },
+      ...cacheOptions,
       headers: {
         Accept: "application/json",
         ...(init?.body ? { "Content-Type": "application/json" } : {}),
@@ -125,6 +133,40 @@ export async function fetchPublicSchedules(
 export async function fetchEventTickets(eventId: string): Promise<PublicTicketsResponse> {
   return publicFetch<PublicTicketsResponse>(
     `/events/${encodeURIComponent(eventId)}/tickets`,
+    { cache: "no-store" },
+  );
+}
+
+/**
+ * Um tipo de ingresso por UUID — inclui `visibility: "PRIVATE"`, para páginas
+ * de link directo. A API filtra só por `active`, não aplica a janela de venda:
+ * um ingresso fora da janela responde 200 com `isSoldOut: true`.
+ */
+export async function fetchEventTicketById(
+  eventId: string,
+  ticketId: string,
+): Promise<PublicTicketTypeDto> {
+  return publicFetch<PublicTicketTypeDto>(
+    `/events/${encodeURIComponent(eventId)}/tickets/${encodeURIComponent(ticketId)}`,
+    { cache: "no-store" },
+  );
+}
+
+/** Estado do pagamento de um pedido (polling pós-checkout). */
+export async function fetchOrderPayment(
+  eventId: string,
+  orderId: string,
+): Promise<OrderPaymentResponse> {
+  return publicFetch<OrderPaymentResponse>(
+    `/events/${encodeURIComponent(eventId)}/orders/${encodeURIComponent(orderId)}/payment`,
+    { cache: "no-store" },
+  );
+}
+
+/** Bilhete emitido — aceita o UUID do bilhete ou o `publicCode`. */
+export async function fetchPublicTicket(ticketId: string): Promise<PublicTicketDto> {
+  return publicFetch<PublicTicketDto>(
+    `/tickets/${encodeURIComponent(ticketId)}`,
     { cache: "no-store" },
   );
 }
@@ -224,4 +266,22 @@ export async function checkEventRegistrationClient(
 
 export function isDuplicateRegistrationError(error: unknown): boolean {
   return error instanceof EventsApiError && error.status === 409;
+}
+
+/**
+ * `409` no checkout cobre dois casos distintos que exigem respostas diferentes:
+ * stock esgotado (refetch dos ingressos) e `idempotencyKey` inutilizável
+ * (repetir com chave nova). A API distingue-os apenas pela mensagem.
+ */
+export function isIdempotencyConflict(error: unknown): boolean {
+  if (!(error instanceof EventsApiError) || error.status !== 409) return false;
+  return /idempot/i.test(error.message);
+}
+
+export function isSoldOutConflict(error: unknown): boolean {
+  return (
+    error instanceof EventsApiError &&
+    error.status === 409 &&
+    !isIdempotencyConflict(error)
+  );
 }
