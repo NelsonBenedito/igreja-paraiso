@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { PlayCircle, Youtube } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Reveal from './Reveal';
+import type { SiteYoutube } from '@/lib/site-content/types';
 
 interface Video {
     id: string;
@@ -12,14 +13,18 @@ interface Video {
     publishedAt: string;
 }
 
-const LatestStream: React.FC = () => {
+interface LatestStreamProps {
+    content: SiteYoutube;
+}
+
+const LatestStream: React.FC<LatestStreamProps> = ({ content }) => {
     const [video, setVideo] = useState<Video | null>(null);
     const [loading, setLoading] = useState(true);
+    const channelHandle = content.channelHandle.replace(/^@/, '');
 
     useEffect(() => {
         const fetchLatestVideo = async () => {
             const apiKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
-            const channelHandle = 'ibrejetibaoficial';
 
             if (!apiKey) {
                 console.warn('NEXT_PUBLIC_YOUTUBE_API_KEY not found');
@@ -29,7 +34,7 @@ const LatestStream: React.FC = () => {
 
             try {
                 const channelRes = await fetch(
-                    `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle=${channelHandle}&key=${apiKey}`
+                    `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle=${encodeURIComponent(channelHandle)}&key=${apiKey}`
                 );
                 const channelData = await channelRes.json();
 
@@ -63,9 +68,13 @@ const LatestStream: React.FC = () => {
         };
 
         fetchLatestVideo();
-    }, []);
+    }, [channelHandle]);
 
     if (!video && !loading) return null;
+
+    const titleParts = content.sectionTitle.trim().split(/\s+/);
+    const highlight = titleParts.length > 1 ? titleParts[titleParts.length - 1] : '';
+    const titleMain = titleParts.length > 1 ? titleParts.slice(0, -1).join(' ') : content.sectionTitle;
 
     return (
         <section id="aovivo" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative">
@@ -79,8 +88,13 @@ const LatestStream: React.FC = () => {
                             <span className="text-red-600 font-black uppercase tracking-widest text-xs">Youtube</span>
                         </div>
                         <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none mb-4">
-                            Transmissões <br />
-                            <span className="text-paraiso-green italic font-serif lowercase">online</span>
+                            {titleMain}{' '}
+                            {highlight ? (
+                                <>
+                                    <br />
+                                    <span className="text-paraiso-green italic font-serif lowercase">{highlight}</span>
+                                </>
+                            ) : null}
                         </h2>
                         <p className="text-slate-500 dark:text-slate-300 font-medium max-w-2xl text-base">
                             Acompanhe nossos cultos e mensagens onde você estiver.
@@ -120,7 +134,7 @@ const LatestStream: React.FC = () => {
 
                 <div className="text-center mt-10">
                     <a
-                        href="https://www.youtube.com/@ibrejetibaoficial"
+                        href={`https://www.youtube.com/@${channelHandle}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-3 px-8 py-4 bg-white dark:bg-paraiso-blue border border-slate-200 dark:border-white/10 text-paraiso-blue dark:text-white rounded-full font-black uppercase tracking-widest text-xs hover:bg-paraiso-blue hover:text-white hover:border-transparent transition-all shadow-lg"

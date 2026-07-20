@@ -2,32 +2,14 @@
 import React from 'react';
 import Reveal from '@/components/Reveal';
 import { motion } from 'framer-motion';
-import { Heart, Users, BookOpen, MapPin } from 'lucide-react';
+import SiteIcon from '@/components/SiteIcon';
+import type { SiteCelulas } from '@/lib/site-content/types';
 
-const beneficios = [
-    {
-        icon: Heart,
-        titulo: 'Comunhão Real',
-        descricao: 'Relacionamentos genuínos construídos em torno da fé, onde cada pessoa é conhecida pelo nome.',
-    },
-    {
-        icon: BookOpen,
-        titulo: 'Crescimento Espiritual',
-        descricao: 'Estudo bíblico aplicado ao cotidiano, com espaço para perguntas e reflexão em grupo.',
-    },
-    {
-        icon: Users,
-        titulo: 'Família de Verdade',
-        descricao: 'Grupos pequenos onde ninguém passa por momentos difíceis sozinho. Somos família.',
-    },
-    {
-        icon: MapPin,
-        titulo: 'Perto de Você',
-        descricao: 'Células espalhadas pela cidade para que você encontre uma próxima de onde você vive.',
-    },
-];
+interface CelulasSectionProps {
+    content: SiteCelulas;
+}
 
-const CelulasSection: React.FC = () => {
+const CelulasSection: React.FC<CelulasSectionProps> = ({ content }) => {
     return (
         <section
             id="celulas"
@@ -41,21 +23,18 @@ const CelulasSection: React.FC = () => {
                     <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-14">
                         <div>
                             <span className="inline-block px-4 py-1 bg-paraiso-green/10 text-paraiso-green text-[10px] font-black uppercase tracking-widest rounded-md mb-6">
-                                Grupos de Vida
+                                {content.badge}
                             </span>
                             <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-tight mb-6 text-paraiso-blue dark:text-white">
-                                A igreja{' '}
-                                <span className="text-paraiso-green italic">acontece</span>{' '}
-                                em células.
+                                {content.titlePart1}{' '}
+                                <span className="text-paraiso-green italic">{content.titleHighlight}</span>{' '}
+                                {content.titlePart2}
                             </h2>
                             <p className="text-base text-slate-500 dark:text-slate-300 font-medium leading-relaxed mb-4">
-                                Células são grupos pequenos onde a vida em comunidade realmente acontece. É onde você encontra amigos, cresce na fé e descobre o seu propósito — sem grandes palcos, só presença e verdade.
+                                {content.paragraph1}
                             </p>
                             <p className="text-base text-slate-500 dark:text-slate-300 font-medium leading-relaxed">
-                                Acreditamos que{' '}
-                                <em className="text-paraiso-blue dark:text-white not-italic font-black">
-                                    ninguém deveria seguir essa caminhada sozinho.
-                                </em>
+                                {content.paragraph2}
                             </p>
                         </div>
 
@@ -68,12 +47,12 @@ const CelulasSection: React.FC = () => {
                             <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
                             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-paraiso-green/20 rounded-full blur-2xl" />
                             <div className="relative z-10">
-                                <span className="text-5xl font-black text-white/20 leading-none">"</span>
+                                <span className="text-5xl font-black text-white/20 leading-none">&ldquo;</span>
                                 <p className="text-lg md:text-xl font-black italic leading-snug -mt-2 mb-4">
-                                    Onde dois ou três se reúnem em meu nome, ali estou eu no meio deles.
+                                    {content.verseText}
                                 </p>
                                 <p className="text-white/60 text-sm font-black uppercase tracking-widest">
-                                    — Mateus 18:20
+                                    — {content.verseReference}
                                 </p>
                             </div>
                         </div>
@@ -81,7 +60,7 @@ const CelulasSection: React.FC = () => {
                 </Reveal>
 
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
-                    {beneficios.map((item) => (
+                    {content.benefits.map((item) => (
                         <Reveal key={item.titulo}>
                             <motion.div
                                 whileHover={{ y: -4 }}
@@ -89,7 +68,7 @@ const CelulasSection: React.FC = () => {
                                 className="bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl p-6 md:p-8 hover:shadow-md transition-shadow"
                             >
                                 <div className="w-11 h-11 rounded-xl bg-paraiso-green/10 flex items-center justify-center mb-5">
-                                    <item.icon className="w-5 h-5 text-paraiso-green" />
+                                    <SiteIcon name={item.icon} className="w-5 h-5 text-paraiso-green" />
                                 </div>
                                 <h3 className="text-base font-black uppercase tracking-tight text-paraiso-blue dark:text-white mb-2">
                                     {item.titulo}
@@ -105,7 +84,7 @@ const CelulasSection: React.FC = () => {
                 <Reveal>
                     <div className="flex flex-col sm:flex-row items-center gap-6">
                         <motion.a
-                            href="/membros"
+                            href={content.ctaUrl}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             className="flex items-center gap-5 text-paraiso-green font-black uppercase tracking-widest text-sm group"
@@ -113,7 +92,7 @@ const CelulasSection: React.FC = () => {
                             <div className="w-14 h-14 rounded-full bg-paraiso-green text-white flex items-center justify-center group-hover:bg-paraiso-blue transition-all shadow-xl">
                                 <span className="text-xl">→</span>
                             </div>
-                            Quero encontrar uma célula
+                            {content.ctaLabel}
                         </motion.a>
                     </div>
                 </Reveal>

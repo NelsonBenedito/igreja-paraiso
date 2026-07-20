@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { createClient } from "@/utils/supabase/server";
 import ThemeHandler from "@/components/ThemeHandler";
+import { getSiteContent } from "@/lib/site-content/data";
 
 export default async function SiteLayout({
   children,
@@ -11,6 +12,7 @@ export default async function SiteLayout({
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const site = await getSiteContent();
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900 transition-colors">
@@ -18,7 +20,7 @@ export default async function SiteLayout({
 
       <Header user={user} />
       <main className="flex-1">{children}</main>
-      <Footer />
+      <Footer contact={site.contact} />
     </div>
   );
 }

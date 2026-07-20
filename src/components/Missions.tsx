@@ -1,14 +1,24 @@
 'use client';
 import React, { useRef, useEffect, useState } from 'react';
-import { MISSION_CHURCHES } from '../constants';
 import Reveal from '@/components/Reveal';
 import { motion } from 'framer-motion';
 import { MapPin, ArrowRight, Home, User } from 'lucide-react';
 import Link from 'next/link';
+import type { SiteChurches } from '@/lib/site-content/types';
 
-const Missions: React.FC = () => {
+interface MissionsProps {
+    content: SiteChurches;
+}
+
+const Missions: React.FC<MissionsProps> = ({ content }) => {
     const [width, setWidth] = useState(0);
     const carouselRef = useRef<HTMLDivElement>(null);
+
+    // Sede primeiro (isHeadquarters), depois o resto na ordem da API.
+    const churches = [...content.items].sort((a, b) => {
+        if (a.isHeadquarters === b.isHeadquarters) return 0;
+        return a.isHeadquarters ? -1 : 1;
+    });
 
     useEffect(() => {
         const updateWidth = () => {
@@ -20,7 +30,7 @@ const Missions: React.FC = () => {
         updateWidth();
         window.addEventListener('resize', updateWidth);
         return () => window.removeEventListener('resize', updateWidth);
-    }, []);
+    }, [churches.length]);
 
     return (
         <section id="missoes" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative">
@@ -28,14 +38,14 @@ const Missions: React.FC = () => {
                 <Reveal>
                     <div className="flex flex-col items-center text-center mb-12 md:mb-16">
                         <span className="inline-block px-4 py-1.5 bg-paraiso-green/10 text-paraiso-green text-[10px] font-black uppercase tracking-widest rounded-md mb-5">
-                            Nossa Presença
+                            {content.badge}
                         </span>
                         <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
-                            NOSSAS <br />
-                            <span className="text-paraiso-green-light italic font-serif lowercase">igrejas & missões</span>
+                            {content.titlePart1} <br />
+                            <span className="text-paraiso-green-light italic font-serif lowercase">{content.titleHighlight}</span>
                         </h2>
                         <p className="mt-5 text-slate-500 dark:text-slate-300 font-medium max-w-2xl text-base">
-                            Estamos presentes em diversas cidades através de nossas filiais e campos missionários, servindo às famílias locais com amor e dedicação.
+                            {content.intro}
                         </p>
                     </div>
                 </Reveal>
@@ -51,9 +61,9 @@ const Missions: React.FC = () => {
                             dragConstraints={{ right: 0, left: -width }}
                             className="flex gap-5 md:gap-6 pb-8"
                         >
-                            {MISSION_CHURCHES.map((church) => (
+                            {churches.map((church) => (
                                 <motion.div
-                                    key={church.id}
+                                    key={church.name}
                                     className="min-w-[280px] md:min-w-[340px] bg-white dark:bg-[#0f2540] rounded-2xl md:rounded-[2rem] overflow-hidden shadow-lg dark:shadow-paraiso-green/5 border border-slate-100 dark:border-white/5 relative group select-none"
                                 >
                                     <div className="relative h-[240px] md:h-[280px] overflow-hidden">
@@ -69,7 +79,7 @@ const Missions: React.FC = () => {
                                         <div className="absolute bottom-5 left-5 right-5 z-30">
                                             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-paraiso-green/90 backdrop-blur-sm text-white text-[9px] font-black uppercase tracking-widest mb-2 shadow-lg">
                                                 <Home size={10} />
-                                                Igreja / Filial
+                                                {church.isHeadquarters ? 'Sede' : 'Igreja / Filial'}
                                             </div>
                                             <h3 className="text-lg font-black text-white uppercase tracking-tight leading-none mb-0.5">
                                                 {church.name}
@@ -104,8 +114,8 @@ const Missions: React.FC = () => {
                                             </div>
                                         </div>
 
-                                        <Link 
-                                            href="/nossas-igrejas" 
+                                        <Link
+                                            href="/nossas-igrejas"
                                             className="mt-5 pt-4 border-t border-slate-100 dark:border-white/10 flex justify-between items-center group/btn cursor-pointer block"
                                         >
                                             <span className="text-paraiso-blue dark:text-paraiso-green-light font-black uppercase tracking-widest text-xs group-hover/btn:text-paraiso-green dark:group-hover/btn:text-white transition-colors">
