@@ -1,45 +1,36 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Calendar, Clock, MapPin, Tag, UserPlus, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Calendar, Clock, MapPin, Tag, UserPlus, CheckCircle2, X, Loader2, AlertCircle, User, Mail, Phone, MessageSquare } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { isRegistrationConfirmed } from '@/lib/events/types';
-import EventRegistrationModal from '@/components/EventRegistrationModal';
-
-interface Event {
-    id: string;
-    title: string;
-    description: string | null;
-    date: string;
-    time_start: string | null;
-    time_end: string | null;
-    location: string | null;
-    image_url: string | null;
-    tag: string | null;
-    registration_price?: number | null;
-}
+import { loadRegisteredEventIdsClient, submitEventRegistration } from '@/lib/events/data-client';
+import type { SiteEvent } from '@/lib/events/types';
 
 interface Props {
-    events: Event[];
-    /** IDs dos eventos em que o usuário já está inscrito */
+    events: SiteEvent[];
     registeredEventIds: string[];
 }
 
 const formatDate = (d: string) =>
     new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
 
-type ModalStatus = 'idle' | 'loading' | 'success' | 'duplicate' | 'table_missing' | 'error' | 'payment_error';
+type ModalStatus = 'idle' | 'loading' | 'success' | 'duplicate' | 'error';
 type ErrorDetail = { code?: string; message?: string } | null;
 
 export default function MembrosEventosClient({ events, registeredEventIds }: Props) {
     const supabase = createClient();
+    const router = useRouter();
 
     // Mantém localmente quais eventos já estão inscritos (inicia com o que virou do server)
     const [registeredIds, setRegisteredIds] = useState<string[]>(registeredEventIds);
 
     // Modal
-    const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+    const [selectedEvent, setSelectedEvent] = useState<SiteEvent | null>(null);
+    const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+    const [status, setStatus] = useState<ModalStatus>('idle');
+    const [errorDetail, setErrorDetail] = useState<ErrorDetail>(null);
 
     // Hydration client-side: re-busca inscrições ao montar
     // garante que inscrições existentes sejam refletidas mesmo que
@@ -47,29 +38,53 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
     useEffect(() => {
         const fetchMyRegistrations = async () => {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return;
+            if (!user?.email) return;
 
-            const { data } = await supabase
-                .from('event_registrations')
-                .select('event_id, payment_status')
-                .or(`user_id.eq.${user.id},email.eq.${user.email?.toLowerCase() ?? ''}`);
-
-            if (data && data.length > 0) {
-                setRegisteredIds(
-                    data
-                        .filter((r) => isRegistrationConfirmed(r.payment_status))
-                        .map((r) => r.event_id),
-                );
+            const ids = await loadRegisteredEventIdsClient(user.email, user.id);
+            if (ids.length > 0) {
+                setRegisteredIds(ids);
             }
         };
         fetchMyRegistrations();
     }, []);
 
-    const openModal = (event: Event) => setSelectedEvent(event);
-    const closeModal = () => setSelectedEvent(null);
+    const openModal = (event: SiteEvent) => {
+        setSelectedEvent(event);
+        setForm({ name: '', email: '', phone: '', message: '' });
+        setStatus('idle');
+        setErrorDetail(null);
+    };
 
-    const handleSuccess = (eventId: string) => {
-        setRegisteredIds((prev) => [...prev, eventId]);
+    const closeModal = () => {
+        setSelectedEvent(null);
+        setStatus('idle');
+        setErrorDetail(null);
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedEvent) return;
+        setStatus('loading');
+
+        const { data: { user } } = await supabase.auth.getUser();
+
+        const result = await submitEventRegistration(selectedEvent.id, {
+            name: form.name.trim(),
+            email: form.email.trim().toLowerCase(),
+            phone: form.phone.trim() || null,
+            message: form.message.trim() || null,
+            userId: user?.id ?? null,
+        });
+
+        if (result.ok) {
+            setStatus('success');
+            setRegisteredIds((prev) => [...prev, selectedEvent.id]);
+        } else if (result.reason === 'duplicate') {
+            setStatus('duplicate');
+        } else {
+            setErrorDetail({ message: result.message });
+            setStatus('error');
+        }
     };
 
     const isRegistered = (id: string) => registeredIds.includes(id);
@@ -90,7 +105,7 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
                         return (
                             <div
                                 key={event.id}
-                                onClick={() => { window.location.href = `/evento/${event.id}`; }}
+                                onClick={() => router.push(`/evento/${event.id}`)}
                                 className="group cursor-pointer bg-white dark:bg-paraiso-blue rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-xl border border-slate-100 dark:border-white/10 hover:-translate-y-1 transition-all duration-300 flex flex-col"
                             >
                                 {/* Imagem */}
@@ -169,7 +184,7 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
                                             whileTap={{ scale: 0.98 }}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                openModal(event);
+                                                router.push(`/evento/${event.id}`);
                                             }}
                                             className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-paraiso-green text-white font-black text-xs uppercase tracking-widest hover:bg-paraiso-blue transition-all shadow-md mt-auto"
                                         >
@@ -184,12 +199,154 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
                 </div>
             )}
 
-            {/* ── Modal de inscrição (multi-step) ── */}
-            <EventRegistrationModal
-                event={selectedEvent}
-                onClose={closeModal}
-                onSuccess={handleSuccess}
-            />
+            {/* ── Modal de inscrição ── */}
+            <AnimatePresence>
+                {selectedEvent && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+                            onClick={closeModal}
+                        />
+
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                            className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
+                        >
+                            <div className="relative w-full max-w-lg bg-white dark:bg-[#0f1a2a] rounded-3xl shadow-2xl overflow-hidden pointer-events-auto">
+
+                                {/* Header com imagem do evento */}
+                                <div
+                                    className="relative h-36 flex items-end p-6"
+                                    style={{
+                                        background: selectedEvent.image_url
+                                            ? `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.75) 100%), url(${selectedEvent.image_url}) center/cover`
+                                            : 'linear-gradient(135deg, #2B4364 0%, #7C9A40 100%)',
+                                    }}
+                                >
+                                    <div className="flex-1">
+                                        {selectedEvent.tag && (
+                                            <span className="px-3 py-1 bg-paraiso-green text-white text-[10px] font-black uppercase tracking-widest rounded-full mb-2 inline-block">
+                                                {selectedEvent.tag}
+                                            </span>
+                                        )}
+                                        <h2 className="text-xl font-black text-white leading-tight">{selectedEvent.title}</h2>
+                                        <p className="text-white/70 text-xs mt-1">
+                                            {formatDate(selectedEvent.date)}
+                                            {selectedEvent.time_start && ` · ${selectedEvent.time_start.slice(0, 5)}`}
+                                            {selectedEvent.location && ` · ${selectedEvent.location}`}
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={closeModal}
+                                        className="absolute top-4 right-4 p-2 rounded-full bg-black/30 text-white hover:bg-black/50 transition-all"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                </div>
+
+                                {/* Body */}
+                                <div className="p-6">
+
+                                    {/* Sucesso */}
+                                    {status === 'success' && (
+                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
+                                            <CheckCircle2 className="w-16 h-16 text-paraiso-green mx-auto" />
+                                            <div>
+                                                <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Inscrição confirmada!</h3>
+                                                <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                                                    Você está inscrito em <strong>{selectedEvent.title}</strong>.
+                                                </p>
+                                            </div>
+                                            <button onClick={closeModal} className="px-8 py-3 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-paraiso-blue transition-all">
+                                                Fechar
+                                            </button>
+                                        </motion.div>
+                                    )}
+
+                                    {/* Duplicado */}
+                                    {status === 'duplicate' && (
+                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
+                                            <AlertCircle className="w-16 h-16 text-amber-500 mx-auto" />
+                                            <div>
+                                                <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Já inscrito!</h3>
+                                                <p className="text-slate-500 dark:text-slate-400 text-sm">Este e-mail já foi cadastrado para este evento.</p>
+                                            </div>
+                                            <button onClick={closeModal} className="px-8 py-3 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full">
+                                                Fechar
+                                            </button>
+                                        </motion.div>
+                                    )}
+
+                                    {/* Erro genérico */}
+                                    {status === 'error' && (
+                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
+                                            <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />
+                                            <div>
+                                                <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Ocorreu um erro</h3>
+                                                <p className="text-slate-500 dark:text-slate-400 text-sm">Não foi possível realizar a inscrição. Tente novamente.</p>
+                                                {errorDetail?.message && (
+                                                    <p className="text-xs text-red-400 mt-2 font-mono">{errorDetail.code}: {errorDetail.message}</p>
+                                                )}
+                                            </div>
+                                            <button onClick={() => setStatus('idle')} className="px-8 py-3 bg-red-500 text-white font-black uppercase tracking-widest text-xs rounded-full">
+                                                Tentar novamente
+                                            </button>
+                                        </motion.div>
+                                    )}
+
+                                    {/* Formulário */}
+                                    {(status === 'idle' || status === 'loading') && (
+                                        <form onSubmit={handleSubmit} className="space-y-4">
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
+                                                Preencha seus dados para garantir sua vaga.
+                                            </p>
+
+                                            <div className="relative">
+                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                <input required type="text" placeholder="Nome completo" value={form.name}
+                                                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-paraiso-green transition-colors" />
+                                            </div>
+
+                                            <div className="relative">
+                                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                <input required type="email" placeholder="E-mail" value={form.email}
+                                                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                                                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-paraiso-green transition-colors" />
+                                            </div>
+
+                                            <div className="relative">
+                                                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                <input type="tel" placeholder="Telefone / WhatsApp (opcional)" value={form.phone}
+                                                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                                                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-paraiso-green transition-colors" />
+                                            </div>
+
+                                            <div className="relative">
+                                                <MessageSquare className="absolute left-4 top-3.5 w-4 h-4 text-slate-400" />
+                                                <textarea rows={2} placeholder="Observação (opcional)" value={form.message}
+                                                    onChange={(e) => setForm({ ...form, message: e.target.value })}
+                                                    className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-paraiso-green transition-colors resize-none" />
+                                            </div>
+
+                                            <button type="submit" disabled={status === 'loading'}
+                                                className="w-full py-4 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-paraiso-blue transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg">
+                                                {status === 'loading' ? <><Loader2 size={16} className="animate-spin" /> Confirmando...</> : 'Confirmar Inscrição'}
+                                            </button>
+                                        </form>
+                                    )}
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </>
     );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavItem, ServiceTime, Ministry, Mission, Sermon } from './types';
+import { NavItem, ServiceTime, Ministry, Mission, Sermon, MissionChurch } from './types';
 import {
     Youtube,
     Instagram,
@@ -7,15 +7,15 @@ import {
 } from 'lucide-react';
 
 export const NAV_ITEMS: NavItem[] = [
-    { label: 'Início', href: '#' },
+    { label: 'Início', href: '/' },
     { label: 'A Igreja', href: '/#sobre' },
-    /*     { label: 'Ao Vivo', href: '/#aovivo' }, */
     { label: 'Eventos', href: '/#eventos' },
     { label: 'Agenda', href: '/#agenda' },
     { label: 'Missões', href: '/#missoes' },
-    { label: 'Localização', href: '/#onde' },
+    { label: 'Time Pastoral', href: '/time-pastoral' },
+    { label: 'Nossas Igrejas', href: '/nossas-igrejas' },
+    { label: 'Ofertório', href: '/#ofertorio' },
     { label: 'Cotas', href: '/cotas/campus' }
-
 ];
 
 export const NEWS_ITEMS = [
@@ -128,6 +128,63 @@ export const MISSIONS: Mission[] = [
         role: 'Pastor Local',
         location: 'Anchieta - ES',
         image: '/prClovesS.jpg'
+    }
+];
+
+export const MISSION_CHURCHES: MissionChurch[] = [
+    {
+        id: '01',
+        name: 'Igreja Paraíso — Sede',
+        location: 'Santa Maria de Jetibá - ES',
+        address: 'Rua Helmut Gums, 438 - Virada, Santa Maria de Jetibá - ES',
+        image: '/pastor.jpg',
+        mapsUrl: 'https://maps.app.goo.gl/UsxnnZ69miAvFzvs6',
+        pastor: 'Pr. Evandro Menezes (Presidente)'
+    },
+    {
+        id: '02',
+        name: 'Igreja Paraíso — Itaguaçu',
+        location: 'Itaguaçu - ES',
+        address: 'Centro, Itaguaçu - ES, CEP 29690-000',
+        image: '/prRobsonJ.jpg',
+        mapsUrl: 'https://maps.google.com/?q=Igreja+Paraiso+Itaguacu',
+        pastor: 'Pr. Robson Jose Maria'
+    },
+    {
+        id: '03',
+        name: 'Igreja Paraíso — Santa Teresa',
+        location: 'Santa Teresa - ES',
+        address: 'Centro, Santa Teresa - ES, CEP 29650-000',
+        image: '/pastorTiagoP.jpg',
+        mapsUrl: 'https://maps.google.com/?q=Igreja+Paraiso+Santa+Teresa',
+        pastor: 'Pr. Tiago Pio'
+    },
+    {
+        id: '04',
+        name: 'Igreja Paraíso — Rio Possmoser',
+        location: 'Rio Possmoser - ES',
+        address: 'Rio Possmoser, Santa Maria de Jetibá - ES',
+        image: '/prJhefersonM.jpg',
+        mapsUrl: 'https://maps.google.com/?q=Igreja+Paraiso+Rio+Possmoser',
+        pastor: 'Pr. Jheferson M. Rosa'
+    },
+    {
+        id: '05',
+        name: 'Igreja Paraíso — Aracruz',
+        location: 'Aracruz - ES',
+        address: 'Centro, Aracruz - ES, CEP 29190-000',
+        image: '/prHerbertN.jpg',
+        mapsUrl: 'https://maps.google.com/?q=Igreja+Paraiso+Aracruz',
+        pastor: 'Pr. Herbert Neiva'
+    },
+    {
+        id: '06',
+        name: 'Igreja Paraíso — Anchieta',
+        location: 'Anchieta - ES',
+        address: 'Centro, Anchieta - ES, CEP 29230-000',
+        image: '/prClovesS.jpg',
+        mapsUrl: 'https://maps.google.com/?q=Igreja+Paraiso+Anchieta',
+        pastor: 'Pr. Cloves Souza'
     }
 ];
 

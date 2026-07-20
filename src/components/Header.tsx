@@ -66,7 +66,7 @@ const Header: React.FC<{ user?: User | null }> = ({ user }) => {
                                 : '/LogoParaisoW.svg'
                             }
                             alt="Logo"
-                            className="h-12 md:h-16 w-auto object-contain transition-all duration-500"
+                            className="h-12 w-auto object-contain transition-all duration-500"
                         />
                     </div>
                 </a>

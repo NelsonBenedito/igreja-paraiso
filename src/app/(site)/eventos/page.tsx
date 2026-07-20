@@ -1,26 +1,17 @@
-import { createClient } from '@/utils/supabase/server'
-import { Calendar, Clock, MapPin, Tag } from "lucide-react"
+import { getPublicEvents } from "@/lib/events/data";
+import { formatEventDate } from "@/lib/events/display";
+import { Calendar, Clock, MapPin, Tag } from "lucide-react";
 
 export default async function EventsPage() {
-    const supabase = await createClient()
-
-    const { data: events } = await supabase
-        .from('events')
-        .select('*')
-        .eq('published', true)
-        .gte('date', new Date().toISOString().split('T')[0]) // apenas eventos futuros
-        .order('date', { ascending: true })
-
-    const formatDate = (d: string) =>
-        new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', {
-            day: 'numeric', month: 'long', year: 'numeric',
-        })
+    const events = await getPublicEvents({ upcomingOnly: true }).catch((error) => {
+        console.error("[events/page] API indisponível, renderizando lista vazia:", error);
+        return [];
+    });
 
     return (
         <div className="bg-slate-50 min-h-screen pb-20 pt-24">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
-                {/* Header */}
                 <div className="text-center mb-16">
                     <span className="inline-block px-4 py-1.5 rounded-full bg-paraiso-green/10 text-paraiso-green text-xs font-black uppercase tracking-widest border border-paraiso-green/20 mb-4">
                         Agenda
@@ -33,8 +24,7 @@ export default async function EventsPage() {
                     </p>
                 </div>
 
-                {/* Events Grid */}
-                {!events || events.length === 0 ? (
+                {events.length === 0 ? (
                     <div className="text-center py-24 text-slate-400">
                         <Calendar size={56} className="mx-auto mb-4 opacity-30" />
                         <p className="text-xl font-bold">Nenhum evento programado no momento.</p>
@@ -47,7 +37,6 @@ export default async function EventsPage() {
                                 key={event.id}
                                 className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl border border-slate-100 hover:-translate-y-1 transition-all duration-300 flex flex-col"
                             >
-                                {/* Image */}
                                 <div className="relative h-52 w-full overflow-hidden bg-slate-200">
                                     {event.image_url ? (
                                         <img
@@ -68,11 +57,10 @@ export default async function EventsPage() {
                                     )}
                                 </div>
 
-                                {/* Content */}
                                 <div className="p-6 flex flex-col flex-grow">
                                     <div className="flex items-center gap-2 text-paraiso-green font-bold text-sm mb-3">
                                         <Calendar size={15} />
-                                        <span>{formatDate(event.date)}</span>
+                                        <span>{formatEventDate(event.date)}</span>
                                     </div>
 
                                     <h2 className="text-xl font-black text-slate-800 mb-2 group-hover:text-paraiso-blue-dark transition-colors leading-tight">

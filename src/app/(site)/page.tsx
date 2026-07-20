@@ -6,57 +6,49 @@ import LatestStream from "@/components/LatestStream";
 import Reveal from "@/components/Reveal";
 import MissionSection from "@/components/MissionSection";
 import CelulasSection from "@/components/CelulasSection";
+import OfertorioSection from "@/components/OfertorioSection";
 import { createClient } from "@/utils/supabase/server";
-import { isRegistrationConfirmed } from "@/lib/events/types";
-import { MapPin } from 'lucide-react';
+import {
+  getActiveSchedules,
+  getPublicEvents,
+  getRegisteredEventIdsForUser,
+} from "@/lib/events/data";
+import { MapPin, Info } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function Home() {
+
   const supabase = await createClient();
-
-  const { data: events } = await supabase
-    .from('events')
-    .select('*')
-    .eq('published', true)
-    .order('date', { ascending: true });
-
-  const { data: schedules } = await supabase
-    .from('schedules')
-    .select('*')
-    .eq('active', true)
-    .order('sort_order', { ascending: true });
-
-  // Verifica se há usuário logado e busca suas inscrições
   const { data: { user } } = await supabase.auth.getUser();
-  let registeredEventIds: string[] = [];
-  if (user?.email) {
-    const { data: registrations } = await supabase
-      .from('event_registrations')
-      .select('event_id, payment_status')
-      .eq('email', user.email.toLowerCase());
-    registeredEventIds = (registrations ?? [])
-      .filter((r) => isRegistrationConfirmed(r.payment_status))
-      .map((r) => r.event_id);
-  }
+
+
+  const [eventsResult, schedulesResult, registeredResult] = await Promise.allSettled([
+    getPublicEvents({ upcomingOnly: true }),
+    getActiveSchedules(),
+
+    user?.email
+      ? getRegisteredEventIdsForUser(user.email, user.id)
+      : Promise.resolve([] as string[])
+  ]);
+
+
+  const events = eventsResult.status === "fulfilled" ? eventsResult.value : [];
+  const schedules = schedulesResult.status === "fulfilled" ? schedulesResult.value : [];
+  const registeredEventIds = registeredResult.status === "fulfilled" ? registeredResult.value : [];
 
   return (
     <>
       <Hero />
 
-      {/* Seção de Texto Impactante - Estilo Igreja da Cidade */}
       <MissionSection />
+
+      <ProgramacaoSection schedules={schedules} />
 
       <CelulasSection />
 
-      <LatestStream />
+      <OfertorioSection />
 
-      <NewsSection events={events ?? []} registeredEventIds={registeredEventIds} />
-
-      <ProgramacaoSection schedules={schedules ?? []} />
-
-      <Missions />
-
-      {/* CTA de Localização Estilizado */}
-      <section id="onde" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-12 py-32 px-6 lg:px-20 border border-slate-100 dark:border-white/5 relative min-h-[80vh] flex items-center justify-center">
+      <section id="onde" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-360 mx-auto bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-6 md:my-10 py-20 md:py-28 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative min-h-[60vh] flex items-center justify-center">
         <img
           src="https://images.unsplash.com/photo-1438232992991-995b7058bbb3?q=80&w=2000"
           className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
@@ -64,7 +56,7 @@ export default async function Home() {
         />
         <div className="absolute inset-0 bg-paraiso-blue/90 backdrop-blur-[2px]"></div>
 
-        <div className="container items-center justify-center flex mx-auto px-6 relative z-10 text-center text-white">
+        <div className="flex justify-start text-left w-full px-6 relative z-10 text-white">
           <Reveal>
             <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter mb-8 leading-none">
               VENHA NOS <br />
@@ -75,7 +67,7 @@ export default async function Home() {
               <div className="bg-white/10 p-8 rounded-3xl backdrop-blur-md border border-white/10">
                 <div className="flex items-center gap-4 mb-4 text-paraiso-green-light">
                   <MapPin size={32} />
-                  <h3 className="text-lg font-black uppercase tracking-widest">Endereço</h3>
+                  <h3 className="text-lg font-black uppercase tracking-widest">Endereço (Sede)</h3>
                 </div>
                 <p className="text-base text-slate-200 font-medium leading-relaxed">
                   Rua Helmut Gums, 438 - Virada<br />
@@ -90,25 +82,42 @@ export default async function Home() {
                   <h3 className="text-lg font-black uppercase tracking-widest">Horários</h3>
                 </div>
                 <p className="text-base text-slate-200 font-medium leading-relaxed">
-                  Domingo: 09h e 18h<br />
-                  Quinta-feira: 19h30<br />
-                  Sábado: 19h30 (Juventude)
+                  Domingo: 09h e 18h30<br />
+                  Terça-feira: 20h00 (Doutrina e Oração)<br />
+                  Sábado: 19h00 (Juventude Eleve)
                 </p>
               </div>
             </div>
 
-            <a
-              href="https://maps.app.goo.gl/UsxnnZ69miAvFzvs6"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 px-12 py-5 bg-white text-paraiso-blue rounded-full font-black uppercase tracking-widest text-sm hover:bg-paraiso-green hover:text-white transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)]"
-            >
-              <MapPin size={18} />
-              Ver no Mapa
-            </a>
+            <div className="flex sm:flex-row gap-4">
+              <a
+                href="https://maps.app.goo.gl/UsxnnZ69miAvFzvs6"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-white text-paraiso-blue rounded-full font-black uppercase tracking-widest text-xs hover:bg-paraiso-green hover:text-white transition-all shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+              >
+                <MapPin size={16} />
+                Como Chegar (Sede)
+              </a>
+              <Link
+                href="/nossas-igrejas"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-transparent border-2 border-white hover:bg-white hover:text-paraiso-blue text-white rounded-full font-black uppercase tracking-widest text-xs transition-all"
+              >
+                <Info size={16} />
+                Nossas Igrejas
+              </Link>
+            </div>
           </Reveal>
         </div>
       </section>
+
+      {events.length > 0 && (
+        <NewsSection events={events} registeredEventIds={registeredEventIds} />
+      )}
+
+      <LatestStream />
+
+      <Missions />
     </>
   );
 }
