@@ -21,10 +21,25 @@ export class SiteContentApiError extends Error {
   }
 }
 
+type FetchCacheOptions = RequestInit & {
+  next?: { revalidate?: number | false; tags?: string[] };
+};
+
 /**
  * Conteúdo institucional completo do tenant.
- * Cache longo (5 min) + tag `site-content` para revalidação sob demanda.
+ *
+ * - Production: cache 5 min + tag `site-content` (webhook
+ *   `/api/revalidate-site-content` invalida sob demanda).
+ * - Preview (homologacao/QA): sem cache — o webhook do CMS não alcança o
+ *   Preview (SSO da Vercel) e `REVALIDATION_SECRET` pode não estar no Preview.
  */
+function siteContentFetchCache(): FetchCacheOptions {
+  if (process.env.VERCEL_ENV === "preview") {
+    return { cache: "no-store" };
+  }
+  return { next: { revalidate: 300, tags: ["site-content"] } };
+}
+
 export async function fetchSiteContent(): Promise<SiteContentResponse> {
   const base = getPublicApiBase();
   const slug = getTenantSlug();
@@ -36,7 +51,7 @@ export async function fetchSiteContent(): Promise<SiteContentResponse> {
   try {
     res = await fetch(url, {
       headers: { Accept: "application/json" },
-      next: { revalidate: 300, tags: ["site-content"] },
+      ...siteContentFetchCache(),
     });
   } catch (networkError) {
     const message =
