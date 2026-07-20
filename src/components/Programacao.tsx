@@ -20,7 +20,7 @@ const ProgramacaoSection: React.FC<ProgramacaoProps> = ({ schedules }) => {
     });
 
     return (
-        <section id="agenda" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative">
+        <section id="agenda" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden bg-clip-padding my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative">
             <div className="absolute top-0 right-0 w-1/3 h-full bg-paraiso-green/[0.03] skew-x-12 translate-x-20 pointer-events-none" />
 
             <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 relative z-10">

@@ -77,7 +77,7 @@ const LatestStream: React.FC<LatestStreamProps> = ({ content }) => {
     const titleMain = titleParts.length > 1 ? titleParts.slice(0, -1).join(' ') : content.sectionTitle;
 
     return (
-        <section id="aovivo" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative">
+        <section id="aovivo" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden bg-clip-padding my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative">
             <div className="absolute inset-0 bg-paraiso-blue/5 pointer-events-none" />
 
             <div className="relative z-10">

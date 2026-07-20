@@ -9,7 +9,7 @@ interface RevealProps {
     direction?: "up" | "down" | "left" | "right";
 }
 
-const Reveal: React.FC<RevealProps> = ({ children, width = "fit-content", delay = 0, direction = "up" }) => {
+const Reveal: React.FC<RevealProps> = ({ children, width = "100%", delay = 0, direction = "up" }) => {
     const directions = {
         up: { y: 40, x: 0 },
         down: { y: -40, x: 0 },
