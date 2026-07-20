@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { MapPin, User, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { MISSIONS } from "@/constants";
+import { getSiteContent } from "@/lib/site-content/data";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata = {
@@ -9,33 +9,36 @@ export const metadata = {
   description: "Conheça os pastores e líderes que servem à nossa comunidade.",
 };
 
-export default function TimePastoralPage() {
+export default async function TimePastoralPage() {
+  const site = await getSiteContent();
+  const { pastors } = site;
+
   return (
     <div className="bg-slate-50 dark:bg-paraiso-blue-deep min-h-screen pb-24 pt-28">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        
-        {/* Voltar */}
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="inline-flex items-center gap-2 text-slate-500 hover:text-paraiso-green transition-colors mb-8 text-sm font-bold uppercase tracking-widest"
         >
           <ArrowLeft size={16} /> Voltar para o início
         </Link>
 
-        {/* Cabeçalho */}
         <div className="text-center max-w-3xl mx-auto mb-20 space-y-6">
           <span className="inline-block px-4 py-1.5 rounded-full bg-paraiso-green/10 text-paraiso-green text-xs font-black uppercase tracking-widest border border-paraiso-green/20">
-            Liderança e Cuidado
+            {pastors.badge}
           </span>
           <h1 className="text-4xl md:text-5xl font-black text-paraiso-blue-dark dark:text-white tracking-tighter uppercase leading-none">
-            Nosso Time <span className="text-paraiso-green italic font-serif lowercase">pastoral</span>
+            {pastors.titlePart1}{" "}
+            <span className="text-paraiso-green italic font-serif lowercase">
+              {pastors.titleHighlight}
+            </span>
           </h1>
           <p className="text-slate-500 dark:text-slate-300 text-lg font-medium leading-relaxed">
-            Uma liderança dedicada a guiar, instruir e caminhar junto com cada família no amor de Cristo.
+            {pastors.intro}
           </p>
         </div>
 
-        {/* Pastor Presidente Destaque */}
+        {/* Destaque do presidente — ainda não modelado no CMS; mantido local */}
         <div className="max-w-4xl mx-auto mb-24 bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] overflow-hidden shadow-xl border border-slate-100 dark:border-white/5 p-8 md:p-12 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div className="relative aspect-[4/5] bg-slate-100 rounded-3xl overflow-hidden shadow-md ring-1 ring-slate-100 dark:ring-white/10">
             <Image
@@ -55,16 +58,20 @@ export default function TimePastoralPage() {
               Pr. Evandro Menezes
             </h2>
             <p className="text-slate-600 dark:text-slate-300 font-medium leading-relaxed text-base">
-              Líder visionário e dedicado ao ministério pastoral, o Pr. Evandro tem servido a esta geração com paixão pelo Evangelho, amor pelas pessoas e compromisso com o crescimento do Reino de Deus.
+              Líder visionário e dedicado ao ministério pastoral, o Pr. Evandro
+              tem servido a esta geração com paixão pelo Evangelho, amor pelas
+              pessoas e compromisso com o crescimento do Reino de Deus.
             </p>
             <div className="pt-2 border-t border-slate-100 dark:border-white/10 space-y-2 text-sm text-slate-500 dark:text-slate-400 font-medium">
               <p>📍 Atuação: Geral / Presidência do Campo</p>
-              <p>📖 Casado com Ricelle Menezes Gonçalves, parceira de vida e ministério.</p>
+              <p>
+                📖 Casado com Ricelle Menezes Gonçalves, parceira de vida e
+                ministério.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Grid de Pastores do Campo */}
         <div className="space-y-12">
           <div className="text-center max-w-2xl mx-auto space-y-4 mb-12">
             <h3 className="text-2xl md:text-3xl font-black text-paraiso-blue-dark dark:text-white uppercase tracking-tight">
@@ -74,9 +81,9 @@ export default function TimePastoralPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {MISSIONS.map((pastor) => (
-              <Card 
-                key={pastor.id} 
+            {pastors.items.map((pastor) => (
+              <Card
+                key={pastor.name}
                 className="group hover:shadow-2xl transition-all duration-500 overflow-hidden border-none shadow-md rounded-[2rem] h-full flex flex-col bg-white dark:bg-paraiso-blue-dark"
               >
                 <div className="relative aspect-[3/4] w-full overflow-hidden bg-slate-200">
@@ -95,7 +102,10 @@ export default function TimePastoralPage() {
                       <User size={10} />
                       {pastor.role.includes("Auxiliar") ? "Auxiliar" : "Local"}
                     </div>
-                    <h4 className="font-black text-xl text-slate-800 dark:text-white uppercase tracking-tight leading-tight line-clamp-1" title={pastor.name}>
+                    <h4
+                      className="font-black text-xl text-slate-800 dark:text-white uppercase tracking-tight leading-tight line-clamp-1"
+                      title={pastor.name}
+                    >
                       {pastor.name}
                     </h4>
                     <p className="text-sm font-bold text-paraiso-green uppercase tracking-wide">
@@ -111,7 +121,6 @@ export default function TimePastoralPage() {
             ))}
           </div>
         </div>
-
       </div>
     </div>
   );
