@@ -60,7 +60,8 @@ export const SITE_CONTENT_FALLBACK: SiteSections = {
       },
     ],
     ctaLabel: "Quero encontrar uma célula",
-    ctaUrl: "/membros",
+    ctaUrl:
+      "https://wa.me/5527998757008?text=Olá,+gostaria+de+falar+com+o+setor+de+secretaria+de+células!+",
   },
   visit: {
     titlePart1: "VENHA NOS",

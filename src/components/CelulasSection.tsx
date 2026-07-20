@@ -5,6 +5,9 @@ import { motion } from 'framer-motion';
 import SiteIcon from '@/components/SiteIcon';
 import type { SiteCelulas } from '@/lib/site-content/types';
 
+const CELULAS_WHATSAPP_URL =
+    'https://wa.me/5527998757008?text=Olá,+gostaria+de+falar+com+o+setor+de+secretaria+de+células!+';
+
 interface CelulasSectionProps {
     content: SiteCelulas;
 }
@@ -84,7 +87,9 @@ const CelulasSection: React.FC<CelulasSectionProps> = ({ content }) => {
                 <Reveal>
                     <div className="flex flex-col sm:flex-row items-center gap-6">
                         <motion.a
-                            href={content.ctaUrl}
+                            href={CELULAS_WHATSAPP_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             className="flex items-center gap-5 text-paraiso-green font-black uppercase tracking-widest text-sm group"
