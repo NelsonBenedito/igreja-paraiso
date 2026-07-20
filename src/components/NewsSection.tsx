@@ -22,6 +22,10 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
 
     const isRegistered = (id: string) => registeredIds.includes(id);
 
+    // Auto-guarda: sem eventos ativos, a seção não existe no DOM.
+    // Nada de "espaço em branco" nem mensagem de "sem eventos".
+    if (!events || events.length === 0) return null;
+
     /* useEffect(() => {
         const fetchMyRegistrations = async () => {
             const supabase = createClient();
@@ -55,16 +59,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
                 </div>
             </Reveal>
 
-            {events.length === 0 ? (
-                <Reveal>
-                    <div className="text-center py-16 text-slate-400">
-                        <CalendarDays size={48} className="mx-auto mb-4 opacity-30" />
-                        <p className="text-lg font-bold">Nenhum evento publicado no momento.</p>
-                        <p className="text-sm mt-1">Volte em breve para novidades!</p>
-                    </div>
-                </Reveal>
-            ) : (
-                <div className={`grid gap-6 md:gap-8 ${events.length === 1 ? 'max-w-lg mx-auto' : events.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
+            <div className={`grid gap-6 md:gap-8 ${events.length === 1 ? 'max-w-lg mx-auto' : events.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
                     {events.map((item, idx) => (
                         <Reveal key={item.id} delay={idx * 0.1}>
                             <div
@@ -162,8 +157,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
                             </div>
                         </Reveal>
                     ))}
-                </div>
-            )}
+            </div>
         </section>
     );
 };

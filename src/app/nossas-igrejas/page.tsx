@@ -1,14 +1,18 @@
 import Image from "next/image";
-import { MapPin, User, ArrowLeft, ExternalLink } from "lucide-react";
+import { MapPin, ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { getSiteContent } from "@/lib/site-content/data";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export const metadata = {
   title: "Nossas Igrejas | Igreja Paraíso",
   description: "Conheça nossas filiais e campos de atuação em diversas cidades.",
 };
+
+/** URL de embed do Google Maps sem necessidade de API key. */
+function mapEmbedUrl(query: string) {
+  return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+}
 
 export default async function NossasIgrejasPage() {
   const site = await getSiteContent();
@@ -45,61 +49,70 @@ export default async function NossasIgrejasPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {items.map((church) => (
-            <Card
-              key={church.name}
-              className="group hover:shadow-2xl transition-all duration-500 overflow-hidden border-none shadow-md rounded-[2.5rem] h-full flex flex-col bg-white dark:bg-paraiso-blue-dark"
-            >
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-200">
-                <Image
-                  src={church.image}
-                  alt={church.name}
-                  fill
-                  className="object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-paraiso-blue-deep/60 via-transparent to-transparent z-10" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+          {items.map((church) => {
+            const query = church.address?.trim() || church.location || church.name;
+            return (
+              <div
+                key={church.name}
+                className="group overflow-hidden rounded-[2.5rem] bg-white dark:bg-paraiso-blue-dark shadow-md hover:shadow-2xl transition-all duration-500 border border-slate-100 dark:border-white/5 flex flex-col"
+              >
+                <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-200">
+                  <Image
+                    src={church.image}
+                    alt={church.name}
+                    fill
+                    className="object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-paraiso-blue-deep/60 via-transparent to-transparent z-10" />
+                  <span className="absolute top-4 left-4 flex items-center gap-1 bg-white/90 backdrop-blur-sm dark:bg-paraiso-blue-dark/90 text-slate-800 dark:text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow z-20">
+                    <MapPin size={10} className="text-paraiso-green" />
+                    {church.isHeadquarters ? "Sede" : church.location.split(" - ")[0]}
+                  </span>
+                </div>
 
-                <span className="absolute top-4 left-4 flex items-center gap-1 bg-white/90 backdrop-blur-sm dark:bg-paraiso-blue-dark/90 text-slate-800 dark:text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow z-20">
-                  <MapPin size={10} className="text-paraiso-green" />
-                  {church.isHeadquarters
-                    ? "Sede"
-                    : church.location.split(" - ")[0]}
-                </span>
-              </div>
-              <CardContent className="p-8 flex flex-col gap-4 flex-grow relative">
-                <div className="space-y-1">
-                  <h3 className="font-black text-xl text-slate-800 dark:text-white uppercase tracking-tight leading-tight group-hover:text-paraiso-green transition-colors">
+                <div className="p-8 flex flex-col gap-5 flex-grow">
+                  <h3 className="font-black text-2xl text-slate-800 dark:text-white uppercase tracking-tight leading-tight group-hover:text-paraiso-green transition-colors">
                     {church.name}
                   </h3>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <User size={12} className="text-paraiso-green" />
-                    Liderança: {church.pastor}
-                  </p>
-                </div>
 
-                <div className="text-sm font-medium text-slate-600 dark:text-slate-300 leading-relaxed min-h-[3rem]">
-                  {church.address}
-                </div>
+                  {/* Endereço completo */}
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-paraiso-green shrink-0 mt-0.5" />
+                    <p className="text-sm md:text-base font-medium text-slate-600 dark:text-slate-300 leading-relaxed">
+                      {church.address?.trim() || church.location}
+                    </p>
+                  </div>
 
-                <div className="mt-auto pt-6 border-t border-slate-100 dark:border-white/5">
-                  <Button
-                    asChild
-                    className="w-full bg-paraiso-blue hover:bg-paraiso-green text-white font-black uppercase tracking-widest text-xs py-5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 group-hover:shadow-lg"
-                  >
-                    <a
-                      href={church.mapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <MapPin size={14} /> Ver no Mapa <ExternalLink size={12} />
-                    </a>
-                  </Button>
+                  {/* Mapa integrado */}
+                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-100 dark:border-white/10 bg-slate-100 dark:bg-white/5">
+                    <iframe
+                      title={`Mapa — ${church.name}`}
+                      src={mapEmbedUrl(query)}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      className="absolute inset-0 h-full w-full border-0"
+                      allowFullScreen
+                    />
+                  </div>
+
+                  {church.mapsUrl?.trim() ? (
+                    <div className="mt-auto pt-2">
+                      <Button
+                        asChild
+                        className="w-full bg-paraiso-blue hover:bg-paraiso-green text-white font-black uppercase tracking-widest text-xs py-5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
+                      >
+                        <a href={church.mapsUrl} target="_blank" rel="noopener noreferrer">
+                          <MapPin size={14} /> Como Chegar <ExternalLink size={12} />
+                        </a>
+                      </Button>
+                    </div>
+                  ) : null}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

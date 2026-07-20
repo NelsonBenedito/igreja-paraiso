@@ -2,7 +2,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Reveal from '@/components/Reveal';
 import { motion } from 'framer-motion';
-import { MapPin, ArrowRight, Home, User } from 'lucide-react';
+import { MapPin, ArrowRight, Home } from 'lucide-react';
 import Link from 'next/link';
 import type { SiteChurches } from '@/lib/site-content/types';
 
@@ -88,6 +88,7 @@ const Missions: React.FC<MissionsProps> = ({ content }) => {
                                     </div>
 
                                     <div className="p-5 md:p-6 bg-white dark:bg-[#0f2540] flex flex-col justify-between min-h-[180px]">
+                                        {/* Missões = sobre o lugar. O time pastoral vive em /time-pastoral. */}
                                         <div className="space-y-4">
                                             <div className="flex items-start gap-3">
                                                 <div className="w-9 h-9 rounded-full bg-paraiso-green/10 flex items-center justify-center text-paraiso-green shrink-0">
@@ -97,18 +98,6 @@ const Missions: React.FC<MissionsProps> = ({ content }) => {
                                                     <h4 className="font-bold text-paraiso-blue dark:text-white text-xs uppercase tracking-widest mb-0.5">Localização</h4>
                                                     <p className="text-slate-500 dark:text-slate-300 font-medium text-sm leading-relaxed truncate">
                                                         {church.location}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-start gap-3">
-                                                <div className="w-9 h-9 rounded-full bg-paraiso-blue/10 flex items-center justify-center text-paraiso-blue dark:text-white shrink-0">
-                                                    <User className="w-4 h-4 text-paraiso-green" />
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <h4 className="font-bold text-paraiso-blue dark:text-white text-xs uppercase tracking-widest mb-0.5">Liderança</h4>
-                                                    <p className="text-slate-500 dark:text-slate-300 font-medium text-sm leading-relaxed truncate">
-                                                        {church.pastor}
                                                     </p>
                                                 </div>
                                             </div>
