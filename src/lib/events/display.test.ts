@@ -41,6 +41,17 @@ describe("isEventFinished", () => {
     expect(isEventFinished(evento("2026-10-22", "20:00:00", "22:00:00"), noite)).toBe(true);
   });
 
+  it("evento que cruza a meia-noite (término < início) só encerra às 23:59 do dia", () => {
+    const virada = evento("2026-10-22", "22:00:00", "01:00:00");
+    const as2330 = new Date("2026-10-23T02:30:00Z"); // 22/10 23:30 em São Paulo
+    const as2359 = new Date("2026-10-23T02:59:30Z"); // 22/10 23:59 em São Paulo
+    const as0030 = new Date("2026-10-23T03:30:00Z"); // 23/10 00:30 em São Paulo
+    expect(isEventFinished(virada, AGORA)).toBe(false);
+    expect(isEventFinished(virada, as2330)).toBe(false);
+    expect(isEventFinished(virada, as2359)).toBe(false);
+    expect(isEventFinished(virada, as0030)).toBe(true);
+  });
+
   it("à meia-noite em São Paulo o dia já é o seguinte (00h, não 24h)", () => {
     const meiaNoite = new Date("2026-10-22T03:00:00Z"); // 22/10 00:00 em São Paulo
     expect(isEventFinished(evento("2026-10-21"), meiaNoite)).toBe(true);

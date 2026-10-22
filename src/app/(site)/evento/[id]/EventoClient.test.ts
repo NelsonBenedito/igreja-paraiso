@@ -81,3 +81,30 @@ describe("/evento/[id] — conteúdo do painel", () => {
     );
   });
 });
+
+describe("/evento/[id] — hero", () => {
+  it("usa capa e primeira tag do painel, como os cards, sem repetir a tag", () => {
+    const html = render(
+      evento({
+        cover_image_url: "https://media.example/capa.jpg",
+        image_url: "https://media.example/antiga.jpg",
+        tags: [
+          { id: "t1", name: "Jovens", slug: "jovens" },
+          { id: "t2", name: "Louvor", slug: "louvor" },
+        ],
+        tag: "Legado",
+      }),
+    );
+    expect(html).toContain('src="https://media.example/capa.jpg"');
+    expect(html).not.toContain("antiga.jpg");
+    expect(html).not.toContain("Legado");
+    expect(html.match(/>Jovens</g)).toHaveLength(1);
+    expect(html.match(/>Louvor</g)).toHaveLength(1);
+  });
+
+  it("sem os campos novos, cai na imagem e etiqueta antigas", () => {
+    const html = render(evento({ image_url: "https://media.example/antiga.jpg", tag: "Legado" }));
+    expect(html).toContain('src="https://media.example/antiga.jpg"');
+    expect(html).toContain(">Legado<");
+  });
+});

@@ -13,7 +13,7 @@ import type {
     OrderPaymentStatus,
     BillingType,
 } from '@/lib/events/types';
-import { formatEventDate } from '@/lib/events/display';
+import { eventCardContent, formatEventDate } from '@/lib/events/display';
 import { selectableTicketId } from '@/lib/events/tickets';
 
 interface Props {
@@ -298,6 +298,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
 
     if (!event) return null;
 
+    const { imageUrl: headerImageUrl, tag: headerTag } = eventCardContent(event);
     const totalCents = unitPrice * quantity;
     const pix = checkoutResponse?.pix;
     const hasPixData = !!(pix?.payload || pix?.encodedImage);
@@ -368,15 +369,15 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                             <div
                                 className="relative h-36 flex items-end p-6 shrink-0"
                                 style={{
-                                    background: event.image_url
-                                        ? `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%), url(${event.image_url}) center/cover`
+                                    background: headerImageUrl
+                                        ? `linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%), url(${headerImageUrl}) center/cover`
                                         : 'linear-gradient(135deg, #2B4364 0%, #7C9A40 100%)',
                                 }}
                             >
                                 <div className="flex-1">
-                                    {event.tag && (
+                                    {headerTag && (
                                         <span className="px-3 py-1 bg-paraiso-green text-white text-[10px] font-black uppercase tracking-widest rounded-full mb-2 inline-block">
-                                            {event.tag}
+                                            {headerTag}
                                         </span>
                                     )}
                                     <h2 className="text-xl font-black text-white leading-tight">{event.title}</h2>

@@ -9,7 +9,7 @@ import {
 import Link from 'next/link';
 import EventRegistrationModal from '@/components/EventRegistrationModal';
 import type { SiteEvent } from '@/lib/events/types';
-import { formatEventDate, isEventFinished, toEmbedUrl } from '@/lib/events/display';
+import { eventCardContent, formatEventDate, isEventFinished, toEmbedUrl } from '@/lib/events/display';
 import { sanitizeEventHtml } from '@/lib/events/sanitize';
 
 interface Props {
@@ -32,6 +32,7 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
     };
 
     const formatInfo = FORMAT_LABELS[event.format] ?? FORMAT_LABELS.IN_PERSON;
+    const { imageUrl: heroImageUrl, tag: heroTag } = eventCardContent(event);
 
     const isFinished = isEventFinished(event);
     const detailsHtml = useMemo(
@@ -68,9 +69,9 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
                 <div className="bg-white dark:bg-paraiso-blue-dark rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border border-slate-100 dark:border-white/5">
                     {/* Hero */}
                     <div className="relative h-[300px] sm:h-[400px] md:h-[500px] w-full">
-                        {(event.cover_image_url || event.image_url) ? (
+                        {heroImageUrl ? (
                             <img
-                                src={event.cover_image_url || event.image_url!}
+                                src={heroImageUrl}
                                 alt={event.title}
                                 className="w-full h-full object-cover"
                             />
@@ -83,15 +84,16 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
 
                         <div className="absolute bottom-0 left-0 w-full p-6 sm:p-10 md:p-16">
                             <div className="flex flex-wrap items-center gap-2 mb-4">
-                                {event.tag && (
+                                {heroTag && (
                                     <span className="px-3 py-1.5 bg-paraiso-green text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                                        {event.tag}
+                                        {heroTag}
                                     </span>
                                 )}
                                 <span className="px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider rounded-full flex items-center gap-1.5">
                                     {formatInfo.icon} {formatInfo.label}
                                 </span>
-                                {event.tags?.map(t => (
+                                {/* A primeira tag já é a etiqueta em destaque. */}
+                                {event.tags.slice(1).map(t => (
                                     <span
                                         key={t.id}
                                         className="px-3 py-1.5 bg-white/10 text-white/80 text-[10px] font-bold uppercase tracking-wider rounded-full"
@@ -260,13 +262,9 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
 
                                 {/* Ações */}
                                 <div className="pt-6 border-t border-slate-200 dark:border-white/10 space-y-3">
-                                    {isFinished ? (
+                                    {isFinished || isRegistrationClosed ? (
                                         <div className="w-full text-center py-4 rounded-full bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest text-xs">
-                                            Evento encerrado
-                                        </div>
-                                    ) : isRegistrationClosed ? (
-                                        <div className="w-full text-center py-4 rounded-full bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest text-xs">
-                                            Inscrições encerradas
+                                            {isFinished ? 'Evento encerrado' : 'Inscrições encerradas'}
                                         </div>
                                     ) : isRegistered ? (
                                         <div className="w-full flex items-center justify-center gap-2 py-4 rounded-full bg-paraiso-green/10 text-paraiso-green font-black uppercase tracking-widest text-xs border border-paraiso-green/30">

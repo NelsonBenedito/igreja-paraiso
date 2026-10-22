@@ -11,11 +11,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     const event = await getPublicEventById(id);
     if (!event) return {};
 
+    const title = `${event.title} | Igreja Paraíso`;
+    const description = event.short_description ?? event.description ?? undefined;
     const image = event.cover_image_url ?? event.image_url;
     return {
-        title: `${event.title} | Igreja Paraíso`,
-        description: event.short_description ?? event.description ?? undefined,
-        ...(image ? { openGraph: { images: [image] } } : {}),
+        title,
+        description,
+        openGraph: { title, description, ...(image ? { images: [image] } : {}) },
     };
 }
 

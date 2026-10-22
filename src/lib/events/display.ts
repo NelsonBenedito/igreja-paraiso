@@ -63,12 +63,15 @@ function saoPauloNow(now: Date): string {
 /**
  * O evento já terminou? Compara, no fuso de São Paulo, o fim do evento
  * (`date` + `time_end ?? time_start ?? "23:59"`) com o momento atual.
+ * Término antes do início (evento que cruza a meia-noite) → fim às 23:59 do dia.
  */
 export function isEventFinished(
   event: { date: string; time_end: string | null; time_start: string | null },
   now = new Date(),
 ): boolean {
-  const endTime = (event.time_end ?? event.time_start ?? "23:59").slice(0, 5);
+  const start = event.time_start?.slice(0, 5) ?? null;
+  const end = event.time_end?.slice(0, 5) ?? null;
+  const endTime = end && start && end < start ? "23:59" : (end ?? start ?? "23:59");
   return saoPauloNow(now) > `${event.date} ${endTime}`;
 }
 
