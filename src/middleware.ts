@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/utils/supabase/middleware";
+import { isRemovedAdminRoute } from "@/lib/legacy-admin-routes";
 
 /**
  * Modo “só campus” em produção: defina `NEXT_PUBLIC_ONLY_CAMPUS_LIVE=true` no
@@ -38,6 +39,9 @@ function isAllowedWhenCampusOnly(pathname: string): boolean {
 export async function middleware(request: NextRequest) {
   if (isCampusOnlyMode() && !isAllowedWhenCampusOnly(request.nextUrl.pathname)) {
     return NextResponse.redirect(new URL("/em-construcao", request.url));
+  }
+  if (isRemovedAdminRoute(request.nextUrl.pathname)) {
+    return NextResponse.redirect(new URL("/membros", request.url));
   }
   return await updateSession(request);
 }

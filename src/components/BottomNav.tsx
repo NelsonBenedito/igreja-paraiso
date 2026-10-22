@@ -4,8 +4,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
     LayoutDashboard,
-    CalendarDays,
-    ListChecks,
     Home,
     Radio,
     UserCircle,
@@ -16,8 +14,6 @@ import {
 
 const ADMIN_NAV = [
     { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
-    { href: '/admin/eventos', icon: CalendarDays, label: 'Eventos' },
-    { href: '/admin/programacao', icon: ListChecks, label: 'Agenda' },
 ]
 
 const MEMBROS_NAV = [
