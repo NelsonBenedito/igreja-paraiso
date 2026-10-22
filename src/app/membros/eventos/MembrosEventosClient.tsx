@@ -34,15 +34,12 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
     const [status, setStatus] = useState<ModalStatus>('idle');
     const [errorDetail, setErrorDetail] = useState<ErrorDetail>(null);
 
-    // Hydration client-side: re-busca inscrições ao montar
-    // garante que inscrições existentes sejam refletidas mesmo que
-    // o servidor não tenha conseguido via RLS
+    // Hydration client-side: re-busca inscrições ao montar (pelo servidor,
+    // que usa a sessão e o segredo de participante), para refletir inscrições
+    // existentes mesmo que a consulta da página tenha falhado
     useEffect(() => {
         const fetchMyRegistrations = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user?.email) return;
-
-            const ids = await loadRegisteredEventIdsClient(user.email, user.id);
+            const ids = await loadRegisteredEventIdsClient();
             if (ids.length > 0) {
                 setRegisteredIds(ids);
             }

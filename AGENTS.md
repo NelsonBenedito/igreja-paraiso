@@ -13,6 +13,8 @@ Next 16 (App Router), React 19, Tailwind 4, TypeScript. Deploy na Vercel:
   link do Maps = filial `isHeadquarters` em `churches.items` (`mapsUrl`); horários de culto =
   `GET /api/public/tenants/:slug/schedules` (só `active`); listas = `churches/pastors/ministries.items`.
   `visit.address` e `visit.hours` são texto da seção Visite-nos, não fonte de endereço/horário.
+- Inscrições do membro (`/registrations/mine`, `/events/:id/registrations/check`): só pelo servidor, com header
+  `x-participant-secret` = `CHURCHMANAGER_PARTICIPANT_SECRET` (só servidor; = `PUBLIC_PARTICIPANT_API_SECRET` da API); o navegador usa `GET /api/membros/inscricoes`.
 - Revalidação: `GET|POST /api/revalidate-site-content` com header `x-revalidation-secret` (= `REVALIDATION_SECRET`);
   em produção sem o segredo configurado → 401; expira a tag `site-content` na hora (`{ expire: 0 }`), que cobre
   site-content, `/schedules` e eventos. `?secret=` ainda é aceito por compatibilidade — **REMOVER** quando o painel só enviar o header.

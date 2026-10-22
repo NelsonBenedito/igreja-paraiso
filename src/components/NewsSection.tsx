@@ -5,7 +5,6 @@ import ImageWithFallback from './ImageWithFallback';
 import { motion } from 'framer-motion';
 import { CalendarDays, MapPin, Clock, UserPlus, CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
 import { loadRegisteredEventIdsClient } from '@/lib/events/data-client';
 import type { SiteEvent } from '@/lib/events/types';
 import { eventCardContent } from '@/lib/events/display';
@@ -30,11 +29,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
 
     /* useEffect(() => {
         const fetchMyRegistrations = async () => {
-            const supabase = createClient();
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user?.email) return;
-
-            const ids = await loadRegisteredEventIdsClient(user.email, user.id);
+            const ids = await loadRegisteredEventIdsClient();
             if (ids.length > 0) {
                 setRegisteredIds(ids);
             }
