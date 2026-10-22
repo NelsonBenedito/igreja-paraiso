@@ -34,8 +34,8 @@ export const SITE_CONTENT_CONSUMPTION: Consumption[] = [
     section: "churches",
     fields: ["badge", "titlePart1", "titleHighlight", "intro"],
     itemFields: ["name", "location", "address", "image", "mapsUrl", "isHeadquarters"],
-    files: ["src/components/Missions.tsx", "src/app/nossas-igrejas/page.tsx"],
-    pages: ["/", "/nossas-igrejas"],
+    files: ["src/components/Missions.tsx", "src/app/nossas-igrejas/page.tsx", "src/lib/contact/view.ts"],
+    pages: ["/", "/nossas-igrejas", "/contato"],
   },
   {
     section: "pastors",
@@ -53,8 +53,8 @@ export const SITE_CONTENT_CONSUMPTION: Consumption[] = [
   {
     section: "contact",
     fields: ["phone", "email", "address", "tagline", "copyright", "youtubeUrl", "instagramUrl", "facebookUrl"],
-    files: ["src/components/Footer.tsx"],
-    pages: ["rodapé de todas as páginas"],
+    files: ["src/components/Footer.tsx", "src/lib/contact/view.ts"],
+    pages: ["rodapé de todas as páginas", "/contato"],
   },
   {
     section: "youtube",
