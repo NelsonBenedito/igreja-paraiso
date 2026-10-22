@@ -1,17 +1,22 @@
 
 import Image from "next/image";
-import { Instagram, GraduationCap, Heart, MapPin, User } from "lucide-react";
+import { Instagram, GraduationCap, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import ImageWithFallback from "@/components/ImageWithFallback";
+import { getSiteContent } from "@/lib/site-content/data";
 
-export default function AboutPage() {
+export default async function AboutPage() {
+    // Lista vem do painel (pastors.items); o bloco do Presidente é texto institucional.
+    const { pastors } = await getSiteContent();
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-20">
             {/* Header Section */}
             <div className="text-center max-w-3xl mx-auto space-y-6">
                 <h1 className="text-4xl md:text-5xl font-serif font-bold text-primary">Sobre a Igreja Paraíso</h1>
                 <p className="text-xl text-muted-foreground leading-relaxed">
-                    "Casa de Deus, minha família."
+                    &quot;Casa de Deus, minha família.&quot;
                 </p>
             </div>
 
@@ -94,60 +99,25 @@ export default function AboutPage() {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <MissionCard
-                        name="Pr. Clétson Barros"
-                        role="Pastor Auxiliar - Sede"
-                        location="Santa Maria de Jetibá - ES"
-                        image="/prCletsonB.jpg"
-                    />
-                    <MissionCard
-                        name="Pr. Leandro Hins de Brito"
-                        role="Pastor Auxiliar - Sede"
-                        location="Santa Maria de Jetibá - ES"
-                        image="/prLeandroB.jpg"
-                    />
-                    <MissionCard
-                        name="Pr. Robson Jose Maria"
-                        role="Pastor Local"
-                        location="Itaguaçu - ES"
-                        image="/prRobsonJ.jpg"
-                    />
-                    <MissionCard
-                        name="Pr. Tiago Pio"
-                        role="Pastor Local"
-                        location="Santa Teresa - ES"
-                        image="/pastorTiagoP.jpg"
-                    />
-                    <MissionCard
-                        name="Pr. Jheferson Marlo Marcal Rosa"
-                        role="Pastor Local"
-                        location="Rio Possmoser - ES"
-                        image="/prJhefersonM.jpg"
-                    />
-                    <MissionCard
-                        name="Pr. Herbert Neiva"
-                        role="Pastor Local"
-                        location="Aracruz - ES"
-                        image="/prHerbertN.jpg"
-                    />
-                    <MissionCard
-                        name="Pr. Cloves Souza"
-                        role="Pastor Local"
-                        location="Anchieta - ES"
-                        image="/prClovesS.jpg"
-                    />
-                </div>
+                {pastors.items.length === 0 ? (
+                    <p className="text-center text-muted-foreground">Nenhum pastor disponível no momento.</p>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {pastors.items.map((pastor) => (
+                            <MissionCard key={pastor.name} name={pastor.name} image={pastor.image} />
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
-function MissionCard({ name, role, location, image }: { name: string, role: string, location: string, image: string }) {
+function MissionCard({ name, image }: { name: string, image: string }) {
     return (
         <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden border-none shadow-sm h-full flex flex-col">
             <div className="relative aspect-square w-full overflow-hidden bg-muted">
-                <Image
+                <ImageWithFallback
                     src={image}
                     alt={name}
                     fill
@@ -157,14 +127,7 @@ function MissionCard({ name, role, location, image }: { name: string, role: stri
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
             <CardContent className="p-6 flex flex-col gap-2 flex-grow bg-card relative">
-                <div className="flex flex-col gap-1">
-                    <h3 className="font-bold text-lg leading-tight line-clamp-1" title={name}>{name}</h3>
-                    <p className="text-sm text-primary font-medium">{role}</p>
-                </div>
-                <div className="mt-auto pt-4 flex items-center gap-2 text-muted-foreground text-sm border-t border-border/40">
-                    <MapPin className="w-4 h-4 shrink-0" />
-                    <span>{location}</span>
-                </div>
+                <h3 className="font-bold text-lg leading-tight line-clamp-1" title={name}>{name}</h3>
             </CardContent>
         </Card>
     );
