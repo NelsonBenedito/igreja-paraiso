@@ -41,8 +41,8 @@ export const SITE_CONTENT_CONSUMPTION: Consumption[] = [
     section: "pastors",
     fields: ["badge", "titlePart1", "titleHighlight", "intro"],
     itemFields: ["name", "image"],
-    files: ["src/app/time-pastoral/page.tsx"],
-    pages: ["/time-pastoral"],
+    files: ["src/app/time-pastoral/page.tsx", "src/app/(site)/sobre/page.tsx"],
+    pages: ["/time-pastoral", "/sobre"],
   },
   {
     section: "giving",

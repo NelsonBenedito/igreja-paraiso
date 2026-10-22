@@ -24,6 +24,7 @@ Só **textos** institucionais usam a reserva (`fallbacks.ts`). Listas (`churches
 | `/` | `youtube` | channelHandle, sectionTitle | texto de reserva |
 | `/nossas-igrejas` | `churches` | cabeçalho + itens: name, location, address, image, mapsUrl, isHeadquarters | cabeçalho + "Nenhuma igreja disponível no momento." |
 | `/time-pastoral` | `pastors` | badge, titlePart1/Highlight, intro; itens: name, image | cabeçalho + "Nenhum pastor disponível no momento." |
+| `/sobre` | `pastors` | só itens: name, image (grade "Nossos Pastores e Missões"; cargo e cidade não existem no contrato). O bloco do Presidente é texto institucional da página | grade dá lugar a "Nenhum pastor disponível no momento." |
 | todas (rodapé) | `contact` | phone, email, address, tagline, copyright, youtubeUrl, instagramUrl, facebookUrl | textos de reserva |
 | `/contato` | `contact` | phone, email, address | blocos **somem** (nenhum texto/dado fixo; API fora → página só com o cabeçalho) |
 | `/contato` | `churches` | só `mapsUrl` da filial ativa com `isHeadquarters` (botões "Ver no Google Maps" e "Abrir GPS") | botões somem |
