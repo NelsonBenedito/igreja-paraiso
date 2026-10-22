@@ -13,6 +13,9 @@ Next 16 (App Router), React 19, Tailwind 4, TypeScript. Deploy na Vercel:
   link do Maps = filial `isHeadquarters` em `churches.items` (`mapsUrl`); horários de culto =
   `GET /api/public/tenants/:slug/schedules` (só `active`); listas = `churches/pastors/ministries.items`.
   `visit.address` e `visit.hours` são texto da seção Visite-nos, não fonte de endereço/horário.
+- Revalidação: `GET|POST /api/revalidate-site-content` com header `x-revalidation-secret` (= `REVALIDATION_SECRET`);
+  em produção sem o segredo configurado → 401; expira a tag `site-content` na hora (`{ expire: 0 }`), que cobre
+  site-content e `/schedules`. `?secret=` ainda é aceito por compatibilidade — **REMOVER** quando o painel só enviar o header.
 - Atualização: revalidação OK → próxima visita mostra o novo; revalidação ausente/falha → até 300 s;
   Preview sem cache; eventos 60 s.
 

@@ -126,7 +126,7 @@ export async function fetchPublicSchedules(
   revalidate = 300,
 ): Promise<PublicScheduleListResponse> {
   return publicFetch<PublicScheduleListResponse>("/schedules", {
-    next: { revalidate },
+    next: { revalidate, tags: ["site-content"] },
   });
 }
 
