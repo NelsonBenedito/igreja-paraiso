@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { eventCardContent, isEventFinished } from "./display";
+import { eventCardContent, isEventFinished, toEmbedUrl } from "./display";
 
 /** 22/10/2026 12:00 em São Paulo (UTC-3). */
 const AGORA = new Date("2026-10-22T15:00:00Z");
@@ -87,5 +87,41 @@ describe("eventCardContent", () => {
 
   it("sem nada, devolve nulos", () => {
     expect(eventCardContent(base)).toEqual({ text: null, imageUrl: null, tag: null });
+  });
+});
+
+describe("toEmbedUrl", () => {
+  const YT = "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ";
+
+  it.each([
+    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "https://youtube.com/watch?v=dQw4w9WgXcQ&t=42s",
+    "https://m.youtube.com/watch?v=dQw4w9WgXcQ",
+    "https://youtu.be/dQw4w9WgXcQ",
+    "https://youtu.be/dQw4w9WgXcQ?si=abc",
+    "https://www.youtube.com/shorts/dQw4w9WgXcQ",
+    "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "  https://youtu.be/dQw4w9WgXcQ  ",
+  ])("YouTube %s → youtube-nocookie", (url) => {
+    expect(toEmbedUrl(url)).toBe(YT);
+  });
+
+  it("Vimeo → player.vimeo.com", () => {
+    expect(toEmbedUrl("https://vimeo.com/76979871")).toBe("https://player.vimeo.com/video/76979871");
+    expect(toEmbedUrl("https://www.vimeo.com/76979871")).toBe("https://player.vimeo.com/video/76979871");
+  });
+
+  it.each([
+    "https://example.com/video.mp4",
+    "https://www.youtube.com/watch",
+    "https://www.youtube.com/watch?v=curto",
+    "https://www.youtube.com/channel/UC123",
+    "https://vimeo.com/channels/staffpicks",
+    "https://youtube.com.evil.example/watch?v=dQw4w9WgXcQ",
+    "javascript:alert(1)",
+    "não é url",
+    "",
+  ])("%s → null (sem embed)", (url) => {
+    expect(toEmbedUrl(url)).toBeNull();
   });
 });

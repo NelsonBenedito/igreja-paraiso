@@ -71,3 +71,38 @@ export function isEventFinished(
   const endTime = (event.time_end ?? event.time_start ?? "23:59").slice(0, 5);
   return saoPauloNow(now) > `${event.date} ${endTime}`;
 }
+
+const YOUTUBE_ID = /^[\w-]{11}$/;
+
+function youtubeEmbed(id: string | null | undefined): string | null {
+  return id && YOUTUBE_ID.test(id) ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+}
+
+/**
+ * URL de vídeo do painel → URL de embed: YouTube (`watch?v=`, `youtu.be/`,
+ * `shorts/`, `embed/`) → `youtube-nocookie.com/embed/<id>`; Vimeo
+ * (`vimeo.com/<id>`) → `player.vimeo.com/video/<id>`. Outro → `null`.
+ */
+export function toEmbedUrl(url: string): string | null {
+  let parsed: URL;
+  try {
+    parsed = new URL(url.trim());
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
+
+  const host = parsed.hostname.replace(/^(www|m)\./, "");
+  const [first, second] = parsed.pathname.split("/").filter(Boolean);
+
+  if (host === "youtu.be") return youtubeEmbed(first);
+  if (host === "youtube.com") {
+    if (first === "watch") return youtubeEmbed(parsed.searchParams.get("v"));
+    if (first === "shorts" || first === "embed") return youtubeEmbed(second);
+    return null;
+  }
+  if (host === "vimeo.com" && first && !second && /^\d+$/.test(first)) {
+    return `https://player.vimeo.com/video/${first}`;
+  }
+  return null;
+}

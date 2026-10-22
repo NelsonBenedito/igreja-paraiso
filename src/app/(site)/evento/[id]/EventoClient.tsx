@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import {
     Calendar, Clock, MapPin, ChevronLeft, UserPlus, CheckCircle2,
@@ -9,7 +9,8 @@ import {
 import Link from 'next/link';
 import EventRegistrationModal from '@/components/EventRegistrationModal';
 import type { SiteEvent } from '@/lib/events/types';
-import { formatEventDate, isEventFinished } from '@/lib/events/display';
+import { formatEventDate, isEventFinished, toEmbedUrl } from '@/lib/events/display';
+import { sanitizeEventHtml } from '@/lib/events/sanitize';
 
 interface Props {
     event: SiteEvent;
@@ -33,6 +34,11 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
     const formatInfo = FORMAT_LABELS[event.format] ?? FORMAT_LABELS.IN_PERSON;
 
     const isFinished = isEventFinished(event);
+    const detailsHtml = useMemo(
+        () => (event.details_html ? sanitizeEventHtml(event.details_html) : null),
+        [event.details_html],
+    );
+    const videoEmbedUrl = event.video_url ? toEmbedUrl(event.video_url) : null;
 
     const isRegistrationClosed = event.registration_closes_at
         ? new Date(event.registration_closes_at) < new Date()
@@ -139,10 +145,10 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
                                 <h2 className="text-xl sm:text-2xl font-black text-paraiso-blue dark:text-white uppercase tracking-widest mb-6">
                                     Sobre o Evento
                                 </h2>
-                                {event.details_html ? (
+                                {detailsHtml ? (
                                     <div
                                         className="prose prose-slate dark:prose-invert max-w-none prose-lg prose-headings:font-black prose-headings:tracking-tight prose-a:text-paraiso-green"
-                                        dangerouslySetInnerHTML={{ __html: event.details_html }}
+                                        dangerouslySetInnerHTML={{ __html: detailsHtml }}
                                     />
                                 ) : event.description ? (
                                     <div className="text-slate-600 dark:text-slate-300 leading-relaxed font-medium whitespace-pre-wrap text-base sm:text-lg">
@@ -161,14 +167,26 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
                                     <h3 className="text-sm font-black text-paraiso-green uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <Video size={16} /> Vídeo
                                     </h3>
-                                    <div className="aspect-video rounded-2xl overflow-hidden bg-black">
-                                        <iframe
-                                            src={event.video_url}
-                                            className="w-full h-full"
-                                            allowFullScreen
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        />
-                                    </div>
+                                    {videoEmbedUrl ? (
+                                        <div className="aspect-video rounded-2xl overflow-hidden bg-black">
+                                            <iframe
+                                                src={videoEmbedUrl}
+                                                title={`Vídeo: ${event.title}`}
+                                                className="w-full h-full"
+                                                allowFullScreen
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <a
+                                            href={event.video_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 text-paraiso-green font-bold text-sm hover:underline"
+                                        >
+                                            <ExternalLink size={16} /> Assistir ao vídeo
+                                        </a>
+                                    )}
                                 </div>
                             )}
                         </div>
