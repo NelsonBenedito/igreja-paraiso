@@ -1,4 +1,5 @@
 import { getPublicApiBase, getTenantSlug } from "@/lib/public-api/env";
+import { normalizeSiteSections } from "./normalize";
 import type { SiteContentResponse } from "./types";
 
 export class SiteContentApiNotConfiguredError extends Error {
@@ -75,5 +76,15 @@ export async function fetchSiteContent(): Promise<SiteContentResponse> {
     );
   }
 
-  return res.json() as Promise<SiteContentResponse>;
+  let json: unknown;
+  try {
+    json = await res.json();
+  } catch {
+    throw new SiteContentApiError(res.status, "site-content: JSON inválido");
+  }
+  const sections = (json as { sections?: unknown } | null)?.sections;
+  if (typeof sections !== "object" || sections === null) {
+    throw new SiteContentApiError(res.status, "site-content: resposta sem `sections`");
+  }
+  return { sections: normalizeSiteSections(sections) };
 }

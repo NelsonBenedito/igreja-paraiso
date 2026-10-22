@@ -38,6 +38,11 @@ export default async function TimePastoralPage() {
         </div>
 
         {/* Grid limpa: apenas foto e nome (sem cargo, sem campus). */}
+        {pastors.items.length === 0 ? (
+          <p className="text-center text-slate-500 dark:text-slate-300 font-medium">
+            Nenhum pastor disponível no momento.
+          </p>
+        ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10">
           {pastors.items.map((pastor) => (
             <div key={pastor.name} className="group flex flex-col">
@@ -59,6 +64,7 @@ export default async function TimePastoralPage() {
             </div>
           ))}
         </div>
+        )}
       </div>
     </div>
   );

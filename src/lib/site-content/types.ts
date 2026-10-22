@@ -2,12 +2,11 @@
  * DTOs do conteúdo institucional do site — espelham o contrato público
  * `GET /api/public/tenants/:slug/site-content` do ChurchManager (SiteModule).
  *
- * Garantias da API (ver doc):
- *  1. As 9 secções existem sempre.
- *  2. Todos os campos de cada secção existem sempre (merge sobre defaults).
- *  3. As listas já vêm filtradas por `active: true` nesta rota.
- * O que NÃO é garantido: strings podem vir vazias ("") — tratar como
- * "não mostrar esta linha", não como erro.
+ * Estes tipos descrevem o conteúdo JÁ NORMALIZADO por `normalizeSiteSections`
+ * (fronteira em `fetchSiteContent`): campo ausente na resposta vira default
+ * seguro, seção/campo desconhecido é ignorado. Só existem aqui os campos que
+ * a API realmente manda (ver docs/consumo-do-painel.md).
+ * Strings podem vir vazias ("") — tratar como "não mostrar esta linha".
  */
 
 /** Nomes de ícone válidos (enum fechado, validado na escrita pela API). */
@@ -42,7 +41,8 @@ export interface SiteMission {
 
 /** Benefício de célula (`celulas.benefits[]`). */
 export interface SiteCelulasBenefit {
-  icon: SiteIconName;
+  /** Texto livre; nome fora do enum cai em Sparkles (SiteIcon). */
+  icon: string;
   titulo: string;
   descricao: string;
 }
@@ -79,7 +79,6 @@ export interface SiteChurch {
   name: string;
   location: string;
   address: string;
-  pastor: string;
   image: string;
   mapsUrl: string;
   /** Usar isto para identificar a sede — não a posição no array. */
@@ -96,14 +95,10 @@ export interface SiteChurches {
   items: SiteChurch[];
 }
 
-/** Item de pastor (`pastors.items[]`). */
+/** Item de pastor (`pastors.items[]`) — a API manda só nome, foto e `active`. */
 export interface SitePastor {
   name: string;
-  role: string;
-  location: string;
   image: string;
-  /** Nome (texto) da igreja — deve bater com `churches.items[].name`. */
-  church: string;
   active: boolean;
 }
 
@@ -120,7 +115,8 @@ export interface SitePastors {
 export interface SiteMinistry {
   name: string;
   description: string;
-  icon: SiteIconName;
+  /** Texto livre. */
+  icon: string;
   image: string;
   active: boolean;
 }

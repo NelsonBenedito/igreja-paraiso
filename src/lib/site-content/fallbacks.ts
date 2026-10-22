@@ -1,8 +1,10 @@
 import type { SiteSections } from "./types";
 
 /**
- * Conteúdo estático actual do site — usado quando a API está em baixo
- * ou não configurada. Remover só depois do seed em produção estar validado.
+ * Reserva (API fora ou não configurada): SÓ textos institucionais.
+ * Listas (`churches`, `pastors`, `ministries`) ficam sempre vazias — nunca
+ * dados fixos de igrejas/pastores/ministérios. Também é o default de campo
+ * ausente no normalizador.
  *
  * Horário de domingo (noite): 18h (confirmado). Manhã 09h mantida da home
  * até confirmação explícita (pendência com `schedules`).
@@ -83,68 +85,7 @@ export const SITE_CONTENT_FALLBACK: SiteSections = {
     titleHighlight: "igrejas & missões",
     intro:
       "Estamos presentes em diversas cidades através de nossas filiais e campos missionários, servindo às famílias locais com amor e dedicação.",
-    items: [
-      {
-        name: "Igreja Paraíso — Sede",
-        location: "Santa Maria de Jetibá - ES",
-        address: "Rua Helmut Gums, 438 - Virada, Santa Maria de Jetibá - ES",
-        image: "/pastor.jpg",
-        mapsUrl: "https://maps.app.goo.gl/UsxnnZ69miAvFzvs6",
-        pastor: "Pr. Evandro Menezes (Presidente)",
-        isHeadquarters: true,
-        active: true,
-      },
-      {
-        name: "Igreja Paraíso — Itaguaçu",
-        location: "Itaguaçu - ES",
-        address: "Centro, Itaguaçu - ES, CEP 29690-000",
-        image: "/prRobsonJ.jpg",
-        mapsUrl: "https://maps.google.com/?q=Igreja+Paraiso+Itaguacu",
-        pastor: "Pr. Robson Jose Maria",
-        isHeadquarters: false,
-        active: true,
-      },
-      {
-        name: "Igreja Paraíso — Santa Teresa",
-        location: "Santa Teresa - ES",
-        address: "Centro, Santa Teresa - ES, CEP 29650-000",
-        image: "/pastorTiagoP.jpg",
-        mapsUrl: "https://maps.google.com/?q=Igreja+Paraiso+Santa+Teresa",
-        pastor: "Pr. Tiago Pio",
-        isHeadquarters: false,
-        active: true,
-      },
-      {
-        name: "Igreja Paraíso — Rio Possmoser",
-        location: "Rio Possmoser - ES",
-        address: "Rio Possmoser, Santa Maria de Jetibá - ES",
-        image: "/prJhefersonM.jpg",
-        mapsUrl: "https://maps.google.com/?q=Igreja+Paraiso+Rio+Possmoser",
-        pastor: "Pr. Jheferson M. Rosa",
-        isHeadquarters: false,
-        active: true,
-      },
-      {
-        name: "Igreja Paraíso — Aracruz",
-        location: "Aracruz - ES",
-        address: "Centro, Aracruz - ES, CEP 29190-000",
-        image: "/prHerbertN.jpg",
-        mapsUrl: "https://maps.google.com/?q=Igreja+Paraiso+Aracruz",
-        pastor: "Pr. Herbert Neiva",
-        isHeadquarters: false,
-        active: true,
-      },
-      {
-        name: "Igreja Paraíso — Anchieta",
-        location: "Anchieta - ES",
-        address: "Centro, Anchieta - ES, CEP 29230-000",
-        image: "/prClovesS.jpg",
-        mapsUrl: "https://maps.google.com/?q=Igreja+Paraiso+Anchieta",
-        pastor: "Pr. Cloves Souza",
-        isHeadquarters: false,
-        active: true,
-      },
-    ],
+    items: [],
   },
   pastors: {
     badge: "Liderança e Cuidado",
@@ -152,95 +93,10 @@ export const SITE_CONTENT_FALLBACK: SiteSections = {
     titleHighlight: "pastoral",
     intro:
       "Uma liderança dedicada a guiar, instruir e caminhar junto com cada família no amor de Cristo.",
-    items: [
-      {
-        name: "Pr. Clétson Barros",
-        role: "Pastor Auxiliar - Sede",
-        location: "Santa Maria de Jetibá - ES",
-        image: "/prCletsonB.jpg",
-        church: "Igreja Paraíso — Sede",
-        active: true,
-      },
-      {
-        name: "Pr. Leandro Hins de Brito",
-        role: "Pastor Auxiliar - Sede",
-        location: "Santa Maria de Jetibá - ES",
-        image: "/prLeandroB.jpg",
-        church: "Igreja Paraíso — Sede",
-        active: true,
-      },
-      {
-        name: "Pr. Robson Jose Maria",
-        role: "Pastor Local",
-        location: "Itaguaçu - ES",
-        image: "/prRobsonJ.jpg",
-        church: "Igreja Paraíso — Itaguaçu",
-        active: true,
-      },
-      {
-        name: "Pr. Tiago Pio",
-        role: "Pastor Local",
-        location: "Santa Teresa - ES",
-        image: "/pastorTiagoP.jpg",
-        church: "Igreja Paraíso — Santa Teresa",
-        active: true,
-      },
-      {
-        name: "Pr. Jheferson M. Rosa",
-        role: "Pastor Local",
-        location: "Rio Possmoser - ES",
-        image: "/prJhefersonM.jpg",
-        church: "Igreja Paraíso — Rio Possmoser",
-        active: true,
-      },
-      {
-        name: "Pr. Herbert Neiva",
-        role: "Pastor Local",
-        location: "Aracruz - ES",
-        image: "/prHerbertN.jpg",
-        church: "Igreja Paraíso — Aracruz",
-        active: true,
-      },
-      {
-        name: "Pr. Cloves Souza",
-        role: "Pastor Local",
-        location: "Anchieta - ES",
-        image: "/prClovesS.jpg",
-        church: "Igreja Paraíso — Anchieta",
-        active: true,
-      },
-    ],
+    items: [],
   },
   ministries: {
-    items: [
-      {
-        name: "Ignição",
-        description:
-          "Ministério infantil: Ensinando os pequenos no caminho em que devem andar com alegria e cor.",
-        image:
-          "https://images.unsplash.com/photo-1472162072942-cd5147eb3902?q=80&w=600",
-        icon: "Heart",
-        active: true,
-      },
-      {
-        name: "Eleve",
-        description:
-          "Juventude: Uma geração apaixonada por Jesus que busca transformar o mundo.",
-        image:
-          "https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=600",
-        icon: "Music",
-        active: true,
-      },
-      {
-        name: "Diamante",
-        description:
-          "Ministério de Mulheres: Preciosas para Deus, brilhando em todas as áreas da vida.",
-        image:
-          "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?q=80&w=600",
-        icon: "Users",
-        active: true,
-      },
-    ],
+    items: [],
   },
   giving: {
     badge: "Dízimos e Ofertas",

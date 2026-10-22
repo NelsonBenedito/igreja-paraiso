@@ -49,6 +49,11 @@ export default async function NossasIgrejasPage() {
           </p>
         </div>
 
+        {items.length === 0 ? (
+          <p className="text-center text-slate-500 dark:text-slate-300 font-medium">
+            Nenhuma igreja disponível no momento.
+          </p>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
           {items.map((church) => {
             const query = church.address?.trim() || church.location || church.name;
@@ -114,6 +119,7 @@ export default async function NossasIgrejasPage() {
             );
           })}
         </div>
+        )}
       </div>
     </div>
   );

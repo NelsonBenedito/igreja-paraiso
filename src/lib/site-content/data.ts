@@ -24,7 +24,7 @@ export const fetchSiteSections = cache(async (): Promise<SiteSections | null> =>
 });
 
 /**
- * Secções prontas para render — API ou fallback completo.
+ * Secções prontas para render — API ou reserva (só textos; listas vazias).
  * Preferir isto nos Server Components para nunca quebrar a página.
  */
 export async function getSiteContent(): Promise<SiteSections> {
