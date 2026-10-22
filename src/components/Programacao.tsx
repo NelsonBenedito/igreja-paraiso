@@ -10,15 +10,8 @@ interface ProgramacaoProps {
     schedules: SiteSchedule[];
 }
 
-const DAYS_ORDER = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-
+/** Exibe na ordem da API (`sortOrder`, dia da semana e hora), sem reordenar. */
 const ProgramacaoSection: React.FC<ProgramacaoProps> = ({ schedules }) => {
-    const sorted = [...schedules].sort((a, b) => {
-        const dayDiff = DAYS_ORDER.indexOf(a.day_of_week) - DAYS_ORDER.indexOf(b.day_of_week);
-        if (dayDiff !== 0) return dayDiff;
-        return a.time_start.localeCompare(b.time_start);
-    });
-
     return (
         <section id="agenda" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden bg-clip-padding my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative">
             <div className="absolute top-0 right-0 w-1/3 h-full bg-paraiso-green/[0.03] skew-x-12 translate-x-20 pointer-events-none" />
@@ -44,7 +37,7 @@ const ProgramacaoSection: React.FC<ProgramacaoProps> = ({ schedules }) => {
                 </div>
 
                 <div className="lg:w-2/3">
-                    {sorted.length === 0 ? (
+                    {schedules.length === 0 ? (
                         <Reveal>
                             <div className="flex flex-col items-center justify-center h-48 text-slate-400 gap-4">
                                 <ListChecks size={40} className="opacity-30" />
@@ -53,7 +46,7 @@ const ProgramacaoSection: React.FC<ProgramacaoProps> = ({ schedules }) => {
                         </Reveal>
                     ) : (
                         <div className="space-y-1">
-                            {sorted.map((item, idx) => (
+                            {schedules.map((item, idx) => (
                                 <Reveal key={item.id} delay={idx * 0.04} width="100%">
                                     <motion.div
                                         whileHover={{ x: 6 }}

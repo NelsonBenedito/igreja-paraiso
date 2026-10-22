@@ -14,6 +14,7 @@ import type {
     BillingType,
 } from '@/lib/events/types';
 import { formatEventDate } from '@/lib/events/display';
+import { selectableTicketId } from '@/lib/events/tickets';
 
 interface Props {
     event: SiteEvent | null;
@@ -54,6 +55,8 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [tickets, setTickets] = useState<PublicTicketTypeDto[]>([]);
     const [isLoadingTickets, setIsLoadingTickets] = useState(false);
+    /** Falha ao carregar ingressos: nunca cair no fluxo gratuito sem `ticketTypeId`. */
+    const [ticketsError, setTicketsError] = useState(false);
     const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
     const [quantity, setQuantity] = useState(1);
     const [holderNames, setHolderNames] = useState<string[]>([]);
@@ -76,9 +79,15 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                 if (cancelled) return;
                 const t = res.ticketTypes ?? [];
                 setTickets(t);
-                if (t.length > 0) setSelectedTicketId(t[0].id);
+                setTicketsError(false);
+                setSelectedTicketId(current => selectableTicketId(t, current));
             })
-            .catch(() => { if (!cancelled) setTickets([]); })
+            .catch(error => {
+                if (cancelled) return;
+                console.warn('[inscrição] não foi possível carregar os ingressos:', error);
+                setTickets([]);
+                setTicketsError(true);
+            })
             .finally(() => { if (!cancelled) setIsLoadingTickets(false); });
         return () => { cancelled = true; };
     }, [eventId]);
@@ -178,7 +187,8 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!event) return;
+        if (!event || ticketsError) return;
+        if (tickets.length > 0 && (!selectedTicket || selectedTicket.isSoldOut)) return;
         setErrorMessage(null);
 
         const missing = customFields.find(f => f.required && !fieldValues[f.fieldId]?.trim());
@@ -270,10 +280,17 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
     const refetchTickets = async () => {
         if (!event) return;
         setStatus('idle');
+        setTicketsError(false);
         setIsLoadingTickets(true);
         try {
             const res = await fetchEventTickets(event.id);
-            setTickets(res.ticketTypes ?? []);
+            const t = res.ticketTypes ?? [];
+            setTickets(t);
+            setSelectedTicketId(current => selectableTicketId(t, current));
+        } catch (error) {
+            console.warn('[inscrição] não foi possível carregar os ingressos:', error);
+            setTickets([]);
+            setTicketsError(true);
         } finally {
             setIsLoadingTickets(false);
         }
@@ -551,8 +568,24 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                     </motion.div>
                                 )}
 
+                                {/* Falha ao carregar ingressos */}
+                                {ticketsError && (status === 'idle' || status === 'loading') && (
+                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
+                                        <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />
+                                        <div>
+                                            <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Ocorreu um erro</h3>
+                                            <p className="text-slate-500 dark:text-slate-400 text-sm">
+                                                Não foi possível carregar os ingressos. Tente novamente.
+                                            </p>
+                                        </div>
+                                        <button onClick={refetchTickets} className="px-8 py-3 bg-red-500 text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-red-600 transition-all">
+                                            Tentar novamente
+                                        </button>
+                                    </motion.div>
+                                )}
+
                                 {/* Formulário */}
-                                {(status === 'idle' || status === 'loading') && (
+                                {!ticketsError && (status === 'idle' || status === 'loading') && (
                                     <form onSubmit={handleSubmit} className="space-y-4">
                                         <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
                                             Preencha seus dados para garantir sua vaga.

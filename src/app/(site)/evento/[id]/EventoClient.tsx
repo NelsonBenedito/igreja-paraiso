@@ -9,7 +9,7 @@ import {
 import Link from 'next/link';
 import EventRegistrationModal from '@/components/EventRegistrationModal';
 import type { SiteEvent } from '@/lib/events/types';
-import { formatEventDate } from '@/lib/events/display';
+import { formatEventDate, isEventFinished } from '@/lib/events/display';
 
 interface Props {
     event: SiteEvent;
@@ -31,6 +31,8 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
     };
 
     const formatInfo = FORMAT_LABELS[event.format] ?? FORMAT_LABELS.IN_PERSON;
+
+    const isFinished = isEventFinished(event);
 
     const isRegistrationClosed = event.registration_closes_at
         ? new Date(event.registration_closes_at) < new Date()
@@ -240,7 +242,11 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
 
                                 {/* Ações */}
                                 <div className="pt-6 border-t border-slate-200 dark:border-white/10 space-y-3">
-                                    {isRegistrationClosed ? (
+                                    {isFinished ? (
+                                        <div className="w-full text-center py-4 rounded-full bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest text-xs">
+                                            Evento encerrado
+                                        </div>
+                                    ) : isRegistrationClosed ? (
                                         <div className="w-full text-center py-4 rounded-full bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest text-xs">
                                             Inscrições encerradas
                                         </div>
@@ -274,7 +280,7 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
             </div>
 
             {/* Modal */}
-            {isModalOpen && (
+            {isModalOpen && !isFinished && (
                 <EventRegistrationModal
                     event={event}
                     onClose={() => setIsModalOpen(false)}

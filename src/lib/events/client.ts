@@ -96,12 +96,16 @@ async function publicFetch<T>(path: string, init?: FetchOptions): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+/**
+ * Eventos: o painel expira a tag `site-content` ao salvar um evento
+ * (`/api/revalidate-site-content`); `revalidate` é só o fallback.
+ */
 export async function fetchPublicEvents(
   options: { upcomingOnly?: boolean; revalidate?: number } = {},
 ): Promise<PublicEventListResponse> {
   const q = options.upcomingOnly ? "?upcomingOnly=true" : "";
   return publicFetch<PublicEventListResponse>(`/events${q}`, {
-    next: { revalidate: options.revalidate ?? 60 },
+    next: { revalidate: options.revalidate ?? 60, tags: ["site-content"] },
   });
 }
 
@@ -109,7 +113,7 @@ export async function fetchPublishedEvents(
   revalidate = 60,
 ): Promise<PublicEventListResponse> {
   return publicFetch<PublicEventListResponse>("/events/published", {
-    next: { revalidate },
+    next: { revalidate, tags: ["site-content"] },
   });
 }
 
@@ -118,7 +122,7 @@ export async function fetchPublicEventById(
   revalidate = 60,
 ): Promise<PublicEventDto> {
   return publicFetch<PublicEventDto>(`/events/${encodeURIComponent(eventId)}`, {
-    next: { revalidate },
+    next: { revalidate, tags: ["site-content"] },
   });
 }
 

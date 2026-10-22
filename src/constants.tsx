@@ -3,7 +3,7 @@ import { NavItem, ServiceTime, Ministry } from './types';
 export const NAV_ITEMS: NavItem[] = [
     { label: 'Início', href: '/' },
     { label: 'A Igreja', href: '/#sobre' },
-    { label: 'Eventos', href: '/#eventos' },
+    { label: 'Eventos', href: '/eventos' },
     { label: 'Agenda', href: '/#agenda' },
     { label: 'Missões', href: '/#missoes' },
     { label: 'Time Pastoral', href: '/time-pastoral' },

@@ -15,9 +15,10 @@ Next 16 (App Router), React 19, Tailwind 4, TypeScript. Deploy na Vercel:
   `visit.address` e `visit.hours` são texto da seção Visite-nos, não fonte de endereço/horário.
 - Revalidação: `GET|POST /api/revalidate-site-content` com header `x-revalidation-secret` (= `REVALIDATION_SECRET`);
   em produção sem o segredo configurado → 401; expira a tag `site-content` na hora (`{ expire: 0 }`), que cobre
-  site-content e `/schedules`. `?secret=` ainda é aceito por compatibilidade — **REMOVER** quando o painel só enviar o header.
+  site-content, `/schedules` e eventos. `?secret=` ainda é aceito por compatibilidade — **REMOVER** quando o painel só enviar o header.
 - Atualização: revalidação OK → próxima visita mostra o novo; revalidação ausente/falha → até 300 s;
-  Preview sem cache; eventos 60 s.
+  Preview sem cache. Eventos (`/events`, `/events/published`, `/events/:id`) usam a mesma tag `site-content`:
+  o painel revalida ao salvar um evento; sem revalidação, fallback de 60 s.
 
 ## Imagens do painel (R2)
 `SITE_MEDIA_HOSTNAMES` (hostnames https separados por vírgula, = host de `R2_PUBLIC_URL`) é lida no **build**
