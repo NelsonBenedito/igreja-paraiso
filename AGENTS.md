@@ -16,6 +16,12 @@ Next 16 (App Router), React 19, Tailwind 4, TypeScript. Deploy na Vercel:
 - Atualização: revalidação OK → próxima visita mostra o novo; revalidação ausente/falha → até 300 s;
   Preview sem cache; eventos 60 s.
 
+## Imagens do painel (R2)
+`SITE_MEDIA_HOSTNAMES` (hostnames https separados por vírgula, = host de `R2_PUBLIC_URL`) é lida no **build**
+por `next.config.ts` (`src/lib/media/remote-patterns.ts`). Precisa existir nos ambientes **Preview e Production
+da Vercel ANTES do build**; alterar o valor exige novo deploy. Imagens do painel usam
+`src/components/ImageWithFallback.tsx` (substituto quando vazia/quebrada).
+
 ## Política de reserva (API fora ou sem configuração)
 Só textos de reserva. **Nunca** exibir listas (igrejas, pastores, ministérios, horários) com dados fixos no código.
 

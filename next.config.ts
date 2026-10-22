@@ -1,19 +1,10 @@
 import type { NextConfig } from "next";
+import { buildRemotePatterns } from "./src/lib/media/remote-patterns";
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "upload.wikimedia.org",
-        pathname: "/**",
-      },
-    ],
+    // Hosts atuais + SITE_MEDIA_HOSTNAMES (mídia do painel/R2). Lida no build.
+    remotePatterns: buildRemotePatterns(process.env.SITE_MEDIA_HOSTNAMES),
   },
 };
 

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { getSiteContent } from "@/lib/site-content/data";
@@ -42,7 +42,7 @@ export default async function TimePastoralPage() {
           {pastors.items.map((pastor) => (
             <div key={pastor.name} className="group flex flex-col">
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[2rem] bg-slate-200 dark:bg-white/5 shadow-md ring-1 ring-slate-100 dark:ring-white/10">
-                <Image
+                <ImageWithFallback
                   src={pastor.image}
                   alt={pastor.name}
                   fill

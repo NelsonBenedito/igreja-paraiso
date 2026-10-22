@@ -1,4 +1,4 @@
-import Image from "next/image";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { MapPin, ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { getSiteContent } from "@/lib/site-content/data";
@@ -58,7 +58,7 @@ export default async function NossasIgrejasPage() {
                 className="group overflow-hidden rounded-[2.5rem] bg-white dark:bg-paraiso-blue-dark shadow-md hover:shadow-2xl transition-all duration-500 border border-slate-100 dark:border-white/5 flex flex-col"
               >
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-200">
-                  <Image
+                  <ImageWithFallback
                     src={church.image}
                     alt={church.name}
                     fill

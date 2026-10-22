@@ -4,6 +4,7 @@ import Reveal from '@/components/Reveal';
 import { motion } from 'framer-motion';
 import { MapPin, ArrowRight, Home } from 'lucide-react';
 import Link from 'next/link';
+import ImageWithFallback from '@/components/ImageWithFallback';
 import type { SiteChurches } from '@/lib/site-content/types';
 
 interface MissionsProps {
@@ -68,7 +69,7 @@ const Missions: React.FC<MissionsProps> = ({ content }) => {
                                 >
                                     <div className="relative h-[240px] md:h-[280px] overflow-hidden">
                                         <div className="absolute inset-0 bg-paraiso-blue/10 dark:bg-transparent z-10 group-hover:bg-transparent transition-colors duration-500" />
-                                        <img
+                                        <ImageWithFallback
                                             src={church.image}
                                             alt={church.name}
                                             className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
