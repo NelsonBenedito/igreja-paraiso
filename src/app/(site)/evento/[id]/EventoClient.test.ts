@@ -82,6 +82,14 @@ describe("/evento/[id] — conteúdo do painel", () => {
       /<a href="https:\/\/example\.com\/video\.mp4" target="_blank" rel="noopener noreferrer"[^>]*>.*Assistir ao vídeo/,
     );
   });
+
+  it("espaço nas pontas da URL do vídeo não esconde o link", () => {
+    const html = render(evento({ video_url: "  https://example.com/video.mp4 " }));
+    expect(html).not.toContain("<iframe");
+    expect(html).toMatch(
+      /<a href="https:\/\/example\.com\/video\.mp4" target="_blank" rel="noopener noreferrer"[^>]*>.*Assistir ao vídeo/,
+    );
+  });
 });
 
 describe("/evento/[id] — hero", () => {

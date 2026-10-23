@@ -14,5 +14,8 @@ DOMPurify.addHook("afterSanitizeAttributes", (node) => {
  * seguro porque todo link recebe `rel="noopener noreferrer"`.
  */
 export function sanitizeEventHtml(html: string): string {
-  return DOMPurify.sanitize(html, { ADD_ATTR: ["target"] });
+  return DOMPurify.sanitize(html, {
+    ADD_ATTR: ["target"],
+    FORBID_TAGS: ["form", "input", "button", "select", "textarea", "video", "audio", "template"],
+  });
 }

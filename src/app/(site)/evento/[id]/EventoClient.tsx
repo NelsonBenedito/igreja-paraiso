@@ -35,10 +35,11 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
     const { imageUrl: heroImageUrl, tag: heroTag } = eventCardContent(event);
 
     const isFinished = isEventFinished(event);
-    const videoEmbedUrl = event.video_url ? toEmbedUrl(event.video_url) : null;
+    // Espaço nas pontas (vindo do painel) não pode esconder o vídeo.
+    const videoUrl = event.video_url?.trim() ?? '';
+    const videoEmbedUrl = videoUrl ? toEmbedUrl(videoUrl) : null;
     // Sem embed conhecido, só um link http(s) em nova aba; outro esquema não aparece.
-    const videoLinkUrl =
-        !videoEmbedUrl && event.video_url && /^https?:\/\//i.test(event.video_url) ? event.video_url : null;
+    const videoLinkUrl = !videoEmbedUrl && /^https?:\/\//i.test(videoUrl) ? videoUrl : null;
 
     const isRegistrationClosed = event.registration_closes_at
         ? new Date(event.registration_closes_at) < new Date()

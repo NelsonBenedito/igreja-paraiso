@@ -16,6 +16,15 @@ describe("sanitizeEventHtml", () => {
     expect(out).not.toMatch(/script|onerror|iframe|alert/);
   });
 
+  it("remove formulário, controles e mídia embutida, mantendo o texto", () => {
+    const out = sanitizeEventHtml(
+      '<p><strong>texto</strong></p><form action="https://evil.example"><input><button>Pagar</button></form><video autoplay src="x"></video>',
+    );
+    // O DOMPurify descarta as tags e mantém só o texto interno ("Pagar" vira texto solto).
+    expect(out).toBe("<p><strong>texto</strong></p>Pagar");
+    expect(out).not.toMatch(/form|input|button|video|evil\.example/);
+  });
+
   it("remove links javascript:", () => {
     expect(sanitizeEventHtml('<a href="javascript:alert(1)">x</a>')).not.toContain("javascript:");
   });

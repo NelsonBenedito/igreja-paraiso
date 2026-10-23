@@ -19,7 +19,7 @@ precisa rodar Node ≥ 22.22.2 (24.x recomendado).
   `x-participant-secret` = `CHURCHMANAGER_PARTICIPANT_SECRET` (só servidor; = `PUBLIC_PARTICIPANT_API_SECRET` da API); o navegador usa `GET /api/membros/inscricoes`.
   Precisa existir nos ambientes **Production e Preview da Vercel**; sem ela a API responde 401 e as consultas degradam
   para "não inscrito" (`console.warn` no servidor; a home só trata como lista vazia).
-- Webhook `/api/webhooks/asaas`: em produção exige `ASAAS_WEBHOOK_TOKEN` (header `asaas-access-token`); sem ele → 401.
+- Webhook `/api/webhooks/asaas`: em produção (na Vercel isso inclui Preview, onde NODE_ENV também é production) exige `ASAAS_WEBHOOK_TOKEN` (header `asaas-access-token`); sem ele → 401.
 - Revalidação: `GET|POST /api/revalidate-site-content` com header `x-revalidation-secret` (= `REVALIDATION_SECRET`);
   em produção sem o segredo configurado → 401; expira a tag `site-content` na hora (`{ expire: 0 }`), que cobre
   site-content, `/schedules` e eventos. `?secret=` ainda é aceito por compatibilidade — **REMOVER** quando o painel só enviar o header.
@@ -43,13 +43,12 @@ npm ci && npx tsc --noEmit && npm run lint && npm test && npm run build
 `npm run lint` ignora `.claude/**` e `coverage/**`. Testes: Vitest (`npm test`), ambiente node,
 alias `@/` = `src/`, arquivos `src/**/*.test.ts`. Playwright não é dependência do projeto (use o MCP).
 
-### Linha de base do lint (22/10/2026): 28 erros, 53 avisos — não pode piorar
+### Linha de base do lint (22/10/2026): 25 erros, 42 avisos — não pode piorar
 Arquivos que você tocar ficam sem erro de lint.
-- Erros: `@typescript-eslint/no-explicit-any` 14, `react/no-unescaped-entities` 6,
+- Erros: `@typescript-eslint/no-explicit-any` 13, `react/no-unescaped-entities` 4,
   `react-hooks/set-state-in-effect` 3, `@next/next/no-html-link-for-pages` 2,
   `react-hooks/static-components` 2, `@typescript-eslint/ban-ts-comment` 1.
-- Avisos: `@typescript-eslint/no-unused-vars` 29, `@next/next/no-img-element` 23,
-  `react-hooks/exhaustive-deps` 1.
+- Avisos: `@typescript-eslint/no-unused-vars` 24, `@next/next/no-img-element` 18.
 
 ## Ciclo
 Implementar → testar → inspecionar o diff → corrigir → testar de novo → validar o que o visitante vê.
