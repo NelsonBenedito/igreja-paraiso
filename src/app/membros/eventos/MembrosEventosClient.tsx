@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { loadRegisteredEventIdsClient, submitEventRegistration } from '@/lib/events/data-client';
 import type { SiteEvent } from '@/lib/events/types';
+import { eventCardContent } from '@/lib/events/display';
+import ImageWithFallback from '@/components/ImageWithFallback';
 
 interface Props {
     events: SiteEvent[];
@@ -32,15 +34,12 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
     const [status, setStatus] = useState<ModalStatus>('idle');
     const [errorDetail, setErrorDetail] = useState<ErrorDetail>(null);
 
-    // Hydration client-side: re-busca inscrições ao montar
-    // garante que inscrições existentes sejam refletidas mesmo que
-    // o servidor não tenha conseguido via RLS
+    // Hydration client-side: re-busca inscrições ao montar (pelo servidor,
+    // que usa a sessão e o segredo de participante), para refletir inscrições
+    // existentes mesmo que a consulta da página tenha falhado
     useEffect(() => {
         const fetchMyRegistrations = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user?.email) return;
-
-            const ids = await loadRegisteredEventIdsClient(user.email, user.id);
+            const ids = await loadRegisteredEventIdsClient();
             if (ids.length > 0) {
                 setRegisteredIds(ids);
             }
@@ -102,6 +101,7 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {events.map((event) => {
                         const registered = isRegistered(event.id);
+                        const card = eventCardContent(event);
                         return (
                             <div
                                 key={event.id}
@@ -110,21 +110,20 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
                             >
                                 {/* Imagem */}
                                 <div className="relative h-52 w-full overflow-hidden">
-                                    {event.image_url ? (
-                                        <img
-                                            src={event.image_url}
-                                            alt={event.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-paraiso-blue-dark/5">
-                                            <Calendar size={40} className="text-paraiso-blue-dark/20" />
-                                        </div>
-                                    )}
-                                    {event.tag && (
+                                    <ImageWithFallback
+                                        src={card.imageUrl}
+                                        alt={event.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        fallback={
+                                            <div className="w-full h-full flex items-center justify-center bg-paraiso-blue-dark/5">
+                                                <Calendar size={40} className="text-paraiso-blue-dark/20" />
+                                            </div>
+                                        }
+                                    />
+                                    {card.tag && (
                                         <span className="absolute top-6 left-6 flex items-center gap-1 bg-white/95 backdrop-blur-sm text-paraiso-blue-dark text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-sm">
                                             <Tag size={10} className="text-paraiso-green" />
-                                            {event.tag}
+                                            {card.tag}
                                         </span>
                                     )}
                                     {/* Badge de inscrito */}
@@ -147,9 +146,9 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
                                         {event.title}
                                     </h2>
 
-                                    {event.description && (
+                                    {card.text && (
                                         <p className="text-slate-500 dark:text-slate-300 text-sm leading-relaxed mb-6 grow line-clamp-3">
-                                            {event.description}
+                                            {card.text}
                                         </p>
                                     )}
 

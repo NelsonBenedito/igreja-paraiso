@@ -1,5 +1,6 @@
 export const runtime = "nodejs";
 
+import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 
@@ -17,21 +18,33 @@ type AsaasWebhookPayload = {
     status?: string;
   };
 };
+
+function tokenMatches(provided: string | null, expected: string): boolean {
+  if (!provided) return false;
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
+/**
+ * Token do painel Asaas no header `asaas-access-token` (ou `x-asaas-access-token`)
+ * = `ASAAS_WEBHOOK_TOKEN`. Em produção sem token configurado → sempre 401.
+ */
 export async function POST(request: Request) {
   const token = process.env.ASAAS_WEBHOOK_TOKEN?.trim();
 
-  // if (token) {
-  //   const header =
-  //     request.headers.get("asaas-access-token") ||
-  //     request.headers.get("x-asaas-access-token");
+  if (token || process.env.NODE_ENV === "production") {
+    const header =
+      request.headers.get("asaas-access-token") ||
+      request.headers.get("x-asaas-access-token");
 
-  //   if (header !== token) {
-  //     return NextResponse.json(
-  //       { message: "Unauthorized" },
-  //       { status: 401 }
-  //     );
-  //   }
-  // }
+    if (!token || !tokenMatches(header, token)) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+  }
 
   let body: AsaasWebhookPayload;
 

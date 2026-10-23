@@ -3,6 +3,8 @@
 ## Stack
 Next 16 (App Router), React 19, Tailwind 4, TypeScript. Deploy na Vercel:
 `master` = produção, `homologacao` = Preview. Nunca faça push/merge/deploy sem pedido explícito.
+Node ≥ 22.22.2 (`engines` do `package.json`, exigido pelo `isomorphic-dompurify`/jsdom): o projeto na Vercel
+precisa rodar Node ≥ 22.22.2 (24.x recomendado).
 
 ## De onde vêm os dados
 - API do ChurchManager (painel), configurada por `NEXT_PUBLIC_DONATIONS_API_BASE` e
@@ -13,11 +15,17 @@ Next 16 (App Router), React 19, Tailwind 4, TypeScript. Deploy na Vercel:
   link do Maps = filial `isHeadquarters` em `churches.items` (`mapsUrl`); horários de culto =
   `GET /api/public/tenants/:slug/schedules` (só `active`); listas = `churches/pastors/ministries.items`.
   `visit.address` e `visit.hours` são texto da seção Visite-nos, não fonte de endereço/horário.
+- Inscrições do membro (`/registrations/mine`, `/events/:id/registrations/check`): só pelo servidor, com header
+  `x-participant-secret` = `CHURCHMANAGER_PARTICIPANT_SECRET` (só servidor; = `PUBLIC_PARTICIPANT_API_SECRET` da API); o navegador usa `GET /api/membros/inscricoes`.
+  Precisa existir nos ambientes **Production e Preview da Vercel**; sem ela a API responde 401 e as consultas degradam
+  para "não inscrito" (`console.warn` no servidor; a home só trata como lista vazia).
+- Webhook `/api/webhooks/asaas`: em produção (na Vercel isso inclui Preview, onde NODE_ENV também é production) exige `ASAAS_WEBHOOK_TOKEN` (header `asaas-access-token`); sem ele → 401.
 - Revalidação: `GET|POST /api/revalidate-site-content` com header `x-revalidation-secret` (= `REVALIDATION_SECRET`);
   em produção sem o segredo configurado → 401; expira a tag `site-content` na hora (`{ expire: 0 }`), que cobre
-  site-content e `/schedules`. `?secret=` ainda é aceito por compatibilidade — **REMOVER** quando o painel só enviar o header.
+  site-content, `/schedules` e eventos. `?secret=` ainda é aceito por compatibilidade — **REMOVER** quando o painel só enviar o header.
 - Atualização: revalidação OK → próxima visita mostra o novo; revalidação ausente/falha → até 300 s;
-  Preview sem cache; eventos 60 s.
+  Preview sem cache. Eventos (`/events`, `/events/published`, `/events/:id`) usam a mesma tag `site-content`:
+  o painel revalida ao salvar um evento; sem revalidação, fallback de 60 s.
 
 ## Imagens do painel (R2)
 `SITE_MEDIA_HOSTNAMES` (hostnames https separados por vírgula, = host de `R2_PUBLIC_URL`) é lida no **build**
@@ -35,13 +43,12 @@ npm ci && npx tsc --noEmit && npm run lint && npm test && npm run build
 `npm run lint` ignora `.claude/**` e `coverage/**`. Testes: Vitest (`npm test`), ambiente node,
 alias `@/` = `src/`, arquivos `src/**/*.test.ts`. Playwright não é dependência do projeto (use o MCP).
 
-### Linha de base do lint (22/10/2026): 28 erros, 53 avisos — não pode piorar
+### Linha de base do lint (22/10/2026): 25 erros, 42 avisos — não pode piorar
 Arquivos que você tocar ficam sem erro de lint.
-- Erros: `@typescript-eslint/no-explicit-any` 14, `react/no-unescaped-entities` 6,
+- Erros: `@typescript-eslint/no-explicit-any` 13, `react/no-unescaped-entities` 4,
   `react-hooks/set-state-in-effect` 3, `@next/next/no-html-link-for-pages` 2,
   `react-hooks/static-components` 2, `@typescript-eslint/ban-ts-comment` 1.
-- Avisos: `@typescript-eslint/no-unused-vars` 29, `@next/next/no-img-element` 23,
-  `react-hooks/exhaustive-deps` 1.
+- Avisos: `@typescript-eslint/no-unused-vars` 24, `@next/next/no-img-element` 18.
 
 ## Ciclo
 Implementar → testar → inspecionar o diff → corrigir → testar de novo → validar o que o visitante vê.

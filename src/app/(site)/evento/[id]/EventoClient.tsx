@@ -9,9 +9,10 @@ import {
 import Link from 'next/link';
 import EventRegistrationModal from '@/components/EventRegistrationModal';
 import type { SiteEvent } from '@/lib/events/types';
-import { formatEventDate } from '@/lib/events/display';
+import { eventCardContent, formatEventDate, isEventFinished, toEmbedUrl } from '@/lib/events/display';
 
 interface Props {
+    /** `details_html` chega já sanitizado pelo servidor (`page.tsx`). */
     event: SiteEvent;
     isRegisteredServer: boolean;
 }
@@ -31,6 +32,14 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
     };
 
     const formatInfo = FORMAT_LABELS[event.format] ?? FORMAT_LABELS.IN_PERSON;
+    const { imageUrl: heroImageUrl, tag: heroTag } = eventCardContent(event);
+
+    const isFinished = isEventFinished(event);
+    // Espaço nas pontas (vindo do painel) não pode esconder o vídeo.
+    const videoUrl = event.video_url?.trim() ?? '';
+    const videoEmbedUrl = videoUrl ? toEmbedUrl(videoUrl) : null;
+    // Sem embed conhecido, só um link http(s) em nova aba; outro esquema não aparece.
+    const videoLinkUrl = !videoEmbedUrl && /^https?:\/\//i.test(videoUrl) ? videoUrl : null;
 
     const isRegistrationClosed = event.registration_closes_at
         ? new Date(event.registration_closes_at) < new Date()
@@ -60,9 +69,9 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
                 <div className="bg-white dark:bg-paraiso-blue-dark rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border border-slate-100 dark:border-white/5">
                     {/* Hero */}
                     <div className="relative h-[300px] sm:h-[400px] md:h-[500px] w-full">
-                        {(event.cover_image_url || event.image_url) ? (
+                        {heroImageUrl ? (
                             <img
-                                src={event.cover_image_url || event.image_url!}
+                                src={heroImageUrl}
                                 alt={event.title}
                                 className="w-full h-full object-cover"
                             />
@@ -75,15 +84,16 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
 
                         <div className="absolute bottom-0 left-0 w-full p-6 sm:p-10 md:p-16">
                             <div className="flex flex-wrap items-center gap-2 mb-4">
-                                {event.tag && (
+                                {heroTag && (
                                     <span className="px-3 py-1.5 bg-paraiso-green text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                                        {event.tag}
+                                        {heroTag}
                                     </span>
                                 )}
                                 <span className="px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider rounded-full flex items-center gap-1.5">
                                     {formatInfo.icon} {formatInfo.label}
                                 </span>
-                                {event.tags?.map(t => (
+                                {/* A primeira tag já é a etiqueta em destaque. */}
+                                {event.tags.slice(1).map(t => (
                                     <span
                                         key={t.id}
                                         className="px-3 py-1.5 bg-white/10 text-white/80 text-[10px] font-bold uppercase tracking-wider rounded-full"
@@ -154,19 +164,31 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
                             </div>
 
                             {/* Vídeo */}
-                            {event.video_url && (
+                            {(videoEmbedUrl || videoLinkUrl) && (
                                 <div>
                                     <h3 className="text-sm font-black text-paraiso-green uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <Video size={16} /> Vídeo
                                     </h3>
-                                    <div className="aspect-video rounded-2xl overflow-hidden bg-black">
-                                        <iframe
-                                            src={event.video_url}
-                                            className="w-full h-full"
-                                            allowFullScreen
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        />
-                                    </div>
+                                    {videoEmbedUrl ? (
+                                        <div className="aspect-video rounded-2xl overflow-hidden bg-black">
+                                            <iframe
+                                                src={videoEmbedUrl}
+                                                title={`Vídeo: ${event.title}`}
+                                                className="w-full h-full"
+                                                allowFullScreen
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            />
+                                        </div>
+                                    ) : videoLinkUrl ? (
+                                        <a
+                                            href={videoLinkUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 text-paraiso-green font-bold text-sm hover:underline"
+                                        >
+                                            <ExternalLink size={16} /> Assistir ao vídeo
+                                        </a>
+                                    ) : null}
                                 </div>
                             )}
                         </div>
@@ -240,9 +262,9 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
 
                                 {/* Ações */}
                                 <div className="pt-6 border-t border-slate-200 dark:border-white/10 space-y-3">
-                                    {isRegistrationClosed ? (
+                                    {isFinished || isRegistrationClosed ? (
                                         <div className="w-full text-center py-4 rounded-full bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest text-xs">
-                                            Inscrições encerradas
+                                            {isFinished ? 'Evento encerrado' : 'Inscrições encerradas'}
                                         </div>
                                     ) : isRegistered ? (
                                         <div className="w-full flex items-center justify-center gap-2 py-4 rounded-full bg-paraiso-green/10 text-paraiso-green font-black uppercase tracking-widest text-xs border border-paraiso-green/30">
@@ -274,7 +296,7 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
             </div>
 
             {/* Modal */}
-            {isModalOpen && (
+            {isModalOpen && !isFinished && (
                 <EventRegistrationModal
                     event={event}
                     onClose={() => setIsModalOpen(false)}

@@ -1,5 +1,7 @@
+import Link from "next/link";
+import ImageWithFallback from "@/components/ImageWithFallback";
 import { getPublicEvents } from "@/lib/events/data";
-import { formatEventDate } from "@/lib/events/display";
+import { eventCardContent, formatEventDate } from "@/lib/events/display";
 import { Calendar, Clock, MapPin, Tag } from "lucide-react";
 
 export default async function EventsPage() {
@@ -32,27 +34,29 @@ export default async function EventsPage() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {events.map((event) => (
-                            <div
+                        {events.map((event) => {
+                            const card = eventCardContent(event);
+                            return (
+                            <Link
                                 key={event.id}
+                                href={`/evento/${event.id}`}
                                 className="group bg-white rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl border border-slate-100 hover:-translate-y-1 transition-all duration-300 flex flex-col"
                             >
                                 <div className="relative h-52 w-full overflow-hidden bg-slate-200">
-                                    {event.image_url ? (
-                                        <img
-                                            src={event.image_url}
-                                            alt={event.title}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-paraiso-blue-dark/10">
-                                            <Calendar size={40} className="text-paraiso-blue-dark/30" />
-                                        </div>
-                                    )}
-                                    {event.tag && (
+                                    <ImageWithFallback
+                                        src={card.imageUrl}
+                                        alt={event.title}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        fallback={
+                                            <div className="w-full h-full flex items-center justify-center bg-paraiso-blue-dark/10">
+                                                <Calendar size={40} className="text-paraiso-blue-dark/30" />
+                                            </div>
+                                        }
+                                    />
+                                    {card.tag && (
                                         <span className="absolute top-4 left-4 flex items-center gap-1 bg-white/90 backdrop-blur-sm text-paraiso-blue-dark text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow">
                                             <Tag size={10} />
-                                            {event.tag}
+                                            {card.tag}
                                         </span>
                                     )}
                                 </div>
@@ -67,9 +71,9 @@ export default async function EventsPage() {
                                         {event.title}
                                     </h2>
 
-                                    {event.description && (
+                                    {card.text && (
                                         <p className="text-slate-500 text-sm leading-relaxed mb-4 flex-grow line-clamp-3">
-                                            {event.description}
+                                            {card.text}
                                         </p>
                                     )}
 
@@ -91,8 +95,9 @@ export default async function EventsPage() {
                                         )}
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            </Link>
+                            );
+                        })}
                     </div>
                 )}
             </div>
