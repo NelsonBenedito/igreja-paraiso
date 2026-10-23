@@ -76,15 +76,24 @@ export function isEventFinished(
 }
 
 const YOUTUBE_ID = /^[\w-]{11}$/;
+const SECONDS = /^[1-9]\d*$/;
 
-function youtubeEmbed(id: string | null | undefined): string | null {
-  return id && YOUTUBE_ID.test(id) ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+/** Embed do YouTube; `start`/`t` só em segundos inteiros (`?t=42`), outros formatos são ignorados. */
+function youtubeEmbed(id: string | null | undefined, params: URLSearchParams): string | null {
+  if (!id || !YOUTUBE_ID.test(id)) return null;
+  const start = [params.get("start"), params.get("t")].find((v) => v && SECONDS.test(v));
+  return `https://www.youtube-nocookie.com/embed/${id}${start ? `?start=${start}` : ""}`;
+}
+
+function vimeoEmbed(id: string | undefined): string | null {
+  return id && /^\d+$/.test(id) ? `https://player.vimeo.com/video/${id}` : null;
 }
 
 /**
  * URL de vídeo do painel → URL de embed: YouTube (`watch?v=`, `youtu.be/`,
- * `shorts/`, `embed/`) → `youtube-nocookie.com/embed/<id>`; Vimeo
- * (`vimeo.com/<id>`) → `player.vimeo.com/video/<id>`. Outro → `null`.
+ * `shorts/`, `embed/`, `youtube-nocookie.com/embed/`) → `youtube-nocookie.com/embed/<id>`;
+ * Vimeo (`vimeo.com/<id>`, `player.vimeo.com/video/<id>`) → `player.vimeo.com/video/<id>`.
+ * Outro → `null`.
  */
 export function toEmbedUrl(url: string): string | null {
   let parsed: URL;
@@ -96,16 +105,20 @@ export function toEmbedUrl(url: string): string | null {
   if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
 
   const host = parsed.hostname.replace(/^(www|m)\./, "");
-  const [first, second] = parsed.pathname.split("/").filter(Boolean);
+  const params = parsed.searchParams;
+  const [first, second, third] = parsed.pathname.split("/").filter(Boolean);
 
-  if (host === "youtu.be") return youtubeEmbed(first);
+  if (host === "youtu.be") return youtubeEmbed(first, params);
   if (host === "youtube.com") {
-    if (first === "watch") return youtubeEmbed(parsed.searchParams.get("v"));
-    if (first === "shorts" || first === "embed") return youtubeEmbed(second);
+    if (first === "watch") return youtubeEmbed(params.get("v"), params);
+    if (first === "shorts" || first === "embed") return youtubeEmbed(second, params);
     return null;
   }
-  if (host === "vimeo.com" && first && !second && /^\d+$/.test(first)) {
-    return `https://player.vimeo.com/video/${first}`;
+  if (host === "youtube-nocookie.com") {
+    return first === "embed" ? youtubeEmbed(second, params) : null;
   }
+
+  if (host === "vimeo.com") return second ? null : vimeoEmbed(first);
+  if (host === "player.vimeo.com") return first === "video" && !third ? vimeoEmbed(second) : null;
   return null;
 }

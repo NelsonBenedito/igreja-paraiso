@@ -6,9 +6,11 @@ vi.mock("@/lib/events/data", () => ({
   getPublicEventById: (id: string) => getPublicEventById(id),
   isUserRegisteredForEvent: async () => false,
 }));
-vi.mock("@/utils/supabase/server", () => ({ createClient: async () => ({}) }));
+vi.mock("@/utils/supabase/server", () => ({
+  createClient: async () => ({ auth: { getUser: async () => ({ data: { user: null } }) } }),
+}));
 
-const { generateMetadata } = await import("./page");
+const { default: EventoPage, generateMetadata } = await import("./page");
 
 const EVENTO: SiteEvent = {
   id: "3f2b8c1e-9a4d-4e6f-8b7a-1c2d3e4f5a6b",
@@ -62,5 +64,26 @@ describe("/evento/[id] — metadados", () => {
   it("evento inexistente → sem metadados próprios", async () => {
     getPublicEventById.mockResolvedValue(null);
     expect(await generateMetadata(params("x"))).toEqual({});
+  });
+});
+
+describe("/evento/[id] — details_html", () => {
+  beforeEach(() => getPublicEventById.mockReset());
+
+  it("é sanitizado no servidor antes de chegar ao componente cliente", async () => {
+    getPublicEventById.mockResolvedValue({
+      ...EVENTO,
+      details_html: '<p>Programação</p><script>alert(1)</script><a href="https://exemplo.com" target="_blank">site</a>',
+    });
+    const page = (await EventoPage(params(EVENTO.id))) as { props: { event: SiteEvent } };
+    expect(page.props.event.details_html).toBe(
+      '<p>Programação</p><a href="https://exemplo.com" target="_blank" rel="noopener noreferrer">site</a>',
+    );
+  });
+
+  it("sem details_html continua nulo", async () => {
+    getPublicEventById.mockResolvedValue(EVENTO);
+    const page = (await EventoPage(params(EVENTO.id))) as { props: { event: SiteEvent } };
+    expect(page.props.event.details_html).toBeNull();
   });
 });

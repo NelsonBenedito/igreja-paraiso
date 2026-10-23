@@ -3,6 +3,8 @@
 ## Stack
 Next 16 (App Router), React 19, Tailwind 4, TypeScript. Deploy na Vercel:
 `master` = produção, `homologacao` = Preview. Nunca faça push/merge/deploy sem pedido explícito.
+Node ≥ 22.22.2 (`engines` do `package.json`, exigido pelo `isomorphic-dompurify`/jsdom): o projeto na Vercel
+precisa rodar Node ≥ 22.22.2 (24.x recomendado).
 
 ## De onde vêm os dados
 - API do ChurchManager (painel), configurada por `NEXT_PUBLIC_DONATIONS_API_BASE` e
@@ -15,6 +17,9 @@ Next 16 (App Router), React 19, Tailwind 4, TypeScript. Deploy na Vercel:
   `visit.address` e `visit.hours` são texto da seção Visite-nos, não fonte de endereço/horário.
 - Inscrições do membro (`/registrations/mine`, `/events/:id/registrations/check`): só pelo servidor, com header
   `x-participant-secret` = `CHURCHMANAGER_PARTICIPANT_SECRET` (só servidor; = `PUBLIC_PARTICIPANT_API_SECRET` da API); o navegador usa `GET /api/membros/inscricoes`.
+  Precisa existir nos ambientes **Production e Preview da Vercel**; sem ela a API responde 401 e as consultas degradam
+  para "não inscrito" (`console.warn` no servidor; a home só trata como lista vazia).
+- Webhook `/api/webhooks/asaas`: em produção exige `ASAAS_WEBHOOK_TOKEN` (header `asaas-access-token`); sem ele → 401.
 - Revalidação: `GET|POST /api/revalidate-site-content` com header `x-revalidation-secret` (= `REVALIDATION_SECRET`);
   em produção sem o segredo configurado → 401; expira a tag `site-content` na hora (`{ expire: 0 }`), que cobre
   site-content, `/schedules` e eventos. `?secret=` ainda é aceito por compatibilidade — **REMOVER** quando o painel só enviar o header.

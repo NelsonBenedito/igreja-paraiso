@@ -6,6 +6,9 @@ DOMPurify.addHook("afterSanitizeAttributes", (node) => {
 });
 
 /**
+ * Só no servidor (ex.: `evento/[id]/page.tsx`): importar num componente cliente
+ * levaria o DOMPurify para o bundle do navegador.
+ *
  * `details_html` do painel pela allowlist padrão do DOMPurify (sem scripts,
  * handlers nem iframes). `target` é mantido para links que abrem em nova aba —
  * seguro porque todo link recebe `rel="noopener noreferrer"`.

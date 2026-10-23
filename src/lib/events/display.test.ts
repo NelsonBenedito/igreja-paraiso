@@ -106,20 +106,42 @@ describe("toEmbedUrl", () => {
 
   it.each([
     "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    "https://youtube.com/watch?v=dQw4w9WgXcQ&t=42s",
     "https://m.youtube.com/watch?v=dQw4w9WgXcQ",
     "https://youtu.be/dQw4w9WgXcQ",
     "https://youtu.be/dQw4w9WgXcQ?si=abc",
     "https://www.youtube.com/shorts/dQw4w9WgXcQ",
     "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+    "https://youtube-nocookie.com/embed/dQw4w9WgXcQ",
     "  https://youtu.be/dQw4w9WgXcQ  ",
   ])("YouTube %s → youtube-nocookie", (url) => {
     expect(toEmbedUrl(url)).toBe(YT);
   });
 
-  it("Vimeo → player.vimeo.com", () => {
-    expect(toEmbedUrl("https://vimeo.com/76979871")).toBe("https://player.vimeo.com/video/76979871");
-    expect(toEmbedUrl("https://www.vimeo.com/76979871")).toBe("https://player.vimeo.com/video/76979871");
+  it.each([
+    ["https://youtu.be/dQw4w9WgXcQ?t=42", `${YT}?start=42`],
+    ["https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=90", `${YT}?start=90`],
+    ["https://www.youtube.com/embed/dQw4w9WgXcQ?start=30", `${YT}?start=30`],
+    ["https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?start=30", `${YT}?start=30`],
+  ])("YouTube %s mantém o início em segundos → %s", (url, embed) => {
+    expect(toEmbedUrl(url)).toBe(embed);
+  });
+
+  it.each([
+    "https://youtube.com/watch?v=dQw4w9WgXcQ&t=42s",
+    "https://youtu.be/dQw4w9WgXcQ?t=1m30s",
+    "https://youtu.be/dQw4w9WgXcQ?t=abc",
+    "https://youtu.be/dQw4w9WgXcQ?t=0",
+  ])("YouTube %s: início fora do formato de segundos é ignorado", (url) => {
+    expect(toEmbedUrl(url)).toBe(YT);
+  });
+
+  it.each([
+    "https://vimeo.com/76979871",
+    "https://www.vimeo.com/76979871",
+    "https://player.vimeo.com/video/76979871",
+  ])("Vimeo %s → player.vimeo.com", (url) => {
+    expect(toEmbedUrl(url)).toBe("https://player.vimeo.com/video/76979871");
   });
 
   it.each([
@@ -128,6 +150,8 @@ describe("toEmbedUrl", () => {
     "https://www.youtube.com/watch?v=curto",
     "https://www.youtube.com/channel/UC123",
     "https://vimeo.com/channels/staffpicks",
+    "https://player.vimeo.com/video/abc",
+    "https://www.youtube-nocookie.com/watch?v=dQw4w9WgXcQ",
     "https://youtube.com.evil.example/watch?v=dQw4w9WgXcQ",
     "javascript:alert(1)",
     "não é url",

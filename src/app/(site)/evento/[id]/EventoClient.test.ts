@@ -55,22 +55,24 @@ describe("/evento/[id] — ação de inscrição", () => {
 });
 
 describe("/evento/[id] — conteúdo do painel", () => {
-  it("details_html é sanitizado antes de ser exibido", () => {
-    const html = render(
-      evento({
-        details_html:
-          '<p>Programação</p><script>alert(1)</script><img src="x" onerror="alert(2)"><a href="https://exemplo.com" target="_blank">site</a>',
-      }),
-    );
-    expect(html).toContain("<p>Programação</p>");
-    expect(html).not.toMatch(/<script|onerror|alert\(/);
-    expect(html).toContain('<a href="https://exemplo.com" target="_blank" rel="noopener noreferrer">site</a>');
+  it("details_html (já sanitizado no servidor) é exibido como recebido", () => {
+    const details = '<p>Programação</p><a href="https://exemplo.com" target="_blank" rel="noopener noreferrer">site</a>';
+    const html = render(evento({ details_html: details }));
+    expect(html).toContain(details);
+    expect(html).not.toContain("Nenhuma descrição fornecida");
   });
 
   it("vídeo do YouTube vira iframe youtube-nocookie", () => {
     const html = render(evento({ video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }));
     expect(html).toContain('<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"');
     expect(html).not.toContain("Assistir ao vídeo");
+  });
+
+  it("vídeo com URL que não é http(s) não vira link nem iframe", () => {
+    const html = render(evento({ video_url: "javascript:alert(1)" }));
+    expect(html).not.toContain("<iframe");
+    expect(html).not.toContain("Assistir ao vídeo");
+    expect(html).not.toContain("javascript:");
   });
 
   it("vídeo sem embed conhecido vira link em nova aba, sem iframe", () => {

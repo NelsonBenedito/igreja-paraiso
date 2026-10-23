@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getPublicEventById, isUserRegisteredForEvent } from '@/lib/events/data';
+import { sanitizeEventHtml } from '@/lib/events/sanitize';
 import { createClient } from '@/utils/supabase/server';
 import { notFound } from 'next/navigation';
 import EventoClient from './EventoClient';
@@ -42,7 +43,11 @@ export default async function EventoPage({ params }: Params) {
         }
     }
 
+    // Sanitiza uma vez, no servidor: o HTML bruto do painel não chega ao
+    // navegador e o DOMPurify fica fora do bundle do cliente.
+    const details_html = event.details_html ? sanitizeEventHtml(event.details_html) : null;
+
     return (
-        <EventoClient event={event} isRegisteredServer={isRegistered} />
+        <EventoClient event={{ ...event, details_html }} isRegisteredServer={isRegistered} />
     );
 }

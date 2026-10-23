@@ -42,6 +42,12 @@ describe("webhook Asaas — token", () => {
     expect(res.status).toBe(401);
   });
 
+  it("token configurado fora de produção, header errado → 401", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    const res = await POST(req({ "asaas-access-token": "outro" }));
+    expect(res.status).toBe(401);
+  });
+
   it("fora de produção, sem token configurado, não exige token", async () => {
     vi.stubEnv("NODE_ENV", "development");
     vi.stubEnv("ASAAS_WEBHOOK_TOKEN", "");
