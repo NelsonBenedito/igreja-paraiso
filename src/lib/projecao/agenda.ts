@@ -1,4 +1,4 @@
-import type { PublicEventDto } from "@/lib/events/types";
+import type { PublicEventDto, PublicProjectionAgendaItemDto } from "@/lib/events/types";
 
 /**
  * Contrato da tela de projeção (`/projecao-agenda`, exibida no Holyrics).
@@ -15,7 +15,7 @@ export interface ProjecaoAviso {
   fim: string | null;
   /** Substitui "dia às hora" na 2ª linha. A API ainda não tem campo para isso. */
   subtitulo: string | null;
-  /** Linha pequena abaixo do detalhe (vem de `shortDescription`). */
+  /** Linha pequena abaixo do detalhe (`shortDescription` do evento / descrição do horário). */
   observacao: string | null;
   /** Ainda não exibido; disponível para futuras versões da arte. */
   local: string | null;
@@ -41,25 +41,59 @@ function texto(v: string | null | undefined): string | null {
   return t ? t : null;
 }
 
-export function toProjecaoAviso(evento: PublicEventDto): ProjecaoAviso {
-  const inicio = horaCurta(evento.timeStart);
-  const fim = horaCurta(evento.timeEnd);
+/** Campos comuns a evento e item da agenda do telão. */
+interface OrigemAviso {
+  id: string;
+  title: string;
+  date: string;
+  timeStart: string | null;
+  timeEnd: string | null;
+  note: string | null | undefined;
+  location: string | null;
+}
+
+function montarAviso(o: OrigemAviso): ProjecaoAviso {
+  const inicio = horaCurta(o.timeStart);
+  const fim = horaCurta(o.timeEnd);
   return {
-    id: evento.id,
-    titulo: evento.title.trim(),
-    inicio: inicio ? `${evento.date}T${inicio}:00${OFFSET_SAO_PAULO}` : evento.date,
-    fim: inicio && fim ? `${evento.date}T${fim}:00${OFFSET_SAO_PAULO}` : null,
+    id: o.id,
+    titulo: o.title.trim(),
+    inicio: inicio ? `${o.date}T${inicio}:00${OFFSET_SAO_PAULO}` : o.date,
+    fim: inicio && fim ? `${o.date}T${fim}:00${OFFSET_SAO_PAULO}` : null,
     subtitulo: null,
-    observacao: texto(evento.shortDescription),
-    local: texto(evento.location),
+    observacao: texto(o.note),
+    local: texto(o.location),
   };
 }
 
-export function montarProjecaoAgenda(eventos: PublicEventDto[], agora = new Date()): ProjecaoAgenda {
+function montarAgenda(avisos: ProjecaoAviso[], agora: Date): ProjecaoAgenda {
   return {
     rotulo: "programação",
     boasVindas: { linhas: ["Seja muito", "bem-vindo"], cursiva: "bem-vindo" },
     atualizadoEm: agora.toISOString(),
-    avisos: eventos.filter((e) => e.published).map(toProjecaoAviso),
+    avisos,
   };
+}
+
+export function toProjecaoAviso(evento: PublicEventDto): ProjecaoAviso {
+  return montarAviso({ ...evento, note: evento.shortDescription });
+}
+
+/** Caminho antigo (API sem `/projection-agenda`): só eventos publicados. */
+export function montarProjecaoAgenda(eventos: PublicEventDto[], agora = new Date()): ProjecaoAgenda {
+  return montarAgenda(eventos.filter((e) => e.published).map(toProjecaoAviso), agora);
+}
+
+/**
+ * Agenda do telão vinda da API (eventos + programação semanal), já filtrada e
+ * ordenada lá. `id` é a `key` do item, única também para cada ocorrência de horário.
+ */
+export function montarProjecaoDaAgenda(
+  items: PublicProjectionAgendaItemDto[],
+  agora = new Date(),
+): ProjecaoAgenda {
+  return montarAgenda(
+    items.map((item) => montarAviso({ ...item, id: item.key })),
+    agora,
+  );
 }

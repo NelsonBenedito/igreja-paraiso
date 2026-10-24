@@ -5,6 +5,7 @@ import type {
   MyRegistrationsResponse,
   PublicEventDto,
   PublicEventListResponse,
+  PublicProjectionAgendaResponse,
   PublicScheduleListResponse,
   PublicTicketsResponse,
   PublicTicketTypeDto,
@@ -130,6 +131,18 @@ export async function fetchPublicSchedules(
   revalidate = 300,
 ): Promise<PublicScheduleListResponse> {
   return publicFetch<PublicScheduleListResponse>("/schedules", {
+    next: { revalidate, tags: ["site-content"] },
+  });
+}
+
+/**
+ * Agenda do telão (eventos + programação semanal). API antiga sem o endpoint
+ * responde 404 — quem chama decide o fallback.
+ */
+export async function fetchProjectionAgenda(
+  revalidate = 60,
+): Promise<PublicProjectionAgendaResponse> {
+  return publicFetch<PublicProjectionAgendaResponse>("/projection-agenda", {
     next: { revalidate, tags: ["site-content"] },
   });
 }

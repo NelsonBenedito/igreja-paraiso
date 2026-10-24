@@ -137,6 +137,30 @@ export interface PublicScheduleListResponse {
   items: PublicScheduleDto[];
 }
 
+/**
+ * Item da agenda do telão (`/projection-agenda`): eventos e ocorrências da
+ * programação semanal dos próximos 7 dias, já sem os ocultos e em ordem.
+ */
+export interface PublicProjectionAgendaItemDto {
+  /** `event:<id>` ou `schedule:<id>:<YYYY-MM-DD>`. */
+  key: string;
+  kind: 'event' | 'schedule';
+  sourceId: string;
+  title: string;
+  /** YYYY-MM-DD */
+  date: string;
+  /** HH:MM */
+  timeStart: string | null;
+  /** HH:MM (só eventos) */
+  timeEnd: string | null;
+  location: string | null;
+  note: string | null;
+}
+
+export interface PublicProjectionAgendaResponse {
+  items: PublicProjectionAgendaItemDto[];
+}
+
 /** Formato usado pelos componentes do site (legado Supabase). */
 export interface SiteEvent {
   id: string;
