@@ -3,8 +3,9 @@
 ## Stack
 Next 16 (App Router), React 19, Tailwind 4, TypeScript. Deploy na Vercel:
 `master` = produção, `homologacao` = Preview. Nunca faça push/merge/deploy sem pedido explícito.
-Node ≥ 22.22.2 (`engines` do `package.json`, exigido pelo `isomorphic-dompurify`/jsdom): o projeto na Vercel
-precisa rodar Node ≥ 22.22.2 (24.x recomendado).
+Node ≥ 20.9 (`engines` do `package.json`, mínimo do Next 16). `isomorphic-dompurify` fica **fixo em 2.26.0**
+(jsdom 26, Node ≥ 18): as versões 3.x/4.x trazem jsdom 28–30, que exige Node mais novo que o da Vercel e
+derrubou `/evento/[id]` com 500 em produção (24/10/2026). Não atualizar sem testar o build no Node da Vercel.
 
 ## De onde vêm os dados
 - API do ChurchManager (painel), configurada por `NEXT_PUBLIC_DONATIONS_API_BASE` e
