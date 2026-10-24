@@ -445,8 +445,9 @@ html, body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  /* Linha única: sem limite, um texto longo passa por baixo do logo (canto inferior direito). */
-  max-width: 52vw;
+  /* Linha única: sem limite, um texto longo passa por baixo do logo (canto inferior direito).
+     Em px do palco (1920×1080 escalado), não em vw da janela. */
+  max-width: 1000px;
 }
 
 .aviso-detalhe {
