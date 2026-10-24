@@ -18,7 +18,12 @@ export default async function MembersEventsPage() {
 
     let registeredEventIds: string[] = []
     if (user.email) {
-        registeredEventIds = await getRegisteredEventIdsForUser(user.email, user.id)
+        try {
+            registeredEventIds = await getRegisteredEventIdsForUser(user.email, user.id)
+        } catch (error) {
+            // Falha na consulta não pode derrubar a página: trata como "não inscrito".
+            console.warn("[membros/eventos] não foi possível carregar as inscrições:", error)
+        }
     }
 
     return (

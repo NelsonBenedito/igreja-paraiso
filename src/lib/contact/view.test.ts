@@ -23,7 +23,7 @@ describe("buildContactView", () => {
     });
   });
 
-  it("usa contact.*, mapsUrl da sede ativa e horários ativos ordenados", () => {
+  it("usa contact.*, mapsUrl da sede ativa e horários ativos na ordem da API", () => {
     const v = buildContactView(
       sections({ phone: "(27) 99875-7008", email: "a@b.com", address: "Rua A, 1" }, [
         church({ mapsUrl: "https://maps.example/filial" }),
@@ -40,7 +40,7 @@ describe("buildContactView", () => {
       email: "a@b.com", mapsUrl: "https://maps.example/sede",
     });
     expect(v.schedules.map((s) => [s.day, s.time, s.title])).toEqual([
-      ["Domingo", "18:00", "Celebração"], ["Quinta-feira", "19:30", "Maná"],
+      ["Quinta-feira", "19:30", "Maná"], ["Domingo", "18:00", "Celebração"],
     ]);
   });
 

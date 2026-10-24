@@ -1,6 +1,7 @@
 import { isPublicApiConfigured } from "@/lib/public-api/env";
 import { toSiteEvent, toSiteSchedule } from "./adapters";
 import {
+  EventsApiError,
   checkEventRegistration,
   fetchPublicEventById,
   fetchPublicEvents,
@@ -23,17 +24,21 @@ export async function getPublicEvents(options: {
   return items.map(toSiteEvent);
 }
 
-/** Detalhe de um evento publicado. */
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Detalhe de um evento publicado; `null` (→ 404) para id inválido ou inexistente. */
 export async function getPublicEventById(eventId: string): Promise<SiteEvent | null> {
   if (!isPublicApiConfigured()) {
     console.warn("[events] API Nest não configurada.");
     return null;
   }
+  if (!UUID_RE.test(eventId)) return null;
   try {
     const dto = await fetchPublicEventById(eventId);
     return toSiteEvent(dto);
   } catch (error) {
-    if (error instanceof Error && "status" in error && (error as { status: number }).status === 404) {
+    // 400 = id que a API rejeita; para o visitante é o mesmo que não existir.
+    if (error instanceof EventsApiError && (error.status === 404 || error.status === 400)) {
       return null;
     }
     throw error;

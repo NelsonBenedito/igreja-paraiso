@@ -10,8 +10,6 @@ export interface ContactView {
   schedules: { id: string; day: string; time: string; title: string }[];
 }
 
-const DAYS_ORDER = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
-
 const clean = (v: string | null | undefined) => (v?.trim() ? v.trim() : null);
 
 function toTelHref(phone: string): string | null {
@@ -33,8 +31,8 @@ function toHttpUrl(url: string | null | undefined): string | null {
 
 /**
  * Dados de /contato. Fonte: contact.* (endereço, telefone, e-mail), filial sede
- * de churches.items (mapsUrl) e /schedules ativos. `sections` nulo (API fora ou
- * sem configuração) → nada é exibido; campo vazio → bloco some.
+ * de churches.items (mapsUrl) e /schedules ativos, na ordem da API. `sections`
+ * nulo (API fora ou sem configuração) → nada é exibido; campo vazio → bloco some.
  */
 export function buildContactView(sections: SiteSections | null, schedules: SiteSchedule[]): ContactView {
   const phone = clean(sections?.contact.phone);
@@ -47,10 +45,6 @@ export function buildContactView(sections: SiteSections | null, schedules: SiteS
     mapsUrl: toHttpUrl(headquarters?.mapsUrl),
     schedules: schedules
       .filter((s) => s.active)
-      .sort((a, b) => {
-        const diff = DAYS_ORDER.indexOf(a.day_of_week) - DAYS_ORDER.indexOf(b.day_of_week);
-        return diff !== 0 ? diff : a.time_start.localeCompare(b.time_start);
-      })
       .map((s) => ({ id: s.id, day: s.day_of_week, time: s.time_start.slice(0, 5), title: s.title })),
   };
 }

@@ -96,12 +96,16 @@ async function publicFetch<T>(path: string, init?: FetchOptions): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+/**
+ * Eventos: o painel expira a tag `site-content` ao salvar um evento
+ * (`/api/revalidate-site-content`); `revalidate` é só o fallback.
+ */
 export async function fetchPublicEvents(
   options: { upcomingOnly?: boolean; revalidate?: number } = {},
 ): Promise<PublicEventListResponse> {
   const q = options.upcomingOnly ? "?upcomingOnly=true" : "";
   return publicFetch<PublicEventListResponse>(`/events${q}`, {
-    next: { revalidate: options.revalidate ?? 60 },
+    next: { revalidate: options.revalidate ?? 60, tags: ["site-content"] },
   });
 }
 
@@ -109,7 +113,7 @@ export async function fetchPublishedEvents(
   revalidate = 60,
 ): Promise<PublicEventListResponse> {
   return publicFetch<PublicEventListResponse>("/events/published", {
-    next: { revalidate },
+    next: { revalidate, tags: ["site-content"] },
   });
 }
 
@@ -118,7 +122,7 @@ export async function fetchPublicEventById(
   revalidate = 60,
 ): Promise<PublicEventDto> {
   return publicFetch<PublicEventDto>(`/events/${encodeURIComponent(eventId)}`, {
-    next: { revalidate },
+    next: { revalidate, tags: ["site-content"] },
   });
 }
 
@@ -208,6 +212,17 @@ export async function createEventCheckout(
   );
 }
 
+/**
+ * Header exigido pela API nas consultas de inscrição (`/registrations/mine` e
+ * `/events/:id/registrations/check`). `CHURCHMANAGER_PARTICIPANT_SECRET` é só
+ * do servidor (sem `NEXT_PUBLIC_`): no navegador fica indefinida e nada é enviado.
+ */
+function participantSecretHeaders(): Record<string, string> {
+  const secret = process.env.CHURCHMANAGER_PARTICIPANT_SECRET?.trim();
+  return secret ? { "x-participant-secret": secret } : {};
+}
+
+/** Só no servidor — o navegador não tem o segredo de participante. */
 export async function checkEventRegistration(
   eventId: string,
   params: { email?: string; userId?: string },
@@ -218,10 +233,11 @@ export async function checkEventRegistration(
   const qs = search.toString();
   return publicFetch<RegistrationCheckResponse>(
     `/events/${encodeURIComponent(eventId)}/registrations/check${qs ? `?${qs}` : ""}`,
-    { cache: "no-store" },
+    { cache: "no-store", headers: participantSecretHeaders() },
   );
 }
 
+/** Só no servidor — o navegador usa `GET /api/membros/inscricoes`. */
 export async function fetchMyRegistrations(params: {
   email: string;
   userId?: string | null;
@@ -231,7 +247,7 @@ export async function fetchMyRegistrations(params: {
   if (params.userId) search.set("userId", params.userId);
   return publicFetch<MyRegistrationsResponse>(
     `/registrations/mine?${search.toString()}`,
-    { cache: "no-store" },
+    { cache: "no-store", headers: participantSecretHeaders() },
   );
 }
 
@@ -248,20 +264,6 @@ export async function createEventCheckoutClient(
   body: EventCheckoutRequest,
 ): Promise<EventCheckoutResponse> {
   return createEventCheckout(eventId, body);
-}
-
-export async function fetchMyRegistrationsClient(params: {
-  email: string;
-  userId?: string | null;
-}): Promise<MyRegistrationsResponse> {
-  return fetchMyRegistrations(params);
-}
-
-export async function checkEventRegistrationClient(
-  eventId: string,
-  params: { email?: string; userId?: string },
-): Promise<RegistrationCheckResponse> {
-  return checkEventRegistration(eventId, params);
 }
 
 export function isDuplicateRegistrationError(error: unknown): boolean {

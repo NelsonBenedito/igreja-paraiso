@@ -1,12 +1,13 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import Reveal from './Reveal';
+import ImageWithFallback from './ImageWithFallback';
 import { motion } from 'framer-motion';
 import { CalendarDays, MapPin, Clock, UserPlus, CheckCircle2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
 import { loadRegisteredEventIdsClient } from '@/lib/events/data-client';
 import type { SiteEvent } from '@/lib/events/types';
+import { eventCardContent } from '@/lib/events/display';
 
 interface NewsSectionProps {
     events: SiteEvent[];
@@ -28,11 +29,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
 
     /* useEffect(() => {
         const fetchMyRegistrations = async () => {
-            const supabase = createClient();
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user?.email) return;
-
-            const ids = await loadRegisteredEventIdsClient(user.email, user.id);
+            const ids = await loadRegisteredEventIdsClient();
             if (ids.length > 0) {
                 setRegisteredIds(ids);
             }
@@ -60,33 +57,32 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
             </Reveal>
 
             <div className={`grid gap-6 md:gap-8 ${events.length === 1 ? 'max-w-lg mx-auto' : events.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
-                    {events.map((item, idx) => (
+                    {events.map((item, idx) => {
+                        const card = eventCardContent(item);
+                        return (
                         <Reveal key={item.id} delay={idx * 0.1}>
                             <div
                                 className="group cursor-pointer"
                                 onClick={() => router.push(`/evento/${item.id}`)}
                             >
                                 <div className="relative mb-5 overflow-hidden rounded-2xl md:rounded-3xl aspect-[4/3] shadow-lg bg-slate-100 dark:bg-slate-800">
-                                    {item.image_url ? (
-                                        <motion.img
-                                            whileHover={{ scale: 1.05 }}
-                                            transition={{ duration: 0.6 }}
-                                            src={item.image_url}
-                                            className="w-full h-full object-cover transition-all duration-500 group-hover:brightness-75"
-                                            alt={item.title}
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full bg-gradient-to-br from-paraiso-blue/10 to-paraiso-green/10 flex items-center justify-center">
-                                            <CalendarDays className="w-12 h-12 text-slate-300 dark:text-slate-600" />
-                                        </div>
-                                    )}
+                                    <ImageWithFallback
+                                        src={card.imageUrl}
+                                        className="w-full h-full object-cover transition-all duration-500 hover:scale-105 group-hover:brightness-75"
+                                        alt={item.title}
+                                        fallback={
+                                            <div className="w-full h-full bg-gradient-to-br from-paraiso-blue/10 to-paraiso-green/10 flex items-center justify-center">
+                                                <CalendarDays className="w-12 h-12 text-slate-300 dark:text-slate-600" />
+                                            </div>
+                                        }
+                                    />
 
                                     {/* Badges — top row */}
                                     <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
                                         <div className="flex flex-wrap gap-2">
-                                            {item.tag && (
+                                            {card.tag && (
                                                 <span className="px-3 py-1.5 bg-paraiso-green text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-md">
-                                                    {item.tag}
+                                                    {card.tag}
                                                 </span>
                                             )}
                                         </div>
@@ -124,9 +120,9 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
                                 <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-2 group-hover:text-paraiso-green transition-colors text-paraiso-blue dark:text-white leading-tight">
                                     {item.title}
                                 </h3>
-                                {item.description && (
+                                {card.text && (
                                     <p className="text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 text-sm mb-4">
-                                        {item.description}
+                                        {card.text}
                                     </p>
                                 )}
 
@@ -156,7 +152,8 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
                                 </div>
                             </div>
                         </Reveal>
-                    ))}
+                        );
+                    })}
             </div>
         </section>
     );

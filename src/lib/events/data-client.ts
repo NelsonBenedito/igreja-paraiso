@@ -1,8 +1,6 @@
 import {
-  checkEventRegistrationClient,
   createEventRegistrationClient,
   createEventCheckoutClient,
-  fetchMyRegistrationsClient,
   fetchOrderPayment,
   isDuplicateRegistrationError,
   isIdempotencyConflict,
@@ -120,29 +118,20 @@ export async function pollOrderPayment(
   return null;
 }
 
-export async function loadRegisteredEventIdsClient(
-  email: string,
-  userId?: string | null,
-): Promise<string[]> {
+/**
+ * IDs dos eventos em que o membro autenticado está inscrito. A consulta passa
+ * pelo servidor (`/api/membros/inscricoes`), que lê o e-mail da sessão e envia
+ * o segredo de participante; sem sessão ou com falha, devolve `[]`.
+ */
+export async function loadRegisteredEventIdsClient(): Promise<string[]> {
   try {
-    const { items } = await fetchMyRegistrationsClient({ email, userId });
-    return items.map((r) => r.eventId);
+    const res = await fetch("/api/membros/inscricoes", { cache: "no-store" });
+    if (!res.ok) return [];
+    const { eventIds } = (await res.json()) as { eventIds?: string[] };
+    return Array.isArray(eventIds) ? eventIds : [];
   } catch (error) {
-    console.error("[registrations] API mine failed:", error);
+    console.error("[registrations] /api/membros/inscricoes failed:", error);
     return [];
-  }
-}
-
-export async function checkRegisteredClient(
-  eventId: string,
-  params: { email?: string; userId?: string },
-): Promise<boolean> {
-  try {
-    const { registered } = await checkEventRegistrationClient(eventId, params);
-    return registered;
-  } catch (error) {
-    console.error("[registrations] API check registered failed:", error);
-    return false;
   }
 }
 

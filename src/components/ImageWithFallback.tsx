@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import Image from "next/image";
 import { ImageOff } from "lucide-react";
 
@@ -12,6 +12,8 @@ interface ImageWithFallbackProps {
   fill?: boolean;
   sizes?: string;
   draggable?: boolean;
+  /** Substituto próprio da página (ex.: o placeholder atual do card); padrão: ícone neutro. */
+  fallback?: ReactNode;
 }
 
 /**
@@ -25,6 +27,7 @@ export default function ImageWithFallback({
   fill,
   sizes,
   draggable,
+  fallback,
 }: ImageWithFallbackProps) {
   const url = src?.trim() ?? "";
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
@@ -35,6 +38,7 @@ export default function ImageWithFallback({
   };
 
   if (!url || failedUrl === url) {
+    if (fallback !== undefined) return <>{fallback}</>;
     return (
       <div
         role="img"
