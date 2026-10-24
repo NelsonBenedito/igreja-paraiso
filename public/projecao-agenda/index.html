@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Programação — Igreja Paraíso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;800&family=Sacramento&display=block">
+  <link rel="stylesheet" href="/projecao-agenda/projecao.css">
+</head>
+<body>
+  <div id="palco" class="palco">
+    <div class="fundo fundo-boas-vindas" aria-hidden="true">
+      <div class="mancha mb1"></div>
+      <div class="mancha mb2"></div>
+      <div class="mancha mb3"></div>
+    </div>
+    <div class="fundo fundo-agenda" aria-hidden="true">
+      <div class="mancha ma1"></div>
+      <div class="mancha ma2"></div>
+      <div class="mancha ma3"></div>
+    </div>
+    <div class="vinheta" aria-hidden="true"></div>
+    <div class="grao" aria-hidden="true"></div>
+
+    <div id="pontos" class="pontos" aria-hidden="true"></div>
+
+    <section id="boasVindas" class="boas-vindas">
+      <div class="bv-bloco">
+        <h1 id="bvTitulo" class="bv-titulo"></h1>
+        <div id="bvCursiva" class="bv-cursiva"></div>
+      </div>
+    </section>
+
+    <section class="agenda">
+      <div id="rotulo" class="agenda-rotulo">programação</div>
+      <ol id="lista" class="agenda-lista"></ol>
+      <ol id="medidor" class="agenda-lista medidor" aria-hidden="true"></ol>
+      <div id="paginas" class="agenda-paginas" aria-hidden="true"></div>
+    </section>
+
+    <img class="logo" src="/projecao-agenda/logo-paraiso-branco.svg" alt="Igreja Paraíso">
+
+    <!-- Usa cada peso da fonte desde o início para a medição do layout já sair certa. -->
+    <div class="pre-fontes" aria-hidden="true">
+      <span class="f3">a</span><span class="f5">a</span><span class="f7">a</span><span class="f8">a</span><span class="fc">a</span>
+    </div>
+  </div>
+
+  <script src="/projecao-agenda/projecao.js"></script>
+</body>
+</html>

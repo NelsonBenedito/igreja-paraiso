@@ -36,7 +36,19 @@ function isAllowedWhenCampusOnly(pathname: string): boolean {
   return false;
 }
 
+/** Tela de projeção do telão: pública, sem sessão e fora do modo "só campus". */
+function isProjecaoRoute(pathname: string): boolean {
+  return (
+    pathname === "/projecao-agenda" ||
+    pathname.startsWith("/projecao-agenda/") ||
+    pathname === "/api/projecao-agenda"
+  );
+}
+
 export async function middleware(request: NextRequest) {
+  if (isProjecaoRoute(request.nextUrl.pathname)) {
+    return NextResponse.next();
+  }
   if (isCampusOnlyMode() && !isAllowedWhenCampusOnly(request.nextUrl.pathname)) {
     return NextResponse.redirect(new URL("/em-construcao", request.url));
   }

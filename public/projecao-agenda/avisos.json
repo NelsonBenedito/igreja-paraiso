@@ -1,0 +1,64 @@
+{
+  "rotulo": "programação",
+  "boasVindas": {
+    "linhas": ["Seja muito", "bem-vindo"],
+    "cursiva": "bem-vindo"
+  },
+  "atualizadoEm": "2026-10-23T12:00:00.000Z",
+  "avisos": [
+    {
+      "id": "exemplo-festa-das-aguas",
+      "titulo": "Festa das Águas",
+      "inicio": "2026-10-24T10:00:00-03:00",
+      "fim": null,
+      "subtitulo": null,
+      "observacao": "Aniversário de 29 anos da Igreja Paraíso",
+      "local": "Campus Paraíso"
+    },
+    {
+      "id": "exemplo-churrasco",
+      "titulo": "Churrasco",
+      "inicio": "2026-10-24T12:00:00-03:00",
+      "fim": null,
+      "subtitulo": null,
+      "observacao": "Aniversário de 29 anos da Igreja Paraíso",
+      "local": "Campus Paraíso"
+    },
+    {
+      "id": "exemplo-festa-country",
+      "titulo": "Festa Country",
+      "inicio": "2026-10-24T13:00:00-03:00",
+      "fim": null,
+      "subtitulo": null,
+      "observacao": "Aniversário de 29 anos da Igreja Paraíso",
+      "local": "Campus Paraíso"
+    },
+    {
+      "id": "exemplo-celebracao-aniversario",
+      "titulo": "Celebração de Aniversário",
+      "inicio": "2026-10-25T18:00:00-03:00",
+      "fim": null,
+      "subtitulo": null,
+      "observacao": "Culto de encerramento dos 29 anos",
+      "local": "Rua Helmut Gums, 438 - Virada"
+    },
+    {
+      "id": "exemplo-abundancia-do-reino",
+      "titulo": "Abundância do Reino",
+      "inicio": "2026-10-29T19:30:00-03:00",
+      "fim": null,
+      "subtitulo": null,
+      "observacao": "Ministração com o Pr. Evandro Menezes",
+      "local": "Campus Paraíso (Rua Helmut Gums, 438 - Virada)"
+    },
+    {
+      "id": "exemplo-culto-de-domingo",
+      "titulo": "Culto de Domingo",
+      "inicio": "2026-11-01T18:00:00-03:00",
+      "fim": null,
+      "subtitulo": null,
+      "observacao": "Reunião principal da Igreja Paraíso",
+      "local": "Rua Helmut Gums, 438 - Virada"
+    }
+  ]
+}
