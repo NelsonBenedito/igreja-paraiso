@@ -70,6 +70,28 @@ describe("GET /api/projecao-agenda", () => {
       },
     ]);
     expect(fetchPublicEvents).not.toHaveBeenCalled();
+    expect(corpo.topicos).toEqual([]);
+    expect(corpo.rotuloTopicos).toBe("participe");
+  });
+
+  it("repassa os tópicos fixos da API", async () => {
+    fetchProjectionAgenda.mockResolvedValue({
+      items: [],
+      topics: [
+        { id: "t1", title: " Células ", text: "Encontre uma célula perto de você", callToAction: "Procure a recepção" },
+        { id: "t2", title: "Batismo", text: "Inscrições abertas", callToAction: "" },
+      ],
+    });
+
+    const res = await GET();
+
+    expect(res.status).toBe(200);
+    const corpo = await res.json();
+    expect(corpo.topicos).toEqual([
+      { id: "t1", titulo: "Células", texto: "Encontre uma célula perto de você", chamada: "Procure a recepção" },
+      { id: "t2", titulo: "Batismo", texto: "Inscrições abertas", chamada: null },
+    ]);
+    expect(corpo.avisos).toEqual([]);
   });
 
   it("API antiga (404) → volta a mostrar só os eventos", async () => {
@@ -84,6 +106,7 @@ describe("GET /api/projecao-agenda", () => {
     expect(corpo.avisos.map((a: { id: string; inicio: string }) => [a.id, a.inicio])).toEqual([
       ["e1", "2026-10-24T19:00:00-03:00"],
     ]);
+    expect(corpo.topicos).toEqual([]);
   });
 
   it("outro erro da API → 503 sem cache e sem tentar os eventos", async () => {

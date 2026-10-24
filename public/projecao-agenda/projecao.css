@@ -362,6 +362,12 @@ html, body {
   transform: translate3d(0, 0, 0);
   transition-delay: 0.5s;
 }
+/* Troca de rótulo entre agenda e tópicos ("programação" ↔ "participe") */
+.cena-agenda .agenda-rotulo.trocando {
+  opacity: 0;
+  transform: translate3d(0, -16px, 0);
+  transition: opacity 0.45s ease-in, transform 0.6s ease-in;
+}
 
 .agenda-lista {
   position: absolute;
@@ -454,6 +460,12 @@ html, body {
   overflow: hidden;
 }
 .aviso-detalhe .destaque { color: #9DB55A; }
+
+/* Chamada do tópico ("Procure a recepção"): linha pequena no verde do "hoje" */
+.aviso-nota.chamada {
+  font-weight: 500;
+  color: #9DB55A;
+}
 
 /* Entrada e saída dos itens (o JS liga as classes e escalona os atrasos) */
 .aviso-data,

@@ -7,7 +7,8 @@ import { montarProjecaoAgenda, montarProjecaoDaAgenda, type ProjecaoAgenda } fro
  * Dados da tela de projeção (`/projecao-agenda`). Mesma origem da página, então
  * não depende do CORS da API. A lista junta eventos e programação semanal dos
  * próximos 7 dias, vinda pronta da API (`/projection-agenda`, sem os itens
- * ocultos no painel), com o cache de conteúdo do site (até 60 s).
+ * ocultos no painel), e os tópicos fixos ativos (tela "participe"), com o cache
+ * de conteúdo do site (até 60 s). API sem `topics` → nenhum tópico.
  * API antiga sem esse endpoint (404) → volta a mostrar só os eventos.
  * Em outra falha responde 503: a página ignora e mantém a última agenda boa na tela.
  */
@@ -17,8 +18,8 @@ const SEM_CACHE = { "Cache-Control": "no-store" };
 
 async function buscarAgenda(): Promise<ProjecaoAgenda> {
   try {
-    const { items } = await fetchProjectionAgenda();
-    return montarProjecaoDaAgenda(items);
+    const { items, topics } = await fetchProjectionAgenda();
+    return montarProjecaoDaAgenda(items, new Date(), topics ?? []);
   } catch (error) {
     if (!(error instanceof EventsApiError && error.status === 404)) throw error;
     const { items } = await fetchPublicEvents({ upcomingOnly: true });

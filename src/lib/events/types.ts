@@ -157,8 +157,18 @@ export interface PublicProjectionAgendaItemDto {
   note: string | null;
 }
 
+/** Tópico fixo do telão (aviso sem data, ex.: "Células"); só os ativos, já em ordem. */
+export interface PublicProjectionTopicDto {
+  id: string;
+  title: string;
+  text: string;
+  callToAction: string | null;
+}
+
 export interface PublicProjectionAgendaResponse {
   items: PublicProjectionAgendaItemDto[];
+  /** Ausente em API anterior aos tópicos → tratar como []. */
+  topics?: PublicProjectionTopicDto[];
 }
 
 /** Formato usado pelos componentes do site (legado Supabase). */

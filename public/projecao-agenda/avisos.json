@@ -60,5 +60,14 @@
       "observacao": "Reunião principal da Igreja Paraíso",
       "local": "Rua Helmut Gums, 438 - Virada"
     }
+  ],
+  "rotuloTopicos": "participe",
+  "topicos": [
+    {
+      "id": "exemplo-celulas",
+      "titulo": "Células",
+      "texto": "Encontre uma célula perto de você",
+      "chamada": "Procure a recepção"
+    }
   ]
 }

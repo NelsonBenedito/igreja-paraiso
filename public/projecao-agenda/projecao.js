@@ -2,7 +2,9 @@
 /*
   Projeção da programação — Igreja Paraíso
 
-  Ciclo: boas-vindas → páginas da agenda → boas-vindas…
+  Ciclo: boas-vindas → páginas da agenda → páginas dos tópicos → boas-vindas…
+  Tópicos são avisos fixos, sem data ("Células · Procure a recepção"), na tela
+  "participe"; sem tópicos, essa cena é pulada.
   Os avisos vêm de CONFIG.fonte: a rota /api/projecao-agenda do site, que lê os
   eventos publicados no ChurchManager (contrato em src/lib/projecao/agenda.ts).
   avisos.json, nesta pasta, é um exemplo do mesmo formato (?fonte=/projecao-agenda/avisos.json).
@@ -12,8 +14,9 @@
   Parâmetros de URL (para links diferentes no Holyrics):
     ?cena=boas-vindas   só a tela de boas-vindas
     ?cena=agenda        só a agenda
+    ?cena=topicos       só os tópicos
     ?fonte=<url>        outra origem de dados
-    ?tempo=<segundos>   tempo de cada página da agenda
+    ?tempo=<segundos>   tempo de cada página da agenda e dos tópicos
 
   Escrito em ES5 (var, function, XMLHttpRequest) de propósito: o navegador
   embutido do Holyrics pode ser antigo.
@@ -25,9 +28,11 @@
     fonte: '/api/projecao-agenda',
     tempoBoasVindas: 12000,
     tempoPagina: 16000,
+    tempoTopicos: 14000,
     intervaloAtualizacao: 60000,
     maxAvisos: 12,
     maxPorPagina: 3,
+    maxTopicosPorPagina: 2,
     fonteBase: 92,       // px do título de cada aviso na escala 1
     escalaMaxima: 1,
     escalaMinima: 0.62,
@@ -55,16 +60,20 @@
   var camadaPontos = document.getElementById('pontos');
 
   var params = lerParametros();
-  var modo = params.cena === 'boas-vindas' || params.cena === 'agenda' ? params.cena : 'ciclo';
+  var modo = params.cena === 'boas-vindas' || params.cena === 'agenda' || params.cena === 'topicos' ? params.cena : 'ciclo';
   var fonte = params.fonte || CONFIG.fonte;
-  if (params.tempo && +params.tempo > 3) CONFIG.tempoPagina = +params.tempo * 1000;
+  if (params.tempo && +params.tempo > 3) CONFIG.tempoPagina = CONFIG.tempoTopicos = +params.tempo * 1000;
 
   var pontos = [];
   var dadosBrutos = null;
   var pendente = null;
   var assinaturaBruta = '';
-  var paginas = [];
-  var escalaLista = 1;
+  var paginas = [];          // páginas da agenda
+  var escalaAgenda = 1;
+  var paginasTopicos = [];
+  var escalaTopicos = 1;
+  var escalaLista = 1;       // escala da lista que está na tela
+  var rotuloAtual = '';
   var versao = 0;
   var chavePreparada = '';
   var boasVindasMontada = '';
@@ -205,6 +214,19 @@
     }
     avisos.sort(function (x, y) { return x.ini.instante - y.ini.instante; });
 
+    var brutoTopicos = (json && (json.topicos || json.topics)) || [];
+    var topicos = [];
+    for (var t = 0; t < brutoTopicos.length; t++) {
+      var tp = brutoTopicos[t] || {};
+      var tituloTp = texto(tp.titulo || tp.title);
+      if (!tituloTp) continue;
+      topicos.push({
+        titulo: tituloTp,
+        texto: texto(tp.texto || tp.text),
+        chamada: texto(tp.chamada || tp.callToAction)
+      });
+    }
+
     var bvj = (json && json.boasVindas) || {};
     var linhas = bvj.linhas && bvj.linhas.length ? bvj.linhas : ['Seja muito', 'bem-vindo'];
     var limpas = [];
@@ -216,7 +238,9 @@
         linhas: limpas.length ? limpas : ['Seja muito', 'bem-vindo'],
         cursiva: texto(bvj.cursiva) || 'bem-vindo'
       },
-      avisos: avisos
+      avisos: avisos,
+      rotuloTopicos: texto(json && json.rotuloTopicos) || 'participe',
+      topicos: topicos
     };
   }
 
@@ -239,6 +263,24 @@
         data: textoData(a.ini, a.fim),
         detalhe: partesDetalhe(a, h0, amanha),
         hoje: emAndamento
+      });
+    }
+    return r;
+  }
+
+  // Tópicos usam o mesmo desenho da agenda: coluna da data vazia (o trilho fica
+  // no mesmo lugar), o texto na linha do detalhe e a chamada em destaque.
+  function itensTopicos(topicos) {
+    var r = [];
+    for (var i = 0; i < topicos.length; i++) {
+      var t = topicos[i];
+      r.push({
+        titulo: t.titulo,
+        observacao: '',
+        chamada: t.chamada,
+        data: '',
+        detalhe: t.texto ? [{ t: t.texto }] : [],
+        hoje: false
       });
     }
     return r;
@@ -303,11 +345,16 @@
       }
     }
     corpo.appendChild(tit);
-    corpo.appendChild(det);
+    if (a.detalhe.length) corpo.appendChild(det);
     if (a.observacao) {
       var nota = el('div', 'aviso-nota');
       nota.appendChild(document.createTextNode(a.observacao));
       corpo.appendChild(nota);
+    }
+    if (a.chamada) {
+      var chamada = el('div', 'aviso-nota chamada');
+      chamada.appendChild(document.createTextNode(a.chamada));
+      corpo.appendChild(chamada);
     }
 
     li.appendChild(data);
@@ -343,10 +390,10 @@
   }
 
   // Menor número de páginas em que tudo cabe; todas as páginas usam a mesma escala.
-  function paginar(itens) {
+  function paginar(itens, maxPorPagina) {
     if (!itens.length) return { grupos: [], escala: 1 };
     for (var n = 1; n <= itens.length; n++) {
-      if (Math.ceil(itens.length / n) > CONFIG.maxPorPagina) continue;
+      if (Math.ceil(itens.length / n) > maxPorPagina) continue;
       var grupos = dividir(itens, n), menor = CONFIG.escalaMaxima, cabe = true;
       for (var g = 0; g < grupos.length; g++) {
         var s = escalaQueCabe(grupos[g]);
@@ -360,15 +407,18 @@
 
   function preparar() {
     var itens = vigentes(dadosBrutos.avisos);
-    var chave = JSON.stringify(itens) + '|' + dadosBrutos.rotulo;
+    var topicos = itensTopicos(dadosBrutos.topicos);
+    var chave = JSON.stringify(itens) + '|' + JSON.stringify(topicos) + '|' +
+      dadosBrutos.rotulo + '|' + dadosBrutos.rotuloTopicos;
     if (chave === chavePreparada) return;
     chavePreparada = chave;
-    var r = paginar(itens);
+    var r = paginar(itens, CONFIG.maxPorPagina);
     paginas = r.grupos;
-    escalaLista = r.escala;
+    escalaAgenda = r.escala;
+    var rt = paginar(topicos, CONFIG.maxTopicosPorPagina);
+    paginasTopicos = rt.grupos;
+    escalaTopicos = rt.escala;
     medidor.innerHTML = '';
-    rotuloEl.innerHTML = '';
-    rotuloEl.appendChild(document.createTextNode(dadosBrutos.rotulo));
     versao++;
   }
 
@@ -453,9 +503,12 @@
     p.el.className = 'ponto' + (p.escuro ? ' escuro' : '') + (tipo ? ' ' + tipo : '') + (hojeMarcado ? ' hoje' : '');
   }
 
+  // Agenda e tópicos usam o mesmo palco (lista com trilho).
+  function cenaDeLista(cena) { return cena === 'agenda' || cena === 'topicos'; }
+
   // Na agenda os pontos livres ficam discretos, mais densos à direita (área vazia).
   function destinoLivre(cena) {
-    if (cena === 'agenda') {
+    if (cenaDeLista(cena)) {
       var direita = Math.random() < 0.6;
       return {
         x: direita ? aleatorio(1250, 1900) : aleatorio(20, 1900),
@@ -543,7 +596,7 @@
     for (var i = 0; i < pontos.length; i++) {
       var p = pontos[i];
       if (!p.livre || Math.random() > 0.35) continue;
-      var amplitude = cena === 'agenda' ? 90 : 160;
+      var amplitude = cenaDeLista(cena) ? 90 : 160;
       var nx = Math.max(10, Math.min(1910, p.x + aleatorio(-amplitude, amplitude)));
       var ny = Math.max(10, Math.min(1070, p.y + aleatorio(-amplitude, amplitude)));
       var d = destinoLivre(cena);
@@ -553,10 +606,10 @@
 
   // ---------- Cenas ----------
 
-  function marcarPaginas(atual) {
+  function marcarPaginas(total, atual) {
     paginasEl.innerHTML = '';
-    if (paginas.length < 2) { paginasEl.className = 'agenda-paginas'; return; }
-    for (var i = 0; i < paginas.length; i++) paginasEl.appendChild(el('i', i === atual ? 'atual' : ''));
+    if (total < 2) { paginasEl.className = 'agenda-paginas'; return; }
+    for (var i = 0; i < total; i++) paginasEl.appendChild(el('i', i === atual ? 'atual' : ''));
     paginasEl.className = 'agenda-paginas ativa';
   }
 
@@ -594,42 +647,62 @@
 
   function irBoasVindas() {
     cancelarCena();
-    var vindoDaAgenda = cenaAtual === 'agenda';
+    var vindoDaAgenda = cenaDeLista(cenaAtual);
     cenaAtual = 'boas-vindas';
     livreAte = new Date().getTime() + 3500;
     if (vindoDaAgenda) sairItens();
     palco.className = 'palco cena-boas-vindas';
-    marcarPaginas(-1);
+    marcarPaginas(0, -1);
     emCena(function () { espalhar('boas-vindas'); }, vindoDaAgenda ? 250 : 0);
     emCena(entrarBoasVindas, vindoDaAgenda ? 700 : 150);
   }
 
-  function irAgenda(indice) {
+  function escreverRotulo(t) {
+    rotuloEl.innerHTML = '';
+    rotuloEl.appendChild(document.createTextNode(t));
+    rotuloAtual = t;
+  }
+
+  // Agenda e tópicos dividem a mesma lista; entre as duas só troca o rótulo.
+  function irLista(cena, indice) {
     cancelarCena();
-    var vindoDasBoasVindas = cenaAtual !== 'agenda';
-    cenaAtual = 'agenda';
+    var vindoDasBoasVindas = !cenaDeLista(cenaAtual);
+    var topicos = cena === 'topicos';
+    var grupos = topicos ? paginasTopicos : paginas;
+    var escala = topicos ? escalaTopicos : escalaAgenda;
+    var rotulo = topicos ? dadosBrutos.rotuloTopicos : dadosBrutos.rotulo;
+    var trocarRotulo = rotulo !== rotuloAtual;
+    cenaAtual = cena;
     livreAte = new Date().getTime() + 4000;
     if (vindoDasBoasVindas) {
       sairBoasVindas();
+      escreverRotulo(rotulo); // ainda invisível: aparece com a cena
+      rotuloEl.className = 'agenda-rotulo';
       palco.className = 'palco cena-agenda';
     } else {
       sairItens();
+      if (trocarRotulo) rotuloEl.className = 'agenda-rotulo trocando';
     }
     emCena(function () {
-      preencher(lista, paginas[indice], escalaLista);
+      if (trocarRotulo && !vindoDasBoasVindas) escreverRotulo(rotulo);
+      rotuloEl.className = 'agenda-rotulo';
+      escalaLista = escala;
+      preencher(lista, grupos[indice], escala);
       var sobra = CONFIG.alturaUtil - lista.offsetHeight;
       lista.style.top = Math.round(236 + Math.max(0, sobra) * 0.3) + 'px';
-      marcarPaginas(indice);
+      marcarPaginas(grupos.length, indice);
       formarTrilho();
       entrarItens(vindoDasBoasVindas ? 700 : 450);
     }, vindoDasBoasVindas ? 450 : 650);
   }
 
   function sequencia() {
-    var s = [];
-    if (modo !== 'agenda') s.push(-1);
-    if (modo !== 'boas-vindas') for (var i = 0; i < paginas.length; i++) s.push(i);
-    if (!s.length) s.push(-1);
+    var s = [], i;
+    var ciclo = modo === 'ciclo';
+    if (ciclo || modo === 'boas-vindas') s.push({ cena: 'boas-vindas', i: 0 });
+    if (ciclo || modo === 'agenda') for (i = 0; i < paginas.length; i++) s.push({ cena: 'agenda', i: i });
+    if (ciclo || modo === 'topicos') for (i = 0; i < paginasTopicos.length; i++) s.push({ cena: 'topicos', i: i });
+    if (!s.length) s.push({ cena: 'boas-vindas', i: 0 });
     return s;
   }
 
@@ -657,9 +730,9 @@
     var seq = sequencia();
     passo = (passo + 1) % seq.length;
     var alvo = seq[passo];
-    var chave = alvo + ':' + versao;
+    var chave = alvo.cena + alvo.i + ':' + versao;
 
-    if (alvo === -1) {
+    if (alvo.cena === 'boas-vindas') {
       if (cenaAtual !== 'boas-vindas') {
         montarBoasVindas(dadosBrutos.boasVindas);
         irBoasVindas();
@@ -674,8 +747,8 @@
       }
       timer = setTimeout(avancar, CONFIG.tempoBoasVindas);
     } else {
-      if (exibido !== chave || cenaAtual !== 'agenda') irAgenda(alvo);
-      timer = setTimeout(avancar, CONFIG.tempoPagina);
+      if (exibido !== chave || cenaAtual !== alvo.cena) irLista(alvo.cena, alvo.i);
+      timer = setTimeout(avancar, alvo.cena === 'topicos' ? CONFIG.tempoTopicos : CONFIG.tempoPagina);
     }
     exibido = chave;
   }

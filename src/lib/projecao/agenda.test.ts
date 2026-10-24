@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
-import type { PublicEventDto, PublicProjectionAgendaItemDto } from "@/lib/events/types";
-import { montarProjecaoAgenda, montarProjecaoDaAgenda, toProjecaoAviso } from "./agenda";
+import type {
+  PublicEventDto,
+  PublicProjectionAgendaItemDto,
+  PublicProjectionTopicDto,
+} from "@/lib/events/types";
+import { montarProjecaoAgenda, montarProjecaoDaAgenda, toProjecaoAviso, toProjecaoTopico } from "./agenda";
 
 function evento(parcial: Partial<PublicEventDto>): PublicEventDto {
   return {
@@ -70,6 +74,12 @@ describe("montarProjecaoAgenda", () => {
     expect(agenda.avisos.map((a) => a.id)).toEqual(["a", "c"]);
     expect(agenda.atualizadoEm).toBe("2026-10-23T15:00:00.000Z");
     expect(agenda.rotulo).toBe("programação");
+  });
+
+  it("caminho só de eventos não tem tópicos", () => {
+    const agenda = montarProjecaoAgenda([evento({})], new Date("2026-10-23T15:00:00Z"));
+    expect(agenda.topicos).toEqual([]);
+    expect(agenda.rotuloTopicos).toBe("participe");
   });
 });
 
@@ -141,5 +151,56 @@ describe("montarProjecaoDaAgenda", () => {
     const soEventos = montarProjecaoAgenda([], agora);
     expect(agenda.rotulo).toBe(soEventos.rotulo);
     expect(agenda.boasVindas).toEqual(soEventos.boasVindas);
+  });
+});
+
+function topico(parcial: Partial<PublicProjectionTopicDto>): PublicProjectionTopicDto {
+  return {
+    id: "t1",
+    title: "Células",
+    text: "Encontre uma célula perto de você",
+    callToAction: "Procure a recepção",
+    ...parcial,
+  };
+}
+
+describe("tópicos fixos do telão", () => {
+  const agora = new Date("2026-10-24T15:00:00Z");
+
+  it("mapeia título, texto e chamada", () => {
+    expect(toProjecaoTopico(topico({}))).toEqual({
+      id: "t1",
+      titulo: "Células",
+      texto: "Encontre uma célula perto de você",
+      chamada: "Procure a recepção",
+    });
+  });
+
+  it("limpa espaços e chamada vazia vira null", () => {
+    const t = toProjecaoTopico(
+      topico({ title: "  Células ", text: "  Encontre   uma célula ", callToAction: "   " }),
+    );
+    expect(t.titulo).toBe("Células");
+    expect(t.texto).toBe("Encontre uma célula");
+    expect(t.chamada).toBeNull();
+    expect(toProjecaoTopico(topico({ callToAction: null })).chamada).toBeNull();
+  });
+
+  it("montarProjecaoDaAgenda mantém a ordem dos tópicos e o rótulo da tela", () => {
+    const agenda = montarProjecaoDaAgenda(
+      [item({})],
+      agora,
+      [topico({ id: "b", title: "Batismo" }), topico({ id: "a" })],
+    );
+    expect(agenda.topicos.map((t) => [t.id, t.titulo])).toEqual([
+      ["b", "Batismo"],
+      ["a", "Células"],
+    ]);
+    expect(agenda.rotuloTopicos).toBe("participe");
+    expect(agenda.avisos).toHaveLength(1);
+  });
+
+  it("sem tópicos → lista vazia", () => {
+    expect(montarProjecaoDaAgenda([item({})], agora).topicos).toEqual([]);
   });
 });
