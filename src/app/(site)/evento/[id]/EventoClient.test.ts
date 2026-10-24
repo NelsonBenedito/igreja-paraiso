@@ -62,6 +62,14 @@ describe("/evento/[id] — conteúdo do painel", () => {
     expect(html).not.toContain("Nenhuma descrição fornecida");
   });
 
+  it("details_html tem cor própria no tema escuro (o projeto não usa o plugin de prose)", () => {
+    const html = render(evento({ details_html: "<p>Programação</p>" }));
+    const bloco = html.match(/<div class="([^"]*)"><p>Programação<\/p><\/div>/);
+    expect(bloco?.[1].split(" ")).toEqual(
+      expect.arrayContaining(["text-slate-600", "dark:text-slate-300"]),
+    );
+  });
+
   it("vídeo do YouTube vira iframe youtube-nocookie", () => {
     const html = render(evento({ video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }));
     expect(html).toContain('<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"');

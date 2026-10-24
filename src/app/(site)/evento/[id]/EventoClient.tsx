@@ -147,9 +147,10 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
                                 <h2 className="text-xl sm:text-2xl font-black text-paraiso-blue dark:text-white uppercase tracking-widest mb-6">
                                     Sobre o Evento
                                 </h2>
+                                {/* Sem o plugin de typography, `prose` não aplica nada: cores explícitas. */}
                                 {event.details_html ? (
                                     <div
-                                        className="prose prose-slate dark:prose-invert max-w-none prose-lg prose-headings:font-black prose-headings:tracking-tight prose-a:text-paraiso-green"
+                                        className="text-slate-600 dark:text-slate-300 leading-relaxed [&_a]:text-paraiso-green [&_a]:underline"
                                         dangerouslySetInnerHTML={{ __html: event.details_html }}
                                     />
                                 ) : event.description ? (
