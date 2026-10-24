@@ -177,6 +177,16 @@ export interface SiteSections {
   youtube: SiteYoutube;
 }
 
+/**
+ * Ordem dos blocos da home definida no painel. Mantida crua (`unknown`):
+ * quem consome passa por `resolveHomeOrder`, que tolera ausência/lixo.
+ */
+export interface SiteLayout {
+  home?: unknown;
+}
+
 export interface SiteContentResponse {
   sections: SiteSections;
+  /** Ausente em APIs anteriores ao campo — acréscimo compatível. */
+  layout?: SiteLayout;
 }

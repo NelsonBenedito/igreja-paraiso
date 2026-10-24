@@ -1,3 +1,4 @@
+import { Fragment, type ReactNode } from "react";
 import Hero from "@/components/Hero";
 import NewsSection from "@/components/NewsSection";
 import ProgramacaoSection from "@/components/Programacao";
@@ -12,8 +13,12 @@ import {
   getPublicEvents,
   getRegisteredEventIdsForUser,
 } from "@/lib/events/data";
-import { getSiteContent } from "@/lib/site-content/data";
+import { getSiteContent, getSiteHomeOrder } from "@/lib/site-content/data";
 import { SITE_CONTENT_FALLBACK } from "@/lib/site-content/fallbacks";
+import {
+  HOME_BLOCKS_DEFAULT,
+  type HomeBlock,
+} from "@/lib/site-content/home-order";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -21,15 +26,21 @@ export default async function Home() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [eventsResult, schedulesResult, registeredResult, siteResult] =
-    await Promise.allSettled([
-      getPublicEvents({ upcomingOnly: true }),
-      getActiveSchedules(),
-      user?.email
-        ? getRegisteredEventIdsForUser(user.email, user.id)
-        : Promise.resolve([] as string[]),
-      getSiteContent(),
-    ]);
+  const [
+    eventsResult,
+    schedulesResult,
+    registeredResult,
+    siteResult,
+    orderResult,
+  ] = await Promise.allSettled([
+    getPublicEvents({ upcomingOnly: true }),
+    getActiveSchedules(),
+    user?.email
+      ? getRegisteredEventIdsForUser(user.email, user.id)
+      : Promise.resolve([] as string[]),
+    getSiteContent(),
+    getSiteHomeOrder(),
+  ]);
 
   const events = eventsResult.status === "fulfilled" ? eventsResult.value : [];
   const schedules =
@@ -40,37 +51,51 @@ export default async function Home() {
     siteResult.status === "fulfilled"
       ? siteResult.value
       : SITE_CONTENT_FALLBACK;
+  const order: HomeBlock[] =
+    orderResult.status === "fulfilled"
+      ? orderResult.value
+      : [...HOME_BLOCKS_DEFAULT];
+
+  // Miolo da home: ordem definida no painel (`layout.home`), padrão =
+  // Sobre → Programação → Células → Eventos → Missões → Ofertório → Transmissão.
+  const blocks: Record<HomeBlock, ReactNode> = {
+    // Sobre a Igreja
+    mission: <MissionSection content={site.mission} />,
+
+    // Programação / Agenda semanal
+    schedules: <ProgramacaoSection schedules={schedules} />,
+
+    // Células
+    celulas: <CelulasSection content={site.celulas} />,
+
+    // Eventos — renderização condicional: a seção só existe no DOM quando há
+    // eventos ativos (Asaas). Sem eventos = nada renderizado, nenhum espaço
+    // em branco.
+    events:
+      events.length > 0 ? (
+        <NewsSection events={events} registeredEventIds={registeredEventIds} />
+      ) : null,
+
+    // Missões / Campos (sobre o lugar — sem nome do time pastoral)
+    churches: <Missions content={site.churches} />,
+
+    // Ofertório — CTA claro
+    giving: <OfertorioSection content={site.giving} />,
+
+    // Transmissão
+    youtube: <LatestStream content={site.youtube} />,
+  };
+
   return (
     <>
-      {/* 1. Hero */}
+      {/* Hero — fixo, sempre primeiro */}
       <Hero />
 
-      {/* 2. Sobre a Igreja */}
-      <MissionSection content={site.mission} />
+      {order.map((id) => (
+        <Fragment key={id}>{blocks[id]}</Fragment>
+      ))}
 
-      {/* 3. Programação / Agenda semanal */}
-      <ProgramacaoSection schedules={schedules} />
-
-      {/* 4. Células */}
-      <CelulasSection content={site.celulas} />
-
-      {/* 5. Eventos — renderização condicional: a seção só existe no DOM
-          quando há eventos ativos (Asaas). Sem eventos = nada renderizado,
-          nenhum espaço em branco. */}
-      {events.length > 0 && (
-        <NewsSection events={events} registeredEventIds={registeredEventIds} />
-      )}
-
-      {/* 6. Missões / Campos (sobre o lugar — sem nome do time pastoral) */}
-      <Missions content={site.churches} />
-
-      {/* 7. Ofertório — CTA claro, antes do rodapé */}
-      <OfertorioSection content={site.giving} />
-
-      {/* Transmissão (exceção à hierarquia — mantida ao fim, antes do rodapé) */}
-      <LatestStream content={site.youtube} />
-
-      {/* 8. Endereços / Rodapé → renderizado pelo (site)/layout.tsx */}
+      {/* Endereços / Rodapé → renderizado pelo (site)/layout.tsx */}
     </>
   );
 }

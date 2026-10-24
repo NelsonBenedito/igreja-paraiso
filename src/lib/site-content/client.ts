@@ -86,5 +86,11 @@ export async function fetchSiteContent(): Promise<SiteContentResponse> {
   if (typeof sections !== "object" || sections === null) {
     throw new SiteContentApiError(res.status, "site-content: resposta sem `sections`");
   }
-  return { sections: normalizeSiteSections(sections) };
+  const layout = (json as { layout?: unknown }).layout;
+  return {
+    sections: normalizeSiteSections(sections),
+    ...(typeof layout === "object" && layout !== null && !Array.isArray(layout)
+      ? { layout: { home: (layout as { home?: unknown }).home } }
+      : {}),
+  };
 }
