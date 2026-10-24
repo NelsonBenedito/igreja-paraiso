@@ -1,0 +1,525 @@
+/*
+  Projeção da programação — Igreja Paraíso
+  Palco fixo de 1920×1080, escalado pelo JS para caber em qualquer tela.
+
+  Paleta (identidade visual):
+    verde-profundo  #092A1E
+    oliva           #708836
+    branco          #FFFFFF
+    preto           #000000
+
+  Sem variáveis CSS, sem flex gap e sem seletores recentes de propósito:
+  o navegador embutido do Holyrics pode ser mais antigo que o Chrome.
+*/
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  cursor: none;
+}
+
+.palco {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  margin: -540px 0 0 -960px;
+  overflow: hidden;
+  background: #092A1E;
+  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- Fundos animados (só transform e opacity: roda na GPU) ---------- */
+
+.fundo {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 1.8s ease-in-out;
+}
+.fundo-boas-vindas { background: #708836; }
+.fundo-agenda { background: #092A1E; }
+
+.cena-boas-vindas .fundo-boas-vindas,
+.cena-agenda .fundo-agenda { opacity: 1; }
+
+.mancha {
+  position: absolute;
+  width: 1500px;
+  height: 1500px;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+/* Boas-vindas: oliva com sombras em verde profundo e um brilho claro */
+.mb1 {
+  left: -620px; top: -720px;
+  background: radial-gradient(circle, rgba(9, 42, 30, 0.85) 0%, rgba(9, 42, 30, 0) 62%);
+  animation: deriva-a 22s ease-in-out infinite alternate;
+}
+.mb2 {
+  right: -500px; top: -260px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 58%);
+  animation: deriva-b 26s ease-in-out infinite alternate;
+}
+.mb3 {
+  left: 180px; bottom: -980px;
+  background: radial-gradient(circle, rgba(9, 42, 30, 0.75) 0%, rgba(9, 42, 30, 0) 60%);
+  animation: deriva-c 30s ease-in-out infinite alternate;
+}
+
+/* Agenda: verde profundo com brilhos oliva */
+.ma1 {
+  left: -700px; bottom: -760px;
+  background: radial-gradient(circle, rgba(112, 136, 54, 0.55) 0%, rgba(112, 136, 54, 0) 60%);
+  animation: deriva-a 24s ease-in-out infinite alternate;
+}
+.ma2 {
+  right: -620px; top: -720px;
+  background: radial-gradient(circle, rgba(112, 136, 54, 0.38) 0%, rgba(112, 136, 54, 0) 58%);
+  animation: deriva-b 28s ease-in-out infinite alternate;
+}
+.ma3 {
+  right: -300px; bottom: -900px;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 62%);
+  animation: deriva-c 32s ease-in-out infinite alternate;
+}
+
+@keyframes deriva-a {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(260px, 140px, 0) scale(1.12); }
+  100% { transform: translate3d(120px, 320px, 0) scale(0.94); }
+}
+@keyframes deriva-b {
+  0%   { transform: translate3d(0, 0, 0) scale(1.05); }
+  50%  { transform: translate3d(-300px, 180px, 0) scale(0.9); }
+  100% { transform: translate3d(-120px, 380px, 0) scale(1.1); }
+}
+@keyframes deriva-c {
+  0%   { transform: translate3d(0, 0, 0) scale(0.95); }
+  50%  { transform: translate3d(220px, -200px, 0) scale(1.1); }
+  100% { transform: translate3d(-180px, -80px, 0) scale(1); }
+}
+
+.vinheta {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 50% 45%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.42) 100%);
+  pointer-events: none;
+}
+
+/* Granulado estático: disfarça o "degrau" de gradiente comum em projetor */
+.grao {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  opacity: 0.07;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- Pontos vivos ---------- */
+
+.pontos {
+  position: absolute;
+  top: 0; left: 0;
+  width: 1920px;
+  height: 1080px;
+  pointer-events: none;
+}
+
+.ponto {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+
+.p-corpo {
+  position: absolute;
+  left: -12px;
+  top: -12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  transform: scale(0.3);
+}
+
+.p-brilho {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+}
+
+.cena-boas-vindas .ponto.escuro .p-corpo { background: #092A1E; }
+.cena-agenda .ponto.no-trilho .p-corpo { background: #708836; }
+
+/* Onda de luz descendo pelo trilho */
+.ponto.no-trilho .p-brilho { animation: onda 3.4s ease-in-out infinite; }
+
+@keyframes onda {
+  0%, 100% { opacity: 0; }
+  40%      { opacity: 0.9; }
+  70%      { opacity: 0; }
+}
+
+/* Marcador de cada aviso */
+.ponto.marcador .p-corpo {
+  background: #fff;
+  box-shadow: 0 0 0 5px rgba(112, 136, 54, 0.55), 0 0 26px rgba(112, 136, 54, 0.8);
+}
+.ponto.marcador .p-corpo:after {
+  content: '';
+  position: absolute;
+  top: -8px; left: -8px; right: -8px; bottom: -8px;
+  border-radius: 50%;
+  border: 3px solid #708836;
+  opacity: 0;
+  animation: anel 3.2s ease-out infinite;
+}
+.ponto.marcador.hoje .p-corpo:after {
+  border-color: #fff;
+  animation-duration: 1.8s;
+}
+
+@keyframes anel {
+  0%   { transform: scale(0.7); opacity: 0.9; }
+  100% { transform: scale(2.3); opacity: 0; }
+}
+
+/* ---------- Cena 1: boas-vindas ---------- */
+
+.boas-vindas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 1920px;
+  height: 1080px;
+  text-align: center;
+  white-space: nowrap;
+}
+.boas-vindas:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.bv-bloco {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: left;
+  margin-top: -60px;
+  animation: flutuar 9s ease-in-out infinite;
+}
+
+@keyframes flutuar {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-0.4deg); }
+  50%      { transform: translate3d(0, -14px, 0) rotate(0.4deg); }
+}
+
+.bv-titulo {
+  margin: 0;
+  font-weight: 800;
+  font-size: 230px;
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  color: #092A1E;
+}
+
+.bv-linha {
+  display: block;
+  overflow: hidden;
+  padding: 0.04em 0.06em 0.02em 0;
+}
+
+.bv-txt {
+  display: inline-block;
+  transform: translate3d(0, 112%, 0);
+  transition: transform 1.1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.bv-linha:nth-child(2) .bv-txt { transition-delay: 0.14s; }
+.bv-linha:nth-child(3) .bv-txt { transition-delay: 0.28s; }
+
+.bv-cursiva {
+  position: absolute;
+  right: -0.05em;
+  bottom: -0.5em;
+  font-family: 'Sacramento', 'Brush Script MT', cursive;
+  font-weight: 400;
+  font-size: 220px;
+  line-height: 1;
+  color: #fff;
+  letter-spacing: 0;
+  text-transform: none;
+  transform: rotate(-7deg);
+  transform-origin: 100% 50%;
+}
+
+.bv-tinta,
+.bv-brilho {
+  display: block;
+  padding: 0 0.12em;
+  -webkit-clip-path: inset(-40% 100% -40% -10%);
+  clip-path: inset(-40% 100% -40% -10%);
+  transition: -webkit-clip-path 2.2s cubic-bezier(0.65, 0, 0.35, 1) 0.75s, clip-path 2.2s cubic-bezier(0.65, 0, 0.35, 1) 0.75s;
+}
+.bv-tinta {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.55), 0 3px 0 rgba(9, 42, 30, 0.25);
+}
+.bv-brilho {
+  position: absolute;
+  top: 0; left: 0;
+  color: transparent;
+  text-shadow: 0 0 22px rgba(255, 255, 255, 0.95), 0 0 60px rgba(255, 255, 255, 0.6);
+  opacity: 0;
+}
+
+/* Entrada */
+.boas-vindas.visivel .bv-txt { transform: translate3d(0, 0, 0); }
+.boas-vindas.visivel .bv-tinta,
+.boas-vindas.visivel .bv-brilho {
+  -webkit-clip-path: inset(-40% -10% -40% -10%);
+  clip-path: inset(-40% -10% -40% -10%);
+}
+.boas-vindas.visivel .bv-brilho { animation: pulsar 4.5s ease-in-out 3s infinite; }
+
+@keyframes pulsar {
+  0%, 100% { opacity: 0; }
+  50%      { opacity: 0.85; }
+}
+
+/* Saída: o texto sobe e a cursiva some */
+.boas-vindas.saindo .bv-txt {
+  transform: translate3d(0, -112%, 0);
+  transition: transform 0.8s cubic-bezier(0.7, 0, 0.84, 0);
+}
+.boas-vindas.saindo .bv-linha:nth-child(2) .bv-txt { transition-delay: 0.08s; }
+.boas-vindas.saindo .bv-cursiva {
+  opacity: 0;
+  transform: rotate(-7deg) translate3d(0, -40px, 0);
+  transition: opacity 0.6s ease-in, transform 0.8s ease-in;
+}
+
+/* Volta à posição inicial sem animar (antes de entrar de novo) */
+.boas-vindas.zerar .bv-txt,
+.boas-vindas.zerar .bv-tinta,
+.boas-vindas.zerar .bv-brilho,
+.boas-vindas.zerar .bv-cursiva { transition: none !important; }
+
+/* ---------- Cena 2: agenda ---------- */
+
+.agenda {
+  position: absolute;
+  top: 0;
+  left: 170px;
+  width: 1560px;
+  height: 1080px;
+}
+
+.agenda-rotulo {
+  position: absolute;
+  top: 118px;
+  left: 0;
+  font-size: 46px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.9);
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+  transition: opacity 0.8s ease, transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.agenda-rotulo:before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 18px;
+  border-radius: 50%;
+  background: #708836;
+  vertical-align: middle;
+  position: relative;
+  top: -3px;
+}
+.cena-agenda .agenda-rotulo {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition-delay: 0.5s;
+}
+
+.agenda-lista {
+  position: absolute;
+  top: 236px;
+  left: 0;
+  width: 1560px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 66px;
+}
+
+.medidor {
+  visibility: hidden;
+  top: 0;
+}
+
+.aviso {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: start;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+  margin: 0 0 0.62em 0;
+}
+.aviso:last-child { margin-bottom: 0; }
+
+.aviso-data {
+  -webkit-flex: none;
+  flex: none;
+  width: 8.4em;
+  padding-top: 0.84em; /* alinha a 1ª linha da data com o centro da 1ª linha do título */
+  font-size: 0.4em;
+  font-weight: 300;
+  line-height: 1.22;
+  text-align: right;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: normal;
+}
+
+.aviso-trilho {
+  position: relative;
+  -webkit-flex: none;
+  flex: none;
+  width: 2.1em;
+  height: 1.16em;
+}
+
+.aviso-corpo {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  min-width: 0;
+}
+
+.aviso-titulo {
+  font-weight: 300;
+  line-height: 1.16;
+  letter-spacing: -0.012em;
+  color: #fff;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.aviso-nota {
+  margin-top: 0.35em;
+  font-size: 0.36em;
+  font-weight: 300;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.aviso-detalhe {
+  margin-top: 0.04em;
+  font-size: 0.9em;
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+  color: #fff;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.aviso-detalhe .destaque { color: #9DB55A; }
+
+/* Entrada e saída dos itens (o JS liga as classes e escalona os atrasos) */
+.aviso-data,
+.aviso-corpo {
+  opacity: 0;
+  transition: opacity 0.7s ease, transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.aviso-data { transform: translate3d(-30px, 0, 0); }
+.aviso-corpo { transform: translate3d(60px, 0, 0); }
+
+.aviso.entrou .aviso-data,
+.aviso.entrou .aviso-corpo {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.aviso.saiu .aviso-data,
+.aviso.saiu .aviso-corpo {
+  opacity: 0;
+  transform: translate3d(0, -24px, 0);
+  transition: opacity 0.45s ease-in, transform 0.6s ease-in;
+}
+
+.agenda-paginas {
+  position: absolute;
+  left: 4px;
+  bottom: 96px;
+  height: 14px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.cena-agenda .agenda-paginas.ativa { opacity: 1; }
+.agenda-paginas i {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 12px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.3);
+  transition: width 0.6s cubic-bezier(0.19, 1, 0.22, 1), background-color 0.6s ease;
+}
+.agenda-paginas i.atual {
+  width: 44px;
+  background: #708836;
+}
+
+/* ---------- Marca ---------- */
+
+.logo {
+  position: absolute;
+  right: 72px;
+  bottom: 60px;
+  height: 62px;
+  opacity: 0.92;
+}
+
+/* ---------- Pré-carga das fontes ---------- */
+
+.pre-fontes {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  visibility: hidden;
+}
+.pre-fontes .f3 { font-weight: 300; }
+.pre-fontes .f5 { font-weight: 500; }
+.pre-fontes .f7 { font-weight: 700; }
+.pre-fontes .f8 { font-weight: 800; }
+.pre-fontes .fc { font-family: 'Sacramento', cursive; }
