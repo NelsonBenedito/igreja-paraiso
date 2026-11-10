@@ -1,6 +1,7 @@
 import {
   createEventRegistrationClient,
   createEventCheckoutClient,
+  validateEventCouponClient,
   fetchOrderPayment,
   isDuplicateRegistrationError,
   isIdempotencyConflict,
@@ -12,6 +13,8 @@ import type {
   EventCheckoutRequest,
   EventCheckoutResponse,
   OrderPaymentResponse,
+  ValidateCouponRequest,
+  ValidateCouponResponse,
 } from "./types";
 
 export type RegistrationResult =
@@ -81,6 +84,26 @@ export async function submitEventCheckout(
   return { ok: false, reason: "error" };
 }
 
+export type ValidateCouponResult =
+  | { ok: true; data: ValidateCouponResponse }
+  | { ok: false; message: string };
+
+export async function submitValidateCoupon(
+  eventId: string,
+  body: ValidateCouponRequest,
+): Promise<ValidateCouponResult> {
+  try {
+    const data = await validateEventCouponClient(eventId, body);
+    return { ok: true, data };
+  } catch (error) {
+    const message =
+      error instanceof EventsApiError
+        ? error.message
+        : "Não foi possível validar o cupom.";
+    return { ok: false, message };
+  }
+}
+
 /**
  * Consulta o pagamento até sair de `PENDING` ou até `timeoutMs`.
  * Cadência conforme o contrato: 2,5 s nos primeiros 30 s, depois 5 s.
@@ -134,4 +157,3 @@ export async function loadRegisteredEventIdsClient(): Promise<string[]> {
     return [];
   }
 }
-

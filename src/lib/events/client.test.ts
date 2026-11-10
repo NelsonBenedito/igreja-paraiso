@@ -4,6 +4,8 @@ import {
   fetchMyRegistrations,
   fetchPublicEvents,
   fetchPublishedEvents,
+  validateEventCoupon,
+  EventsApiError,
 } from "./client";
 
 const fetchMock = vi.fn<typeof fetch>();
@@ -80,5 +82,70 @@ describe("consultas de inscrição — segredo de participante", () => {
     expect(lastRequest().headers).not.toHaveProperty("x-participant-secret");
     await checkEventRegistration(EVENT_ID, { email: "a@b.com" });
     expect(lastRequest().headers).not.toHaveProperty("x-participant-secret");
+  });
+});
+
+describe("validateEventCoupon", () => {
+  beforeEach(() => {
+    vi.stubEnv("NEXT_PUBLIC_DONATIONS_API_BASE", "https://api.exemplo.com");
+    vi.stubEnv("NEXT_PUBLIC_DONATIONS_TENANT_SLUG", "paraiso");
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
+  });
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+  });
+
+  it("chama POST /events/:id/coupons/validate com código em caixa alta e sem pontuação no CPF", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          valid: true,
+          couponId: "cp-1",
+          code: "PROMO10",
+          name: "Desconto 10%",
+          discountType: "PERCENTAGE",
+          discountValue: 10,
+          discountCents: 1500,
+          eligibleTicketTypeIds: null,
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      ),
+    );
+
+    const result = await validateEventCoupon(EVENT_ID, {
+      code: "promo10 ",
+      lines: [{ ticketTypeId: "t1", quantity: 2 }],
+      cpf: "123.456.789-09",
+    });
+
+    expect(result.valid).toBe(true);
+    expect(result.discountCents).toBe(1500);
+
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe(`https://api.exemplo.com/api/public/tenants/paraiso/events/${EVENT_ID}/coupons/validate`);
+    expect(init?.method).toBe("POST");
+    expect(JSON.parse(init?.body as string)).toEqual({
+      code: "PROMO10",
+      lines: [{ ticketTypeId: "t1", quantity: 2 }],
+      cpf: "12345678909",
+    });
+  });
+
+  it("lança EventsApiError com a mensagem de erro da API quando o cupom for inválido (400)", async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ message: "Cupom inválido ou inativo" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }),
+    );
+
+    await expect(
+      validateEventCoupon(EVENT_ID, {
+        code: "INVALIDO",
+        lines: [{ ticketTypeId: "t1", quantity: 1 }],
+      }),
+    ).rejects.toThrow(EventsApiError);
   });
 });

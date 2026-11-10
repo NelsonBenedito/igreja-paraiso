@@ -233,6 +233,7 @@ export interface EventCheckoutRequest {
   fieldValues?: EventFieldValue[];
   /** Único global. Gerar uma por tentativa de checkout — ver `submitEventCheckout`. */
   idempotencyKey?: string;
+  couponCode?: string;
 }
 
 export interface EventCheckoutResponse {
@@ -253,6 +254,28 @@ export interface EventCheckoutResponse {
     payload: string | null;
     expirationDate: string | null;
   } | null;
+}
+
+export interface ValidateCouponLineRequest {
+  ticketTypeId: string;
+  quantity: number;
+}
+
+export interface ValidateCouponRequest {
+  code: string;
+  lines: ValidateCouponLineRequest[];
+  cpf?: string;
+}
+
+export interface ValidateCouponResponse {
+  valid: boolean;
+  couponId: string;
+  code: string;
+  name: string;
+  discountType: 'PERCENTAGE' | 'FIXED';
+  discountValue: number;
+  discountCents: number;
+  eligibleTicketTypeIds: string[] | null;
 }
 
 export type OrderPaymentStatus = 'PENDING' | 'CONFIRMED' | 'FAILED' | 'EXPIRED';

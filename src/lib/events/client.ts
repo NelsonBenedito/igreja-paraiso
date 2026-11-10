@@ -14,6 +14,8 @@ import type {
   RegistrationCheckResponse,
   EventCheckoutRequest,
   EventCheckoutResponse,
+  ValidateCouponRequest,
+  ValidateCouponResponse,
 } from "./types";
 
 export class EventsApiNotConfiguredError extends Error {
@@ -225,6 +227,24 @@ export async function createEventCheckout(
   );
 }
 
+export async function validateEventCoupon(
+  eventId: string,
+  body: ValidateCouponRequest,
+): Promise<ValidateCouponResponse> {
+  return publicFetch<ValidateCouponResponse>(
+    `/events/${encodeURIComponent(eventId)}/coupons/validate`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        ...body,
+        code: body.code.trim().toUpperCase(),
+        cpf: body.cpf ? body.cpf.replace(/\D/g, "") : undefined,
+      }),
+      cache: "no-store",
+    },
+  );
+}
+
 /**
  * Header exigido pela API nas consultas de inscrição (`/registrations/mine` e
  * `/events/:id/registrations/check`). `CHURCHMANAGER_PARTICIPANT_SECRET` é só
@@ -277,6 +297,13 @@ export async function createEventCheckoutClient(
   body: EventCheckoutRequest,
 ): Promise<EventCheckoutResponse> {
   return createEventCheckout(eventId, body);
+}
+
+export async function validateEventCouponClient(
+  eventId: string,
+  body: ValidateCouponRequest,
+): Promise<ValidateCouponResponse> {
+  return validateEventCoupon(eventId, body);
 }
 
 export function isDuplicateRegistrationError(error: unknown): boolean {

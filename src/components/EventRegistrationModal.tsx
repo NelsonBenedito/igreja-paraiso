@@ -1,9 +1,9 @@
 'use client';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2, CheckCircle2, AlertCircle, User, Mail, Phone, MessageSquare, Ticket, CreditCard, Copy, ExternalLink, QrCode, Users, Clock } from 'lucide-react';
+import { X, Loader2, CheckCircle2, AlertCircle, User, Mail, Phone, MessageSquare, Ticket, CreditCard, Copy, ExternalLink, QrCode, Users, Clock, Tag } from 'lucide-react';
 import { createClient } from '@/utils/supabase/client';
-import { submitEventRegistration, submitEventCheckout, pollOrderPayment } from '@/lib/events/data-client';
+import { submitEventRegistration, submitEventCheckout, submitValidateCoupon, pollOrderPayment } from '@/lib/events/data-client';
 import { fetchEventTickets } from '@/lib/events/client';
 import type {
     SiteEvent,
@@ -12,6 +12,7 @@ import type {
     EventCheckoutResponse,
     OrderPaymentStatus,
     BillingType,
+    ValidateCouponResponse,
 } from '@/lib/events/types';
 import { eventCardContent, formatEventDate } from '@/lib/events/display';
 import { selectableTicketId } from '@/lib/events/tickets';
@@ -69,7 +70,13 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
     const [paymentStatus, setPaymentStatus] = useState<OrderPaymentStatus>('PENDING');
     const [communityLink, setCommunityLink] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
+    const [appliedCoupon, setAppliedCoupon] = useState<ValidateCouponResponse | null>(null);
+    const [isCouponOpen, setIsCouponOpen] = useState(false);
+    const [couponInput, setCouponInput] = useState('');
+    const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+    const [couponError, setCouponError] = useState<string | null>(null);
     const pollAbortRef = useRef<AbortController | null>(null);
+    const couponValidationSeq = useRef(0);
 
     const eventId = event?.id ?? null;
 
@@ -188,6 +195,96 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
         return digits;
     };
 
+    const appliedCouponCode = appliedCoupon?.code;
+
+    // Recálculo dinâmico: revalida o cupom no backend ao alterar a quantidade ou ingresso
+    useEffect(() => {
+        if (!appliedCouponCode || !selectedTicketId || !eventId || !isPaid) return;
+        let cancelled = false;
+        const seq = ++couponValidationSeq.current;
+        const cpfDigits = form.cpf ? validateCpf(form.cpf) ?? undefined : undefined;
+
+        submitValidateCoupon(eventId, {
+            code: appliedCouponCode,
+            lines: [{ ticketTypeId: selectedTicketId, quantity }],
+            cpf: cpfDigits,
+        }).then(result => {
+            if (cancelled || seq !== couponValidationSeq.current) return;
+            if (result.ok && result.data.valid) {
+                if (
+                    result.data.eligibleTicketTypeIds &&
+                    !result.data.eligibleTicketTypeIds.includes(selectedTicketId)
+                ) {
+                    setAppliedCoupon(null);
+                    setCouponError('Este cupom não é aplicável ao ingresso selecionado.');
+                    return;
+                }
+                setAppliedCoupon(result.data);
+                setCouponError(null);
+            } else {
+                setAppliedCoupon(null);
+                setCouponError(result.ok ? 'Cupom inválido.' : result.message);
+            }
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [quantity, selectedTicketId, appliedCouponCode, eventId, isPaid]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Limpa cupom se o ingresso selecionado não for pago
+    useEffect(() => {
+        if (!isPaid && appliedCoupon) {
+            setAppliedCoupon(null);
+            setCouponError(null);
+            setIsCouponOpen(false);
+        }
+    }, [isPaid, appliedCoupon]);
+
+    const handleApplyCoupon = async () => {
+        const code = couponInput.trim();
+        if (!code || !selectedTicketId || !eventId) return;
+        setCouponError(null);
+        setIsValidatingCoupon(true);
+        const cpfDigits = form.cpf ? validateCpf(form.cpf) ?? undefined : undefined;
+
+        const result = await submitValidateCoupon(eventId, {
+            code,
+            lines: [{ ticketTypeId: selectedTicketId, quantity }],
+            cpf: cpfDigits,
+        });
+
+        setIsValidatingCoupon(false);
+
+        if (result.ok) {
+            if (!result.data.valid) {
+                setCouponError('Cupom inválido ou inativo.');
+                return;
+            }
+            if (
+                result.data.eligibleTicketTypeIds &&
+                !result.data.eligibleTicketTypeIds.includes(selectedTicketId)
+            ) {
+                setCouponError('Este cupom não é aplicável ao ingresso selecionado.');
+                return;
+            }
+            setAppliedCoupon(result.data);
+            setCouponError(null);
+            setIsCouponOpen(false);
+        } else {
+            setCouponError(result.message);
+        }
+    };
+
+    const handleRemoveCoupon = () => {
+        setAppliedCoupon(null);
+        setCouponError(null);
+    };
+
+    const subtotalCents = unitPrice * quantity;
+    const discountCents = appliedCoupon ? Math.min(appliedCoupon.discountCents, subtotalCents) : 0;
+    const finalTotalCents = Math.max(0, subtotalCents - discountCents);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!event || ticketsError) return;
@@ -247,8 +344,9 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                     holderNames: holderNames.map(n => n.trim()).filter(Boolean),
                 }],
                 billingType: form.billingType,
-                ...(form.billingType === 'CREDIT_CARD' ? { installmentCount } : {}),
+                ...(form.billingType === 'CREDIT_CARD' && finalTotalCents > 0 ? { installmentCount } : {}),
                 ...(apiFieldValues.length > 0 ? { fieldValues: apiFieldValues } : {}),
+                ...(appliedCoupon ? { couponCode: appliedCoupon.code } : {}),
             });
 
             if (result.ok) {
@@ -322,7 +420,6 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
     if (!event) return null;
 
     const { imageUrl: headerImageUrl, tag: headerTag } = eventCardContent(event);
-    const totalCents = unitPrice * quantity;
     const pix = checkoutResponse?.pix;
     const hasPixData = !!(pix?.payload || pix?.encodedImage);
 
@@ -468,7 +565,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                         </div>
 
                                         {hasPixData && (
-                                            <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 space-y-4">
+                                             <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 space-y-4">
                                                 <p className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2">
                                                     <QrCode size={18} /> Pague via PIX
                                                 </p>
@@ -519,12 +616,14 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                     </motion.div>
                                 )}
 
-                                {/* Pagamento confirmado */}
+                                {/* Pagamento ou inscrição confirmada */}
                                 {status === 'paid' && (
                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-6">
                                         <CheckCircle2 className="w-16 h-16 text-paraiso-green mx-auto" />
                                         <div>
-                                            <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Pagamento confirmado!</h3>
+                                            <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">
+                                                {finalTotalCents === 0 ? 'Inscrição confirmada!' : 'Pagamento confirmado!'}
+                                            </h3>
                                             <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
                                                 Sua inscrição para <strong>{event.title}</strong> está garantida.
                                                 Os bilhetes foram enviados para <strong>{form.email.trim().toLowerCase()}</strong>.
@@ -768,7 +867,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                                 const next = [...prev];
                                                                 next[i] = e.target.value;
                                                                 return next;
-                                                             })}
+                                                            })}
                                                             className={inputClass}
                                                         />
                                                     </div>
@@ -808,8 +907,8 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                         />
                                                     </div>
 
-                                                    {/* Forma de pagamento */}
-                                                    {(() => {
+                                                    {/* Forma de pagamento — oculta quando o cupom concede 100% de desconto */}
+                                                    {finalTotalCents > 0 && (() => {
                                                         const allowed = selectedTicket?.allowedBillingTypes ?? [];
                                                         const options = allowed.length === 0
                                                             ? PAYMENT_OPTIONS
@@ -840,8 +939,8 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                         ) : null;
                                                     })()}
 
-                                                    {/* Parcelamento — só no cartão e se o ingresso permitir */}
-                                                    {form.billingType === 'CREDIT_CARD' && (selectedTicket?.maxInstallments ?? 1) > 1 && (
+                                                    {/* Parcelamento — só no cartão, se o total for > 0 e se o ingresso permitir */}
+                                                    {finalTotalCents > 0 && form.billingType === 'CREDIT_CARD' && (selectedTicket?.maxInstallments ?? 1) > 1 && (
                                                         <div className="space-y-2">
                                                             <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                                                                 Parcelamento
@@ -853,7 +952,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                             >
                                                                 {Array.from({ length: selectedTicket?.maxInstallments ?? 1 }).map((_, i) => (
                                                                     <option key={i + 1} value={i + 1}>
-                                                                        {i + 1}x de {formatCurrency(Math.round(totalCents / (i + 1)))}
+                                                                        {i + 1}x de {formatCurrency(Math.round(finalTotalCents / (i + 1)))}
                                                                         {i === 0 ? ' (à vista)' : ''}
                                                                     </option>
                                                                 ))}
@@ -876,17 +975,125 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                             />
                                         </div>
 
+                                        {/* Cupom de desconto */}
+                                        {isPaid && (
+                                            <div className="pt-2">
+                                                {!appliedCoupon ? (
+                                                    !isCouponOpen ? (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setIsCouponOpen(true)}
+                                                            className="text-xs font-bold text-paraiso-green hover:underline flex items-center gap-1.5 transition-all"
+                                                        >
+                                                            <Tag size={13} /> Possui um cupom de desconto?
+                                                        </button>
+                                                    ) : (
+                                                        <div className="space-y-2">
+                                                            <div className="flex items-center justify-between">
+                                                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                                                                    <Tag size={13} className="text-paraiso-green" /> Cupom de Desconto
+                                                                </label>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setIsCouponOpen(false);
+                                                                        setCouponError(null);
+                                                                    }}
+                                                                    className="text-[11px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                                                >
+                                                                    Cancelar
+                                                                </button>
+                                                            </div>
+                                                            <div className="flex gap-2">
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="CÓDIGO DO CUPOM"
+                                                                    value={couponInput}
+                                                                    onChange={(e) => {
+                                                                        setCouponInput(e.target.value.toUpperCase());
+                                                                        setCouponError(null);
+                                                                    }}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            e.preventDefault();
+                                                                            handleApplyCoupon();
+                                                                        }
+                                                                    }}
+                                                                    disabled={isValidatingCoupon}
+                                                                    className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold uppercase placeholder:normal-case placeholder:font-normal text-slate-800 dark:text-white focus:outline-none focus:border-paraiso-green transition-colors"
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={handleApplyCoupon}
+                                                                    disabled={!couponInput.trim() || isValidatingCoupon}
+                                                                    className="px-5 py-2.5 bg-paraiso-green text-white font-black text-xs uppercase tracking-wider rounded-xl hover:bg-paraiso-blue transition-all disabled:opacity-50 flex items-center gap-1.5 shrink-0"
+                                                                >
+                                                                    {isValidatingCoupon ? (
+                                                                        <Loader2 size={14} className="animate-spin" />
+                                                                    ) : (
+                                                                        'Aplicar'
+                                                                    )}
+                                                                </button>
+                                                            </div>
+                                                            {couponError && (
+                                                                <p className="text-xs text-red-500 font-medium flex items-center gap-1.5">
+                                                                    <AlertCircle size={13} className="shrink-0" />
+                                                                    {couponError}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    )
+                                                ) : (
+                                                    <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl text-emerald-800 dark:text-emerald-300">
+                                                        <div className="flex items-center gap-2 text-xs font-bold">
+                                                            <Tag size={14} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                                            <span>
+                                                                Cupom <strong className="font-black">{appliedCoupon.code}</strong> aplicado (-{formatCurrency(appliedCoupon.discountCents)})
+                                                            </span>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleRemoveCoupon}
+                                                            title="Remover cupom"
+                                                            className="p-1 rounded-lg text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200/50 dark:hover:bg-emerald-500/20 transition-all"
+                                                        >
+                                                            <X size={14} />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
                                         {errorMessage && (
                                             <p className="text-xs text-red-500 bg-red-50 dark:bg-red-500/10 p-3 rounded-xl flex items-center gap-2">
                                                 <AlertCircle size={14} className="shrink-0" /> {errorMessage}
                                             </p>
                                         )}
 
-                                        {/* Total */}
+                                        {/* Resumo financeiro */}
                                         {isPaid && (
-                                            <div className="flex items-center justify-between px-1 pt-2">
-                                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total</span>
-                                                <span className="text-xl font-black text-paraiso-blue dark:text-white">{formatCurrency(totalCents)}</span>
+                                            <div className="pt-3 border-t border-slate-200 dark:border-white/10 space-y-1.5">
+                                                {appliedCoupon ? (
+                                                    <>
+                                                        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                                                            <span>Subtotal dos ingressos</span>
+                                                            <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(subtotalCents)}</span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+                                                            <span>Desconto (Cupom)</span>
+                                                            <span>- {formatCurrency(appliedCoupon.discountCents)}</span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-white/10">
+                                                            <span className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Total a pagar</span>
+                                                            <span className="text-xl font-black text-paraiso-blue dark:text-white">{formatCurrency(finalTotalCents)}</span>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <div className="flex items-center justify-between px-1">
+                                                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total</span>
+                                                        <span className="text-xl font-black text-paraiso-blue dark:text-white">{formatCurrency(subtotalCents)}</span>
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
 
@@ -897,8 +1104,10 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                         >
                                             {status === 'loading' ? (
                                                 <><Loader2 size={16} className="animate-spin" /> Processando...</>
+                                            ) : isPaid ? (
+                                                finalTotalCents === 0 ? 'Concluir Inscrição Gratuita' : 'Ir para o pagamento'
                                             ) : (
-                                                isPaid ? 'Ir para o pagamento' : 'Confirmar Inscrição'
+                                                'Confirmar Inscrição'
                                             )}
                                         </button>
 
