@@ -43,8 +43,9 @@ export interface PublicTicketFieldDto {
   fieldId: string;
   key: string;
   label: string;
-  type: 'TEXT' | 'EMAIL' | 'PHONE' | 'CPF' | 'TEXTAREA' | 'SELECT' | 'CHECKBOX';
+  type: 'TEXT' | 'EMAIL' | 'PHONE' | 'CPF' | 'TEXTAREA' | 'SELECT' | 'CHECKBOX' | 'TERMS';
   options: string[] | null;
+  termText: string | null;
   required: boolean;
 }
 

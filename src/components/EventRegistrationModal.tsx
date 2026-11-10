@@ -15,6 +15,9 @@ import type {
 } from '@/lib/events/types';
 import { eventCardContent, formatEventDate } from '@/lib/events/display';
 import { selectableTicketId } from '@/lib/events/tickets';
+import { TermsField, type TermsFieldProps } from '@/components/TermsField';
+
+export { TermsField, type TermsFieldProps };
 
 interface Props {
     event: SiteEvent | null;
@@ -191,16 +194,36 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
         if (tickets.length > 0 && (!selectedTicket || selectedTicket.isSoldOut)) return;
         setErrorMessage(null);
 
-        const missing = customFields.find(f => f.required && !fieldValues[f.fieldId]?.trim());
+        const missing = customFields.find(f => {
+            if (!f.required) return false;
+            const val = fieldValues[f.fieldId]?.trim();
+            if (f.type === 'TERMS') {
+                return val !== 'true';
+            }
+            if (f.type === 'CHECKBOX') {
+                return val !== 'true';
+            }
+            return !val;
+        });
+
         if (missing) {
-            setErrorMessage(`Campo obrigatório: ${missing.label}`);
+            if (missing.type === 'TERMS') {
+                setErrorMessage(`É necessário aceitar os termos: ${missing.label}`);
+            } else {
+                setErrorMessage(`Campo obrigatório: ${missing.label}`);
+            }
             return;
         }
 
         setStatus('loading');
         const { data: { user } } = await supabase.auth.getUser();
         const apiFieldValues = customFields
-            .filter(f => fieldValues[f.fieldId]?.trim())
+            .filter(f => {
+                const val = fieldValues[f.fieldId]?.trim();
+                if (!val) return false;
+                if (f.type === 'TERMS' && val !== 'true') return false;
+                return true;
+            })
             .map(f => ({ fieldId: f.fieldId, value: fieldValues[f.fieldId].trim() }));
 
         if (isPaid && selectedTicketId) {
@@ -307,6 +330,18 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
         const value = fieldValues[field.fieldId] ?? '';
         const set = (v: string) => setFieldValues(prev => ({ ...prev, [field.fieldId]: v }));
         const base = 'w-full px-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-paraiso-green transition-colors';
+
+        if (field.type === 'TERMS') {
+            return (
+                <TermsField
+                    key={field.fieldId}
+                    field={field}
+                    value={value === 'true'}
+                    onChange={agreed => set(agreed ? 'true' : '')}
+                    error={errorMessage?.includes(field.label) ? errorMessage : undefined}
+                />
+            );
+        }
 
         return (
             <div key={field.fieldId} className="space-y-1.5">
@@ -733,7 +768,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                                 const next = [...prev];
                                                                 next[i] = e.target.value;
                                                                 return next;
-                                                            })}
+                                                             })}
                                                             className={inputClass}
                                                         />
                                                     </div>

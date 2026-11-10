@@ -7,7 +7,7 @@ vi.mock("@/utils/supabase/client", () => ({
   createClient: () => ({ auth: { getUser: async () => ({ data: { user: null } }) } }),
 }));
 
-const { default: EventRegistrationModal } = await import("./EventRegistrationModal");
+const { default: EventRegistrationModal, TermsField } = await import("./EventRegistrationModal");
 
 const EVENTO: SiteEvent = {
   id: "3f2b8c1e-9a4d-4e6f-8b7a-1c2d3e4f5a6b",
@@ -48,5 +48,9 @@ describe("EventRegistrationModal — cabeçalho", () => {
     const html = render({ ...EVENTO, cover_image_url: null, tags: [] });
     expect(html).toContain("https://media.example/antiga.jpg");
     expect(html).toContain(">Legado<");
+  });
+
+  it("exporta o componente TermsField para renderização de termos de responsabilidade", () => {
+    expect(TermsField).toBeDefined();
   });
 });
