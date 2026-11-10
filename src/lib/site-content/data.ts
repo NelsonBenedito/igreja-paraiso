@@ -1,9 +1,32 @@
 import { cache } from "react";
-import { isPublicApiConfigured } from "@/lib/public-api/env";
-import { fetchSiteContent } from "./client";
+import {
+  getPublicApiBase,
+  getTenantSlug,
+  isPublicApiConfigured,
+} from "@/lib/public-api/env";
+import { fetchSiteContent, SiteContentApiError } from "./client";
 import { SITE_CONTENT_FALLBACK } from "./fallbacks";
 import { resolveHomeOrder, type HomeBlock } from "./home-order";
 import type { SiteContentResponse, SiteSections } from "./types";
+
+function warnSiteContentFallback(error: unknown): void {
+  if (error instanceof SiteContentApiError) {
+    const slug = getTenantSlug() ?? "?";
+    const base = getPublicApiBase() ?? "?";
+    if (error.status === 404) {
+      console.warn(
+        `[site-content] 404 em ${base}/api/public/tenants/${slug}/site-content — usando fallback estático. Confirme se o ChurchManager (SiteModule) está publicado neste ambiente e se o slug do tenant está correto.`,
+      );
+      return;
+    }
+    console.warn(
+      `[site-content] API respondeu ${error.status} — usando fallback estático:`,
+      error.message,
+    );
+    return;
+  }
+  console.warn("[site-content] a usar fallback estático:", error);
+}
 
 /**
  * Busca o conteúdo institucional (seções + layout) na API pública.
@@ -19,7 +42,7 @@ const fetchSiteContentOnce = cache(async (): Promise<SiteContentResponse | null>
   try {
     return await fetchSiteContent();
   } catch (error) {
-    console.warn("[site-content] a usar fallback estático:", error);
+    warnSiteContentFallback(error);
     return null;
   }
 });
