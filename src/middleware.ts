@@ -18,6 +18,9 @@ function isAllowedWhenCampusOnly(pathname: string): boolean {
   if (pathname === "/cotas/campus" || pathname.startsWith("/cotas/campus/")) {
     return true;
   }
+  if (pathname === "/cotas/minhas-contribuicoes") {
+    return true;
+  }
   if (pathname === "/em-construcao" || pathname.startsWith("/em-construcao/")) {
     return true;
   }

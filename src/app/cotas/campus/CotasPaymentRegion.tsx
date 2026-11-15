@@ -1,46 +1,19 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
+import { normalizeIdentity } from "@/lib/donations/contribuirPayload";
+import { maskCpf } from "@/lib/donations/cpf";
+import { MINHAS_CONTRIBUICOES_PATH } from "@/lib/donations/publicApi";
 import { CotasIntentPanel } from "./CotasIntentPanel";
 import { OutroValorUnicoPanel } from "./OutroValorUnicoPanel";
-
-function onlyDigits(raw: string): string {
-  return raw.replace(/\D/g, "");
-}
-
-function maskCpf(raw: string): string {
-  const digits = onlyDigits(raw).slice(0, 11);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
-  if (digits.length <= 9) {
-    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
-  }
-  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
-}
-
-function isValidCpf(cpf: string): boolean {
-  const digits = onlyDigits(cpf);
-  if (digits.length !== 11 || /^(\d)\1{10}$/.test(digits)) return false;
-  const nums = digits.split("").map((c) => Number.parseInt(c, 10));
-  const calc = (size: number) => {
-    let sum = 0;
-    for (let i = 0; i < size; i += 1) sum += nums[i] * (size + 1 - i);
-    const mod = (sum * 10) % 11;
-    return mod === 10 ? 0 : mod;
-  };
-  return calc(9) === nums[9] && calc(10) === nums[10];
-}
 
 export function CotasPaymentRegion() {
   const [name, setName] = useState("");
   const [cpf, setCpf] = useState("");
 
-  const donorName = name.trim();
-  const donorCpf = onlyDigits(cpf);
-  const validName = donorName.length >= 3;
-  const validCpf = isValidCpf(donorCpf);
-  const isIdentityValid = validName && validCpf;
+  const identity = normalizeIdentity(name, cpf);
   const hasIdentityInput = name.length > 0 || cpf.length > 0;
 
   return (
@@ -75,7 +48,66 @@ export function CotasPaymentRegion() {
                   desta grande obra e ajude a impactar gerações!
                 </p>
               </div>
-              <CotasIntentPanel />
+
+              <div
+                className="cb-outro-valor__aside cb-identity"
+                id="quem-contribui"
+                role="group"
+                aria-labelledby="quem-contribui-titulo"
+              >
+                <div className="cb-identity__head">
+                  <h3 className="cb-identity__title" id="quem-contribui-titulo">
+                    Quem está contribuindo?
+                  </h3>
+                  <Link className="cb-identity__link" href={MINHAS_CONTRIBUICOES_PATH}>
+                    Minhas contribuições
+                  </Link>
+                </div>
+                <p className="cb-outro-valor__field-hint">
+                  Vale para as cotas e para outro valor. Usamos o CPF só para
+                  identificar sua contribuição.
+                </p>
+                <div className="cb-identity__fields">
+                  <div className="cb-outro-valor__block">
+                    <label className="cb-outro-valor__simple-label" htmlFor="contribuinte-nome">
+                      Nome completo
+                    </label>
+                    <input
+                      id="contribuinte-nome"
+                      name="name"
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Ex.: Maria Silva"
+                      className="cb-outro-valor__input cb-outro-valor__input--touch"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </div>
+                  <div className="cb-outro-valor__block">
+                    <label className="cb-outro-valor__simple-label" htmlFor="contribuinte-cpf">
+                      CPF
+                    </label>
+                    <input
+                      id="contribuinte-cpf"
+                      name="cpf"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="off"
+                      placeholder="000.000.000-00"
+                      className="cb-outro-valor__input cb-outro-valor__input--touch"
+                      value={cpf}
+                      onChange={(e) => setCpf(maskCpf(e.target.value))}
+                    />
+                  </div>
+                </div>
+                {hasIdentityInput && !identity ? (
+                  <p className="cb-outro-valor__erro" role="status">
+                    Preencha nome completo e um CPF válido para continuar.
+                  </p>
+                ) : null}
+              </div>
+
+              <CotasIntentPanel identity={identity} />
             </div>
           </div>
         </div>
@@ -103,16 +135,7 @@ export function CotasPaymentRegion() {
             </div>
 
             <div className="cb-outro-valor__form-wrap">
-              <OutroValorUnicoPanel
-                donorName={donorName}
-                donorCpf={donorCpf}
-                isIdentityValid={isIdentityValid}
-                hasIdentityInput={hasIdentityInput}
-                nameInputValue={name}
-                cpfInputValue={cpf}
-                onNameChange={setName}
-                onCpfChange={(next) => setCpf(maskCpf(next))}
-              />
+              <OutroValorUnicoPanel identity={identity} />
             </div>
           </div>
         </div>

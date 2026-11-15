@@ -13,9 +13,9 @@ function ContribuirFallback() {
   return (
     <main className="campus-page cotas-contribuir">
       <div className="cb-shell cotas-contribuir__shell">
-        <h1 className="cotas-contribuir__title">A preparar o pagamento</h1>
+        <h1 className="cotas-contribuir__title">Preparando o pagamento</h1>
         <p className="cotas-contribuir__sub">
-          Estamos abrindo a pagina segura do parceiro financeiro. Aguarde um
+          Estamos abrindo a página segura do parceiro financeiro. Aguarde um
           instante.
         </p>
         <div className="cotas-contribuir__spinner" aria-hidden />

@@ -1,21 +1,24 @@
 "use client";
 
 import { Info } from "lucide-react";
+import {
+  type ContribuinteIdentity,
+  MAX_MESES_CAMPUS as MESES_MAX_CAMPUS,
+  MSG_STORAGE_BLOQUEADO,
+  buildContribuirQuery,
+  getSessionStorage,
+  saveIdentity,
+} from "@/lib/donations/contribuirPayload";
 import { MIN_PAYMENT_LINK_VALUE_BRL } from "@/lib/donations/minPaymentValue";
 import { useRouter } from "next/navigation";
 import { FormEvent, useMemo, useState } from "react";
 
-const MESES_MAX_CAMPUS = 12;
+const MSG_IDENTIDADE_PENDENTE =
+  "Preencha nome e CPF em “Quem está contribuindo?” para continuar.";
 
 type OutroValorUnicoPanelProps = {
-  donorName: string;
-  donorCpf: string;
-  isIdentityValid: boolean;
-  hasIdentityInput: boolean;
-  nameInputValue: string;
-  cpfInputValue: string;
-  onNameChange: (value: string) => void;
-  onCpfChange: (value: string) => void;
+  /** Identidade válida do bloco "Quem está contribuindo?"; `null` desabilita o envio. */
+  identity: ContribuinteIdentity | null;
 };
 
 function parseValorReais(raw: string): number | null {
@@ -26,16 +29,7 @@ function parseValorReais(raw: string): number | null {
   return Math.round(n * 100) / 100;
 }
 
-export function OutroValorUnicoPanel({
-  donorName,
-  donorCpf,
-  isIdentityValid,
-  hasIdentityInput,
-  nameInputValue,
-  cpfInputValue,
-  onNameChange,
-  onCpfChange,
-}: OutroValorUnicoPanelProps) {
+export function OutroValorUnicoPanel({ identity }: OutroValorUnicoPanelProps) {
   const router = useRouter();
   const [mesesStr, setMesesStr] = useState("1");
   const [valorTexto, setValorTexto] = useState("");
@@ -45,8 +39,8 @@ export function OutroValorUnicoPanel({
   function handleGerarLink(e: FormEvent) {
     e.preventDefault();
     if (busy) return;
-    if (!isIdentityValid) {
-      setErro("Preencha nome e CPF validos para continuar.");
+    if (!identity) {
+      setErro(MSG_IDENTIDADE_PENDENTE);
       return;
     }
     const v = parseValorReais(valorTexto);
@@ -70,15 +64,14 @@ export function OutroValorUnicoPanel({
       return;
     }
 
+    if (!saveIdentity(getSessionStorage(), identity)) {
+      setErro(MSG_STORAGE_BLOQUEADO);
+      return;
+    }
+
     setErro("");
     setBusy(true);
-    const params = new URLSearchParams();
-    params.set("valor", String(v));
-    params.set("mensal", "true");
-    params.set("meses", String(m));
-    params.set("name", donorName);
-    params.set("cpf", donorCpf);
-    router.push(`/cotas/campus/contribuir?${params.toString()}`);
+    router.push(`/cotas/campus/contribuir?${buildContribuirQuery(v, m)}`);
   }
 
   const valorParsed = useMemo(() => parseValorReais(valorTexto), [valorTexto]);
@@ -99,45 +92,6 @@ export function OutroValorUnicoPanel({
     >
       <div className="cb-outro-valor__block">
         <span className="cb-outro-valor__step">1</span>
-        <label className="cb-outro-valor__simple-label" htmlFor="outro-valor-nome">
-          Nome completo
-        </label>
-        <input
-          id="outro-valor-nome"
-          name="name"
-          type="text"
-          autoComplete="name"
-          placeholder="Ex.: Maria Silva"
-          className="cb-outro-valor__input cb-outro-valor__input--touch"
-          value={nameInputValue}
-          onChange={(e) => {
-            onNameChange(e.target.value);
-            setErro("");
-          }}
-          disabled={busy}
-        />
-        <label className="cb-outro-valor__simple-label" htmlFor="outro-valor-cpf">
-          CPF
-        </label>
-        <input
-          id="outro-valor-cpf"
-          name="cpf"
-          type="text"
-          inputMode="numeric"
-          autoComplete="off"
-          placeholder="000.000.000-00"
-          className="cb-outro-valor__input cb-outro-valor__input--touch"
-          value={cpfInputValue}
-          onChange={(e) => {
-            onCpfChange(e.target.value);
-            setErro("");
-          }}
-          disabled={busy}
-        />
-      </div>
-
-      <div className="cb-outro-valor__block">
-        <span className="cb-outro-valor__step">2</span>
         <label className="cb-outro-valor__simple-label" htmlFor="outro-valor-campo">
           Valor em reais (R$)
         </label>
@@ -186,13 +140,13 @@ export function OutroValorUnicoPanel({
         ) : null}
         {erroRelacionadaAValor ? (
           <p id="outro-valor-min-hint" className="cb-outro-valor__field-hint">
-            Valores como 5, 10 ou 50 são aceites; centavos podem ser usados (ex.: 5,50).
+            Valores como 5, 10 ou 50 são aceitos; centavos podem ser usados (ex.: 5,50).
           </p>
         ) : null}
       </div>
 
       <div className="cb-outro-valor__block">
-        <span className="cb-outro-valor__step">3</span>
+        <span className="cb-outro-valor__step">2</span>
         <label
           className="cb-outro-valor__simple-label"
           htmlFor="outro-valor-meses"
@@ -217,7 +171,7 @@ export function OutroValorUnicoPanel({
           aria-describedby="outro-valor-meses-hint"
         />
         <p id="outro-valor-meses-hint" className="cb-outro-valor__field-hint">
-          Cada mês, o mesmo valor que indicou acima. Escolha só 1 mês para pagamento único ou recorrência
+          Cada mês, o mesmo valor que você indicou acima. Escolha só 1 mês para pagamento único ou recorrência
           mensal até {MESES_MAX_CAMPUS}.
         </p>
       </div>
@@ -226,25 +180,29 @@ export function OutroValorUnicoPanel({
         <p className="cb-outro-valor__erro" role="alert">
           {erro}
         </p>
-      ) : hasIdentityInput && !isIdentityValid ? (
-        <p className="cb-outro-valor__erro" role="alert">
-          Preencha nome e CPF validos para continuar.
+      ) : !identity ? (
+        <p className="cb-outro-valor__field-hint">
+          Preencha nome e CPF em{" "}
+          <a className="cb-identity__inline-link" href="#quem-contribui">
+            Quem está contribuindo?
+          </a>{" "}
+          para continuar.
         </p>
       ) : null}
 
       <button
         type="submit"
         className="cb-outro-valor__submit cb-outro-valor__submit--touch"
-        disabled={busy || abaixoDoMinimo || !isIdentityValid}
+        disabled={busy || abaixoDoMinimo || !identity}
         title={
-          !isIdentityValid
-            ? "Preencha nome e CPF validos para continuar"
+          !identity
+            ? "Preencha nome e CPF para continuar"
             : abaixoDoMinimo
             ? `Indique pelo menos R$ ${MIN_PAYMENT_LINK_VALUE_BRL.toFixed(2).replace(".", ",")} por mês para continuar`
             : undefined
         }
       >
-        {busy ? "A abrir…" : "Continuar para pagar"}
+        {busy ? "Abrindo…" : "Continuar para pagar"}
       </button>
     </form>
   );

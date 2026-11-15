@@ -1,7 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useState } from "react";
+import {
+  type ContribuinteIdentity,
+  MAX_MESES_CAMPUS,
+  MSG_STORAGE_BLOQUEADO,
+  buildContribuirQuery,
+  getSessionStorage,
+  saveIdentity,
+} from "@/lib/donations/contribuirPayload";
 import { COTAS_DESC, parseReaisFromCotaLabel } from "./cotasCampusData";
 
 const COTA_OPTIONS = COTAS_DESC.map((label) => ({
@@ -10,31 +18,24 @@ const COTA_OPTIONS = COTAS_DESC.map((label) => ({
 }));
 
 type CotasIntentPanelProps = {
-  presetKey?: string;
+  /** Identidade válida do bloco "Quem está contribuindo?"; `null` mantém os botões desabilitados. */
+  identity: ContribuinteIdentity | null;
 };
 
-export function CotasIntentPanel({ presetKey }: CotasIntentPanelProps) {
+export function CotasIntentPanel({ identity }: CotasIntentPanelProps) {
   const router = useRouter();
   const [isNavigating, setIsNavigating] = useState(false);
-
-  const pushContribuirMensal12 = useCallback(
-    (valor: number) => {
-      const params = new URLSearchParams();
-      params.set("valor", String(valor));
-      params.set("mensal", "true");
-      params.set("meses", "12");
-      if (presetKey?.trim()) {
-        params.set("presetKey", presetKey.trim());
-      }
-      router.push(`/cotas/campus/contribuir?${params.toString()}`);
-    },
-    [presetKey, router],
-  );
+  const [erro, setErro] = useState("");
 
   function handleValorMensal(value: number) {
-    if (isNavigating) return;
+    if (isNavigating || !identity) return;
+    if (!saveIdentity(getSessionStorage(), identity)) {
+      setErro(MSG_STORAGE_BLOQUEADO);
+      return;
+    }
+    setErro("");
     setIsNavigating(true);
-    pushContribuirMensal12(value);
+    router.push(`/cotas/campus/contribuir?${buildContribuirQuery(value, MAX_MESES_CAMPUS)}`);
   }
 
   return (
@@ -45,19 +46,30 @@ export function CotasIntentPanel({ presetKey }: CotasIntentPanelProps) {
         <strong>assinatura de 1 a 12 meses</strong>,{" "}
         <a href="#outro-valor">veja abaixo</a>.
       </p>
+      {!identity ? (
+        <p className="cb-identity__gate" id="cotas-gate">
+          Preencha nome e CPF acima para escolher uma cota.
+        </p>
+      ) : null}
       <div className="cotas-grid">
         {COTA_OPTIONS.map(({ label, value }) => (
           <button
             key={label}
             type="button"
-            className="cota-btn"
+            className={identity ? "cota-btn" : "cota-btn cota-btn--locked"}
             onClick={() => handleValorMensal(value)}
-            disabled={isNavigating}
+            disabled={isNavigating || !identity}
+            aria-describedby={!identity ? "cotas-gate" : undefined}
           >
             {label}
           </button>
         ))}
       </div>
+      {erro ? (
+        <p className="cb-outro-valor__erro cb-identity__erro" role="alert">
+          {erro}
+        </p>
+      ) : null}
     </>
   );
 }
