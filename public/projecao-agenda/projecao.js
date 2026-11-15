@@ -175,15 +175,29 @@
     return dois(ini.dia) + ' de ' + MESES[ini.mes] + ' a ' + dois(fim.dia) + ' de ' + MESES[fim.mes];
   }
 
-  // Segunda linha: "segunda às 18:30h", "hoje às 20h", "Noite de sopas · 19:30h", "sexta a domingo"
+  function numeroDia(p) { return Math.round(Date.UTC(p.ano, p.mes, p.dia) / DIA_MS); }
+
+  // Mesma semana de calendário (domingo a sábado) que hoje: só aí o nome do dia
+  // ("quinta") é claro; numa semana seguinte, fala o dia do mês ("dia 31").
+  function nestaSemana(p, h0) {
+    var d = numeroDia(p) - numeroDia(h0);
+    return d >= -h0.sem && d <= 6 - h0.sem;
+  }
+
+  // Segunda linha: "segunda às 18:30h", "hoje às 20h", "dia 31 às 19h",
+  // "Noite de sopas · 19:30h", "sexta a domingo", "dias 30 a 02"
   function partesDetalhe(a, h0, amanha) {
     var multi = a.fim && a.fim.chave !== a.ini.chave;
     var hr = hora(a.ini);
     if (a.subtitulo) return [{ t: a.subtitulo + (hr && !multi ? ' · ' + hr : '') }];
-    if (multi) return [{ t: DIAS[a.ini.sem] + ' a ' + DIAS[a.fim.sem] }];
+    if (multi) {
+      if (nestaSemana(a.ini, h0) && nestaSemana(a.fim, h0)) return [{ t: DIAS[a.ini.sem] + ' a ' + DIAS[a.fim.sem] }];
+      return [{ t: 'dias ' + dois(a.ini.dia) + ' a ' + dois(a.fim.dia) }];
+    }
     var resto = hr ? ' às ' + hr : '';
     if (a.ini.chave === h0.chave) return [{ t: 'hoje', destaque: true }, { t: resto }];
     if (a.ini.chave === amanha) return [{ t: 'amanhã' + resto }];
+    if (!nestaSemana(a.ini, h0)) return [{ t: 'dia ' + dois(a.ini.dia) + resto }];
     return [{ t: DIAS[a.ini.sem] + resto }];
   }
 
