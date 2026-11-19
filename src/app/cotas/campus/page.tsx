@@ -68,37 +68,7 @@ export default function CotasCampusPage() {
       </Suspense>
 
       <div className="cb-shell">
-        <section className="cb-slab cb-slab--hero" aria-label="Destaque do projeto">
-          <div className="cb-hero-media">
-            <video
-              className="hero-video"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster="/ConferenciaDeFamilias.jpg"
-            >
-              <source src="/video_campus.MP4" type="video/mp4" />
-            </video>
-            <div className="cb-hero-overlay" aria-hidden />
-            <div className="cb-hero-content">
-              <Image
-                className="cb-hero-logo"
-                src="/paraiso_logo_branca.png"
-                alt="Igreja Paraiso"
-                width={512}
-                height={288}
-                priority
-              />
-              <h1 className="sr-only">Campus Paraíso</h1>
-              <a href="#cotas" className="cb-hero-cta cb-pill--down">
-                Contribuir
-              </a>
-            </div>
-          </div>
-          <div className="cb-hero-bar" aria-hidden />
-        </section>
+        <h1 className="sr-only">Campus Paraíso</h1>
 
         <CotasPaymentRegion />
 
