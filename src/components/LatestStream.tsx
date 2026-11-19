@@ -1,8 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { PlayCircle, Youtube } from 'lucide-react';
-import { motion } from 'framer-motion';
 import Reveal from './Reveal';
+import { EditorialSection, Period, SectionTitle, TextLink } from '@/components/site/Editorial';
 import type { SiteYoutube } from '@/lib/site-content/types';
 
 interface Video {
@@ -15,6 +14,12 @@ interface Video {
 
 interface LatestStreamProps {
     content: SiteYoutube;
+}
+
+function formatDate(iso: string): string {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return '';
+    return date.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 const LatestStream: React.FC<LatestStreamProps> = ({ content }) => {
@@ -72,79 +77,61 @@ const LatestStream: React.FC<LatestStreamProps> = ({ content }) => {
 
     if (!video && !loading) return null;
 
-    const titleParts = content.sectionTitle.trim().split(/\s+/);
-    const highlight = titleParts.length > 1 ? titleParts[titleParts.length - 1] : '';
-    const titleMain = titleParts.length > 1 ? titleParts.slice(0, -1).join(' ') : content.sectionTitle;
+    const sectionTitle = content.sectionTitle.trim().replace(/\.$/, '');
+    const channelUrl = `https://www.youtube.com/@${channelHandle}`;
+    const publishedLabel = video ? formatDate(video.publishedAt) : '';
 
     return (
-        <section id="aovivo" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden bg-clip-padding my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative">
-            <div className="absolute inset-0 bg-paraiso-blue/5 pointer-events-none" />
-
-            <div className="relative z-10">
-                <Reveal>
-                    <div className="flex flex-col items-center text-center mb-12">
-                        <div className="flex items-center gap-2 mb-4">
-                            <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-                            <span className="text-red-600 font-black uppercase tracking-widest text-xs">Youtube</span>
-                        </div>
-                        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none mb-4">
-                            {titleMain}{' '}
-                            {highlight ? (
-                                <>
-                                    <br />
-                                    <span className="text-paraiso-green italic font-serif lowercase">{highlight}</span>
-                                </>
-                            ) : null}
-                        </h2>
-                        <p className="text-slate-500 dark:text-slate-300 font-medium max-w-2xl text-base">
+        <EditorialSection id="aovivo" label="Ao vivo" layout="stack">
+            <Reveal>
+                <div className="mb-14 flex flex-wrap items-end justify-between gap-x-12 gap-y-6">
+                    <div className="min-w-0">
+                        <SectionTitle>
+                            {sectionTitle}
+                            <Period />
+                        </SectionTitle>
+                        <p className="mt-5 max-w-2xl text-base text-ink-muted">
                             Acompanhe nossos cultos e mensagens onde você estiver.
                         </p>
                     </div>
-                </Reveal>
+                    <TextLink href={channelUrl}>youtube.com/@{channelHandle}</TextLink>
+                </div>
+            </Reveal>
 
-                <Reveal delay={0.2}>
-                    {video ? (
-                        <motion.div
-                            whileHover={{ y: -4 }}
-                            className="max-w-4xl mx-auto rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl bg-black relative group aspect-video"
-                        >
-                            <a href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer" className="block w-full h-full">
-                                <img
-                                    src={video.thumbnail}
-                                    alt={video.title}
-                                    className="w-full h-full object-cover opacity-80 group-hover:opacity-60 transition-opacity duration-500"
-                                />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="w-16 h-16 md:w-20 md:h-20 bg-red-600/90 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(220,38,38,0.5)] group-hover:scale-110 transition-transform duration-300">
-                                        <PlayCircle size={36} className="text-white fill-white" />
-                                    </div>
-                                </div>
-                                <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8 bg-gradient-to-t from-black/90 to-transparent">
-                                    <h3 className="text-white text-lg md:text-2xl font-bold line-clamp-2">{video.title}</h3>
-                                    <p className="text-slate-300 mt-1 font-medium text-sm">Clique para assistir agora</p>
-                                </div>
-                            </a>
-                        </motion.div>
-                    ) : (
-                        <div className="max-w-4xl mx-auto h-[300px] md:h-[400px] rounded-3xl bg-slate-200 dark:bg-white/5 flex items-center justify-center animate-pulse">
-                            <Youtube size={64} className="text-slate-300 dark:text-slate-600" />
-                        </div>
-                    )}
-                </Reveal>
-
-                <div className="text-center mt-10">
+            <Reveal delay={0.2}>
+                {video ? (
                     <a
-                        href={`https://www.youtube.com/@${channelHandle}`}
+                        href={`https://www.youtube.com/watch?v=${video.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-white dark:bg-paraiso-blue border border-slate-200 dark:border-white/10 text-paraiso-blue dark:text-white rounded-full font-black uppercase tracking-widest text-xs hover:bg-paraiso-blue hover:text-white hover:border-transparent transition-all shadow-lg"
+                        className="group block"
                     >
-                        <Youtube size={18} />
-                        Ver Canal Completo
+                        <div className="relative aspect-video overflow-hidden rounded-md bg-ink">
+                            <img
+                                src={video.thumbnail}
+                                alt={video.title}
+                                className="h-full w-full object-cover transition-opacity duration-500 group-hover:opacity-85"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="flex h-[88px] w-[88px] items-center justify-center rounded-full bg-paraiso-green transition-transform duration-300 group-hover:scale-105">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+                                        <path d="M8 5v14l11-7z" />
+                                    </svg>
+                                </span>
+                            </div>
+                        </div>
+                        <div className="mt-6 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2">
+                            <h3 className="m-0 line-clamp-2 text-lg font-medium text-ink md:text-xl">{video.title}</h3>
+                            {publishedLabel ? (
+                                <p className="m-0 shrink-0 text-sm text-ink-muted">{publishedLabel}</p>
+                            ) : null}
+                        </div>
                     </a>
-                </div>
-            </div>
-        </section>
+                ) : (
+                    <div className="aspect-video animate-pulse rounded-md bg-ink/5" aria-hidden="true" />
+                )}
+            </Reveal>
+        </EditorialSection>
     );
 };
 

@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import BackToTop from "@/components/BackToTop";
@@ -8,6 +8,14 @@ import BackToTop from "@/components/BackToTop";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+});
+
+// Fonte do site público (títulos e texto) e das cotas (`campus.css` usa --font-poppins).
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-poppins",
 });
 
 export const metadata: Metadata = {
@@ -29,20 +37,20 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var theme = localStorage.getItem('paraiso-theme') || localStorage.getItem('theme') || 'dark';
+                  var theme = localStorage.getItem('paraiso-theme') || localStorage.getItem('theme') || 'light';
                   document.documentElement.classList.add(theme);
                 } catch(e) {
-                  document.documentElement.classList.add('dark');
+                  document.documentElement.classList.add('light');
                 }
               })();
             `,
           }}
         />
       </head>
-      <body className={`${inter.variable} font-sans antialiased text-slate-900`} suppressHydrationWarning>
+      <body className={`${inter.variable} ${poppins.variable} font-sans antialiased text-slate-900`} suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           storageKey="paraiso-theme"
           disableTransitionOnChange={false}
         >

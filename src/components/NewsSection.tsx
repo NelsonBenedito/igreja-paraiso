@@ -3,11 +3,12 @@ import React, { useState, useEffect } from 'react';
 import Reveal from './Reveal';
 import ImageWithFallback from './ImageWithFallback';
 import { motion } from 'framer-motion';
-import { CalendarDays, MapPin, Clock, UserPlus, CheckCircle2 } from 'lucide-react';
+import { CalendarDays, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { loadRegisteredEventIdsClient } from '@/lib/events/data-client';
 import type { SiteEvent } from '@/lib/events/types';
 import { eventCardContent } from '@/lib/events/display';
+import { EditorialSection, SectionTitle, Period, TextLink } from '@/components/site/Editorial';
 
 interface NewsSectionProps {
     events: SiteEvent[];
@@ -38,124 +39,94 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
     }, []); */
 
     return (
-        <section id="eventos" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden bg-clip-padding my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5">
+        <EditorialSection id="eventos" label="Eventos" layout="stack">
             <Reveal>
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
-                    <div>
-                        <div className="flex items-center gap-4 mb-4">
-                            <span className="w-10 h-[2px] bg-paraiso-green" />
-                            <span className="text-paraiso-green font-black uppercase tracking-widest text-xs">Eventos</span>
-                        </div>
-                        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white leading-none">
-                            ACONTECE NA <br />PARAÍSO
-                        </h2>
-                    </div>
-                    <p className="text-slate-500 dark:text-slate-300 font-bold uppercase tracking-widest text-xs max-w-[200px] leading-tight">
-                        Fique por dentro de tudo que move nossa casa.
-                    </p>
+                <div className="mb-12 flex flex-wrap items-end justify-between gap-x-12 gap-y-6 md:mb-14">
+                    <SectionTitle>
+                        Acontece na Paraíso<Period />
+                    </SectionTitle>
+                    <TextLink href="/eventos">Ver todos os eventos</TextLink>
                 </div>
             </Reveal>
 
-            <div className={`grid gap-6 md:gap-8 ${events.length === 1 ? 'max-w-lg mx-auto' : events.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
+            <div className={`grid gap-8 ${events.length === 1 ? 'max-w-lg' : events.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
                     {events.map((item, idx) => {
                         const card = eventCardContent(item);
                         return (
                         <Reveal key={item.id} delay={idx * 0.1}>
-                            <div
-                                className="group cursor-pointer"
+                            <article
+                                className="group flex h-full cursor-pointer flex-col"
                                 onClick={() => router.push(`/evento/${item.id}`)}
                             >
-                                <div className="relative mb-5 overflow-hidden rounded-2xl md:rounded-3xl aspect-[4/3] shadow-lg bg-slate-100 dark:bg-slate-800">
+                                <div className="relative mb-5 aspect-[4/3] overflow-hidden rounded-md border border-hairline bg-paper-soft">
                                     <ImageWithFallback
                                         src={card.imageUrl}
-                                        className="w-full h-full object-cover transition-all duration-500 hover:scale-105 group-hover:brightness-75"
+                                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                                         alt={item.title}
                                         fallback={
-                                            <div className="w-full h-full bg-gradient-to-br from-paraiso-blue/10 to-paraiso-green/10 flex items-center justify-center">
-                                                <CalendarDays className="w-12 h-12 text-slate-300 dark:text-slate-600" />
+                                            <div className="flex h-full w-full items-center justify-center bg-paper-soft">
+                                                <CalendarDays className="h-10 w-10 text-ink-muted/50" />
                                             </div>
                                         }
                                     />
 
-                                    {/* Badges — top row */}
-                                    <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
-                                        <div className="flex flex-wrap gap-2">
-                                            {card.tag && (
-                                                <span className="px-3 py-1.5 bg-paraiso-green text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-md">
-                                                    {card.tag}
-                                                </span>
-                                            )}
-                                        </div>
-                                        {isRegistered(item.id) && (
-                                            <span className="flex items-center gap-1 bg-white/90 dark:bg-paraiso-green text-paraiso-green dark:text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md backdrop-blur-sm">
-                                                <CheckCircle2 size={11} />
-                                                Inscrito
-                                            </span>
-                                        )}
-                                    </div>
-
-                                    {/* Date overlay */}
-                                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-                                        <div className="flex items-center gap-3 text-white/90 text-xs font-bold">
-                                            <div className="flex items-center gap-1.5">
-                                                <CalendarDays size={12} />
-                                                {formatDate(item.date)}
-                                            </div>
-                                            {item.time_start && (
-                                                <div className="flex items-center gap-1.5">
-                                                    <Clock size={12} />
-                                                    {item.time_start.slice(0, 5)}
-                                                </div>
-                                            )}
-                                        </div>
-                                        {item.location && (
-                                            <div className="flex items-center gap-1.5 text-white/70 text-xs font-medium mt-1">
-                                                <MapPin size={11} />
-                                                {item.location}
-                                            </div>
-                                        )}
-                                    </div>
+                                    {isRegistered(item.id) && (
+                                        <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full border border-hairline bg-paper px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-detail">
+                                            <CheckCircle2 size={11} />
+                                            Inscrito
+                                        </span>
+                                    )}
                                 </div>
 
-                                <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter mb-2 group-hover:text-paraiso-green transition-colors text-paraiso-blue dark:text-white leading-tight">
+                                <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-xs font-medium uppercase tracking-[0.14em] text-ink-muted">
+                                    <span>
+                                        <span className="text-detail" aria-hidden="true">●</span>{' '}
+                                        {formatDate(item.date)}
+                                    </span>
+                                    {item.time_start && <span>{item.time_start.slice(0, 5)}</span>}
+                                    {item.location && <span>{item.location}</span>}
+                                </div>
+
+                                <h3 className="m-0 mb-2 text-2xl font-medium leading-tight tracking-[-0.02em] text-ink transition-colors group-hover:text-detail">
                                     {item.title}
                                 </h3>
                                 {card.text && (
-                                    <p className="text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-2 text-sm mb-4">
+                                    <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-ink-muted">
                                         {card.text}
                                     </p>
                                 )}
 
-                                <div className="flex items-center justify-between mt-auto pt-2">
-                                    <span className="flex items-center gap-3 text-paraiso-green font-black text-xs uppercase tracking-[0.15em] group-hover:gap-5 transition-all">
-                                        Saiba mais <span className="text-xl">→</span>
+                                <div className="mt-auto flex items-center justify-between gap-4 border-t border-hairline pt-4">
+                                    <span className="text-[15px] text-ink-muted">
+                                        {card.tag ?? 'Saiba mais'}
                                     </span>
                                     {isRegistered(item.id) ? (
-                                        <span className="flex items-center gap-1.5 px-4 py-2 bg-paraiso-green/10 text-paraiso-green font-black text-[10px] uppercase tracking-widest rounded-full border border-paraiso-green/30">
-                                            <CheckCircle2 size={12} />
+                                        <span className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-detail">
+                                            <CheckCircle2 size={14} />
                                             Confirmada
                                         </span>
                                     ) : (
                                         <motion.button
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
+                                            whileTap={{ scale: 0.97 }}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 router.push(`/evento/${item.id}`);
                                             }}
-                                            className="flex items-center gap-1.5 px-4 py-2 bg-paraiso-green text-white font-black uppercase tracking-widest text-[10px] rounded-full hover:bg-paraiso-blue transition-all shadow-md"
+                                            className="inline-flex min-h-11 items-center gap-2.5 text-sm font-medium text-ink transition-colors hover:text-detail"
                                         >
-                                            <UserPlus size={12} />
                                             Inscrever-se
+                                            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-paraiso-green text-white">
+                                                <ArrowRight size={12} strokeWidth={2.2} />
+                                            </span>
                                         </motion.button>
                                     )}
                                 </div>
-                            </div>
+                            </article>
                         </Reveal>
                         );
                     })}
             </div>
-        </section>
+        </EditorialSection>
     );
 };
 

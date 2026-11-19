@@ -78,6 +78,15 @@
   --paraiso-section-alt: #e8edf4;
   --paraiso-text: #1e3047;
   --paraiso-text-muted: rgba(30,48,71,0.6);
+
+  /* Editorial (site público) — fundo papel, texto tinta, cor só em detalhe */
+  --paper: #FAFAF7;
+  --paper-soft: #F2F1EB;
+  --ink: #0A0A0A;
+  --ink-muted: rgba(10, 10, 10, 0.64);
+  --hairline: rgba(10, 10, 10, 0.12);
+  --detail: #7C9A40;
+  --detail-blue: #2B4364;
 }
 
 @theme inline {
@@ -141,6 +150,16 @@
   --color-paraiso-section-alt: var(--paraiso-section-alt);
   --color-paraiso-text: var(--paraiso-text);
   --color-paraiso-text-muted: var(--paraiso-text-muted);
+
+  /* Editorial */
+  --color-paper: var(--paper);
+  --color-paper-soft: var(--paper-soft);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-hairline: var(--hairline);
+  --color-detail: var(--detail);
+  --color-detail-blue: var(--detail-blue);
+  --font-display: var(--font-poppins);
 }
 
 body {
@@ -201,6 +220,15 @@ h6 {
   --paraiso-section-alt: #1e3047;
   --paraiso-text: #ffffff;
   --paraiso-text-muted: rgba(255,255,255,0.6);
+
+  /* Editorial — variante escura */
+  --paper: #111311;
+  --paper-soft: #171A17;
+  --ink: #F2F1EC;
+  --ink-muted: rgba(242, 241, 236, 0.66);
+  --hairline: rgba(242, 241, 236, 0.14);
+  --detail: #A1BC6B;
+  --detail-blue: #9FB4D4;
 }
 
 @layer base {
@@ -211,4 +239,15 @@ h6 {
   body {
     @apply bg-background text-foreground;
   }
+}
+/* Numeração das seções da home (01, 02…): a ordem vem do painel e blocos podem
+   faltar (eventos), então o número sai de um contador CSS, não do código. */
+.secoes-editoriais {
+  counter-reset: secao;
+}
+
+.secao-indice::before {
+  counter-increment: secao;
+  content: counter(secao, decimal-leading-zero);
+  color: var(--detail);
 }
