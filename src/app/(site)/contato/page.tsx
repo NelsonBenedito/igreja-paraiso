@@ -1,10 +1,30 @@
-
-import { Mail, MapPin, Phone, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import type { ReactNode } from "react";
+import {
+    EditorialSection,
+    Highlight,
+    Period,
+    PillLink,
+    SectionLabel,
+    SectionTitle,
+} from "@/components/site/Editorial";
 import { getActiveSchedules } from "@/lib/events/data";
 import { buildContactView } from "@/lib/contact/view";
 import { fetchSiteSections } from "@/lib/site-content/data";
+
+const ROW =
+    "grid grid-cols-1 gap-2 border-b border-hairline py-6 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-8 md:py-8";
+const ROW_LABEL = "text-xs font-medium uppercase tracking-[0.16em] text-ink-muted md:pt-1.5";
+const ROW_VALUE = "text-lg tracking-[-0.01em] md:text-[1.375rem]";
+const LINK = "transition-colors hover:text-detail";
+
+function Row({ label, children }: { label: string; children: ReactNode }) {
+    return (
+        <div className={ROW}>
+            <dt className={ROW_LABEL}>{label}</dt>
+            <dd className="m-0 min-w-0">{children}</dd>
+        </div>
+    );
+}
 
 export default async function ContactPage() {
     const [sectionsResult, schedulesResult] = await Promise.allSettled([
@@ -15,129 +35,94 @@ export default async function ContactPage() {
         sectionsResult.status === "fulfilled" ? sectionsResult.value : null,
         schedulesResult.status === "fulfilled" ? schedulesResult.value : [],
     );
+    const hasContact = Boolean(address || mapsUrl || phone || email);
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16 space-y-12">
-            <div className="text-center space-y-4">
-                <h1 className="text-4xl font-serif font-bold text-primary">Fale Conosco</h1>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    Entre em contato conosco para pedidos de oração, dúvidas ou para saber mais sobre nossa igreja.
-                    Estamos aqui para servir você.
+        <div className="bg-paper text-ink">
+            <header className="mx-auto max-w-[82rem] px-5 pt-32 pb-16 md:px-16 md:pt-40 md:pb-24">
+                <SectionLabel numbered={false} className="mb-6">
+                    Contato
+                </SectionLabel>
+                <SectionTitle as="h1" size="xl">
+                    Fale <Highlight>conosco</Highlight>
+                    <Period />
+                </SectionTitle>
+                <p className="mt-6 max-w-xl text-base leading-relaxed text-ink-muted md:text-lg">
+                    Pedidos de oração, dúvidas ou uma visita.
                 </p>
-            </div>
+            </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Contact Information */}
-                <div className="space-y-6">
-                    {(address || mapsUrl) && (
-                        <Card>
-                            <CardContent className="p-6 flex items-start space-x-4">
-                                <div className="bg-primary/10 p-3 rounded-full">
-                                    <MapPin className="text-primary w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-lg mb-1">Endereço</h3>
-                                    {address && (
-                                        <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
-                                            {address}
-                                        </p>
-                                    )}
-                                    {mapsUrl && (
-                                        <Button variant="link" className="p-0 h-auto mt-2" asChild>
-                                            <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-                                                Ver no Google Maps
-                                            </a>
-                                        </Button>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-
-                    {phone && (
-                        <Card>
-                            <CardContent className="p-6 flex items-start space-x-4">
-                                <div className="bg-primary/10 p-3 rounded-full">
-                                    <Phone className="text-primary w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-lg mb-1">Telefone</h3>
-                                    {phoneHref ? (
-                                        <a
-                                            href={phoneHref}
-                                            className="text-muted-foreground text-sm hover:text-primary transition-colors block"
-                                        >
-                                            {phone}
-                                        </a>
-                                    ) : (
-                                        <p className="text-muted-foreground text-sm">{phone}</p>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-
-                    {email && (
-                        <Card>
-                            <CardContent className="p-6 flex items-start space-x-4">
-                                <div className="bg-primary/10 p-3 rounded-full">
-                                    <Mail className="text-primary w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-lg mb-1">E-mail</h3>
-                                    <a
-                                        href={`mailto:${email}`}
-                                        className="text-muted-foreground text-sm hover:text-primary transition-colors block"
-                                    >
-                                        {email}
-                                    </a>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-
-                    {schedules.length > 0 && (
-                        <Card>
-                            <CardContent className="p-6 flex items-start space-x-4">
-                                <div className="bg-primary/10 p-3 rounded-full">
-                                    <Clock className="text-primary w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-lg mb-1">Horários de Culto</h3>
-                                    <ul className="text-muted-foreground text-sm space-y-1">
-                                        {schedules.map((item) => (
-                                            <li key={item.id}>
-                                                {item.day}: {item.time} - {item.title}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-                </div>
-
-                {/* Map or Decoration */}
-                <div className="min-h-[400px] bg-muted rounded-2xl flex items-center justify-center p-8 relative overflow-hidden group">
-                    {/* Placeholder for map iframe or image */}
-                    <div className="absolute inset-0 bg-secondary/10 flex flex-col items-center justify-center text-center p-6">
-                        <MapPin className="w-16 h-16 text-primary/40 mb-4 group-hover:scale-110 transition-transform duration-300" />
-                        <h3 className="text-xl font-bold text-primary mb-2">Venha nos visitar</h3>
-                        {mapsUrl && (
-                            <>
-                                <p className="text-muted-foreground mb-6">
-                                    Clique no botão abaixo para abrir a localização exata no Google Maps.
-                                </p>
-                                <Button size="lg" className="rounded-full shadow-lg" asChild>
-                                    <a href={mapsUrl} target="_blank" rel="noopener noreferrer">
-                                        Abrir GPS
-                                    </a>
-                                </Button>
-                            </>
+            {hasContact && (
+                <EditorialSection label="Onde estamos" numbered={false}>
+                    <dl className="m-0 border-t border-ink">
+                        {(address || mapsUrl) && (
+                            <Row label="Endereço">
+                                {address && <p className={`m-0 whitespace-pre-line ${ROW_VALUE}`}>{address}</p>}
+                                {mapsUrl && (
+                                    <PillLink href={mapsUrl} variant="soft" arrow="up-right" className={address ? "mt-5" : undefined}>
+                                        Abrir no Google Maps
+                                    </PillLink>
+                                )}
+                            </Row>
                         )}
-                    </div>
+
+                        {phone && (
+                            <Row label="Telefone">
+                                {phoneHref ? (
+                                    <a href={phoneHref} className={`${ROW_VALUE} ${LINK}`}>
+                                        {phone}
+                                    </a>
+                                ) : (
+                                    <p className={`m-0 ${ROW_VALUE}`}>{phone}</p>
+                                )}
+                            </Row>
+                        )}
+
+                        {email && (
+                            <Row label="E-mail">
+                                <a href={`mailto:${email}`} className={`break-all ${ROW_VALUE} ${LINK}`}>
+                                    {email}
+                                </a>
+                            </Row>
+                        )}
+                    </dl>
+                </EditorialSection>
+            )}
+
+            {schedules.length > 0 && (
+                <EditorialSection label="Cultos" numbered={false} tone="soft">
+                    <SectionTitle className="mb-10 md:mb-14">
+                        Horários de culto
+                        <Period />
+                    </SectionTitle>
+                    <ul className="m-0 list-none border-t border-ink p-0">
+                        {schedules.map((item) => (
+                            <li
+                                key={item.id}
+                                className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-6 gap-y-1 border-b border-hairline py-5 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)_minmax(0,2fr)] md:py-7"
+                            >
+                                <span className="text-xl font-medium tracking-[-0.02em] md:text-[1.625rem]">
+                                    {item.day}
+                                </span>
+                                <span className="text-xl font-light tabular-nums text-detail md:text-[1.625rem]">
+                                    {item.time}
+                                </span>
+                                <span className="col-span-2 min-w-0 text-sm text-ink-muted md:col-span-1 md:text-[1.0625rem]">
+                                    {item.title}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </EditorialSection>
+            )}
+
+            {!hasContact && schedules.length === 0 && (
+                <div className="border-t border-hairline">
+                    <p className="mx-auto max-w-[82rem] px-5 py-20 text-sm text-ink-muted md:px-16">
+                        Contatos indisponíveis no momento.
+                    </p>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

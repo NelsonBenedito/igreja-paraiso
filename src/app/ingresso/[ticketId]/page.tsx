@@ -8,10 +8,10 @@ import type { TicketStatus } from '@/lib/events/types';
 export const dynamic = 'force-dynamic';
 
 const STATUS_LABEL: Record<TicketStatus, { label: string; className: string }> = {
-    VALID: { label: 'Válido', className: 'bg-paraiso-green text-white' },
-    USED: { label: 'Já utilizado', className: 'bg-slate-400 text-white' },
-    CANCELLED: { label: 'Cancelado', className: 'bg-red-500 text-white' },
-    REFUNDED: { label: 'Reembolsado', className: 'bg-amber-500 text-white' },
+    VALID: { label: 'Válido', className: 'border-detail text-detail' },
+    USED: { label: 'Já utilizado', className: 'border-hairline text-ink-muted' },
+    CANCELLED: { label: 'Cancelado', className: 'border-red-600/40 text-red-600 dark:border-red-400/40 dark:text-red-400' },
+    REFUNDED: { label: 'Reembolsado', className: 'border-amber-600/40 text-amber-700 dark:border-amber-400/40 dark:text-amber-400' },
 };
 
 /** Bilhete emitido — aceita o UUID ou o `publicCode` na URL. */
@@ -35,24 +35,24 @@ export default async function IngressoPage({
     const startsAt = new Date(ticket.event.startsAt);
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-16 bg-slate-50 dark:bg-[#0a1420]">
-            <div className="w-full max-w-sm bg-white dark:bg-[#0f1a2a] rounded-3xl shadow-2xl overflow-hidden">
-                <div className="bg-gradient-to-br from-paraiso-blue to-paraiso-green p-6 text-white">
+        <div className="min-h-screen bg-paper px-5 py-16 font-display text-ink md:py-24">
+            <div className="mx-auto w-full max-w-sm overflow-hidden rounded-md border border-hairline bg-paper">
+                <div className="border-b border-hairline p-6">
                     <div className="flex items-start justify-between gap-3">
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-white/70">Ingresso</p>
-                            <h1 className="text-xl font-black leading-tight mt-1">{ticket.event.title}</h1>
-                        </div>
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shrink-0 ${status.className}`}>
+                        <p className="m-0 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
+                            <span className="text-detail" aria-hidden="true">●</span> Ingresso
+                        </p>
+                        <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] ${status.className}`}>
                             {status.label}
                         </span>
                     </div>
+                    <h1 className="m-0 mt-4 text-2xl font-semibold leading-tight tracking-[-0.03em] text-ink">{ticket.event.title}</h1>
                 </div>
 
-                <div className="p-6 space-y-5">
+                <div className="space-y-6 p-6">
                     <div className="space-y-3 text-sm">
-                        <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
-                            <Calendar size={16} className="text-paraiso-green shrink-0" />
+                        <div className="flex items-center gap-3 text-ink">
+                            <Calendar size={16} className="shrink-0 text-ink-muted" />
                             <span>
                                 {startsAt.toLocaleString('pt-BR', {
                                     day: '2-digit', month: 'long', year: 'numeric',
@@ -65,35 +65,35 @@ export default async function IngressoPage({
                             </span>
                         </div>
                         {ticket.event.venueName && (
-                            <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
-                                <MapPin size={16} className="text-paraiso-green shrink-0" />
+                            <div className="flex items-center gap-3 text-ink">
+                                <MapPin size={16} className="shrink-0 text-ink-muted" />
                                 <span>{ticket.event.venueName}</span>
                             </div>
                         )}
-                        <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
-                            <Ticket size={16} className="text-paraiso-green shrink-0" />
+                        <div className="flex items-center gap-3 text-ink">
+                            <Ticket size={16} className="shrink-0 text-ink-muted" />
                             <span>{ticket.ticketTypeName}</span>
                         </div>
                     </div>
 
-                    <div className="border-t border-dashed border-slate-200 dark:border-white/10 pt-5 space-y-1">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Participante</p>
-                        <p className="font-bold text-slate-800 dark:text-white">{ticket.holderName}</p>
+                    <div className="space-y-1 border-t border-dashed border-hairline pt-5">
+                        <p className="m-0 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">Participante</p>
+                        <p className="m-0 font-medium text-ink">{ticket.holderName}</p>
                     </div>
 
                     {/* Código de entrada — apresentar na portaria. */}
-                    <div className="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-5 text-center space-y-2">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    <div className="space-y-2 rounded-md border border-hairline bg-paper-soft p-5 text-center">
+                        <p className="m-0 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
                             Código de entrada
                         </p>
-                        <p className="font-mono text-lg font-black tracking-[0.2em] text-paraiso-blue dark:text-white break-all">
+                        <p className="m-0 break-all font-mono text-lg font-semibold tracking-[0.2em] text-ink">
                             {ticket.publicCode}
                         </p>
                     </div>
 
                     <Link
                         href={`/evento/${ticket.event.id}`}
-                        className="w-full inline-flex items-center justify-center gap-2 py-3 text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-paraiso-green transition-colors"
+                        className="inline-flex w-full items-center justify-center gap-1.5 py-3 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted transition-colors hover:text-ink"
                     >
                         <ChevronLeft size={14} /> Ver o evento
                     </Link>

@@ -1,226 +1,176 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { login, signup, loginWithGoogle } from "@/app/auth/actions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ArrowLeft, User, Lock, ArrowRight, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { SectionLabel, SectionTitle, Period } from "@/components/site/Editorial";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
+const LABEL_CLASS = "block text-xs font-medium uppercase tracking-[0.16em] text-ink-muted";
+const INPUT_CLASS =
+    "mt-2 block h-12 w-full rounded-md border border-hairline bg-paper px-4 text-base text-ink placeholder:text-ink-muted/60 transition-colors focus:border-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-detail/40";
 
-// Submit button with loading state
+// Botão de envio no visual do PillLink (tinta, círculo verde com seta), com estado de carregamento.
 function SubmitButton({ text }: { text: string }) {
     const { pending } = useFormStatus();
     return (
-        <Button
+        <button
             type="submit"
             disabled={pending}
-            className="w-full h-14 bg-paraiso-green hover:bg-paraiso-blue text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-[0_10px_30px_rgba(100,167,11,0.3)] hover:shadow-[0_10px_40px_rgba(0,35,80,0.4)] hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group overflow-hidden relative"
+            aria-busy={pending}
+            className="inline-flex min-h-12 w-full items-center gap-3.5 rounded-full bg-ink py-1.5 pl-1.5 pr-6 text-sm font-medium text-paper transition-opacity duration-300 hover:opacity-90 disabled:opacity-70 focus:outline-none focus-visible:ring-2 focus-visible:ring-detail/40"
         >
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 rounded-2xl"></div>
-            <span className="relative z-10 flex items-center gap-2">
-                {pending ? <Loader2 className="animate-spin" /> : text}
-                {!pending && <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />}
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-paraiso-green text-white">
+                {pending ? <Loader2 size={15} className="animate-spin" aria-hidden="true" /> : <ArrowRight size={15} aria-hidden="true" />}
             </span>
-        </Button>
-    )
+            {text}
+        </button>
+    );
 }
 
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true);
 
     return (
-        <div className="min-h-screen w-full flex bg-slate-50 relative overflow-hidden">
-            {/* Background Texture/Elements */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-                <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-paraiso-green/5 rounded-full blur-[120px]"></div>
-                <div className="absolute top-[40%] right-[10%] w-[30%] h-[30%] bg-paraiso-blue/5 rounded-full blur-[100px]"></div>
-            </div>
-
-            {/* Left Content - Form Area */}
-            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center relative z-10 p-8 lg:p-12">
-                {/* Back Button - Absolute Position */}
-                <div className="absolute top-8 left-8 lg:top-12 lg:left-12">
+        <div className="flex min-h-screen w-full flex-col bg-paper font-display text-ink">
+            <header className="border-b border-hairline">
+                <div className="mx-auto flex max-w-[82rem] items-center justify-between gap-6 px-5 py-4 md:px-16">
+                    <Link href="/" aria-label="Igreja Paraíso — início" className="flex shrink-0 items-center">
+                        <Image
+                            src="/IgrejaParaiso.webp"
+                            alt="Igreja Paraíso"
+                            width={1529}
+                            height={461}
+                            unoptimized
+                            priority
+                            className="h-10 w-auto object-contain dark:hidden"
+                        />
+                        <Image
+                            src="/LogoParaisoW.svg"
+                            alt="Igreja Paraíso"
+                            width={1920}
+                            height={562}
+                            unoptimized
+                            priority
+                            className="hidden h-10 w-auto object-contain dark:block"
+                        />
+                    </Link>
                     <Link
                         href="/"
-                        className="inline-flex items-center gap-2 text-slate-400 hover:text-paraiso-blue transition-colors text-xs font-bold uppercase tracking-widest group"
+                        className="text-sm font-medium text-ink-muted transition-colors hover:text-ink"
                     >
-                        <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
                         Voltar
                     </Link>
                 </div>
+            </header>
 
-                <motion.div
-                    key={isLogin ? "login" : "signup"}
-                    initial={{ opacity: 0, x: isLogin ? -20 : 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="w-full max-w-sm mt-16 lg:mt-0"
-                >
-                    {/* Header */}
-                    <div className="mb-12 text-center lg:text-left">
+            <main className="mx-auto grid w-full max-w-[82rem] flex-1 gap-12 px-5 py-14 md:px-16 md:py-20 lg:grid-cols-2 lg:items-center lg:gap-16">
+                <div>
+                    <SectionLabel numbered={false} className="mb-6">
+                        Igreja Paraíso
+                    </SectionLabel>
+                    <SectionTitle as="h1" size="lg">
+                        {isLogin ? "Área de membros" : "Criar conta"}
+                        <Period />
+                    </SectionTitle>
+                    <p className="mt-6 max-w-md text-lg leading-relaxed text-ink-muted">
+                        {isLogin
+                            ? "Entre com seu e-mail e senha."
+                            : "Preencha os dados para criar seu acesso."}
+                    </p>
+                </div>
 
-                        <div className="flex items-center justify-center lg:justify-start gap-3 mb-6">
-                            <img src="/IgrejaParaiso.webp" alt="Logo" className="w-42 object-contain" />
-                        </div>
-
-                        <h1 className="text-5xl font-black text-paraiso-blue-dark mb-4 tracking-tighter leading-[0.9]">
-                            {isLogin ? (
-                                <>ÁREA DE <br /><span className="text-paraiso-green">MEMBROS</span></>
-                            ) : (
-                                <>CRIAR SUA <br /><span className="text-paraiso-green">CONTA</span></>
-                            )}
-                        </h1>
-                        <p className="text-slate-500 font-medium text-lg leading-relaxed">
-                            {isLogin
-                                ? "Bem-vindo de volta! Digite suas credenciais para acessar conteúdos exclusivos."
-                                : "Preencha seus dados abaixo para se tornar um membro da nossa comunidade digital."
-                            }
-                        </p>
-                    </div>
-
-                    {/* Form */}
+                <div className="w-full max-w-md lg:justify-self-end lg:border-l lg:border-hairline lg:pl-16 lg:max-w-none">
                     <form action={isLogin ? login : signup} className="space-y-6">
                         {!isLogin && (
-                            <div className="space-y-2 group">
-                                <Label htmlFor="name" className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1 group-focus-within:text-paraiso-blue transition-colors">Nome Completo</Label>
-                                <div className="relative">
-                                    <div className="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center text-slate-300 group-focus-within:text-paraiso-green transition-colors">
-                                        <User size={20} />
-                                    </div>
-                                    <Input
-                                        id="name"
-                                        name="name"
-                                        type="text"
-                                        placeholder="Seu nome"
-                                        required
-                                        className="pl-12 h-14 bg-white border-0 border-b-2 border-slate-100 rounded-xl focus:border-paraiso-green focus:ring-0 shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all font-medium text-slate-700 placeholder:text-slate-300 text-lg"
-                                    />
-                                </div>
+                            <div>
+                                <label htmlFor="name" className={LABEL_CLASS}>Nome completo</label>
+                                <input
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    autoComplete="name"
+                                    placeholder="Seu nome"
+                                    required
+                                    className={INPUT_CLASS}
+                                />
                             </div>
                         )}
 
-                        <div className="space-y-2 group">
-                            <Label htmlFor="email" className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1 group-focus-within:text-paraiso-blue transition-colors">Email</Label>
-                            <div className="relative">
-                                <div className="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center text-slate-300 group-focus-within:text-paraiso-green transition-colors">
-                                    <User size={20} />
-                                </div>
-                                <Input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    placeholder="seu@email.com"
-                                    required
-                                    className="pl-12 h-14 bg-white border-0 border-b-2 border-slate-100 rounded-xl focus:border-paraiso-green focus:ring-0 shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all font-medium text-slate-700 placeholder:text-slate-300 text-lg"
-                                />
-                            </div>
+                        <div>
+                            <label htmlFor="email" className={LABEL_CLASS}>E-mail</label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                autoComplete="email"
+                                placeholder="seu@email.com"
+                                required
+                                className={INPUT_CLASS}
+                            />
                         </div>
 
-                        <div className="space-y-2 group">
-                            <div className="flex items-center justify-between ml-1">
-                                <Label htmlFor="password" className="text-xs font-black text-slate-400 uppercase tracking-widest group-focus-within:text-paraiso-blue transition-colors">Senha</Label>
+                        <div>
+                            <div className="flex items-center justify-between">
+                                <label htmlFor="password" className={LABEL_CLASS}>Senha</label>
                                 {isLogin && (
-                                    <Link href="#" className="text-xs font-bold text-paraiso-green hover:text-paraiso-blue transition-colors">
+                                    <Link href="#" className="text-xs font-medium text-ink-muted underline-offset-4 transition-colors hover:text-ink hover:underline">
                                         Esqueceu?
                                     </Link>
                                 )}
                             </div>
-                            <div className="relative">
-                                <div className="absolute left-0 top-0 bottom-0 w-12 flex items-center justify-center text-slate-300 group-focus-within:text-paraiso-green transition-colors">
-                                    <Lock size={20} />
-                                </div>
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    required
-                                    className="pl-12 h-14 bg-white border-0 border-b-2 border-slate-100 rounded-xl focus:border-paraiso-green focus:ring-0 shadow-[0_4px_20px_rgba(0,0,0,0.03)] transition-all font-medium text-slate-700 placeholder:text-slate-300 text-lg"
-                                />
-                            </div>
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                autoComplete={isLogin ? "current-password" : "new-password"}
+                                placeholder="••••••••"
+                                required
+                                className={INPUT_CLASS}
+                            />
                         </div>
 
-                        <div className="pt-4">
-                            <SubmitButton text={isLogin ? "Acessar Portal" : "Criar Conta"} />
+                        <div className="pt-2">
+                            <SubmitButton text={isLogin ? "Entrar" : "Criar conta"} />
                         </div>
                     </form>
 
-                    {/* Divider */}
-                    <div className="flex items-center gap-4 my-8">
-                        <div className="flex-1 h-px bg-slate-100" />
-                        <span className="text-xs font-bold text-slate-300 uppercase tracking-widest shrink-0">ou continue com</span>
-                        <div className="flex-1 h-px bg-slate-100" />
+                    <div className="my-8 flex items-center gap-4">
+                        <div className="h-px flex-1 bg-hairline" />
+                        <span className="shrink-0 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">ou</span>
+                        <div className="h-px flex-1 bg-hairline" />
                     </div>
 
-                    {/* Google */}
                     <form action={loginWithGoogle}>
                         <button
                             type="submit"
-                            className="w-full h-14 flex items-center justify-center gap-3 rounded-2xl border-2 border-slate-100 bg-white hover:bg-slate-50 hover:border-slate-200 hover:-translate-y-0.5 transition-all duration-200 shadow-sm hover:shadow-md group"
+                            className="flex min-h-12 w-full items-center justify-center gap-3 rounded-full border border-hairline bg-paper text-sm font-medium text-ink transition-colors hover:border-ink/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-detail/40"
                         >
                             {/* Google G logo */}
-                            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
                                 <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05" />
                                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
                             </svg>
-                            <span className="text-sm font-black uppercase tracking-widest text-slate-600 group-hover:text-slate-800 transition-colors">
-                                Entrar com Google
-                            </span>
+                            Entrar com Google
                         </button>
                     </form>
 
-                    <div className="text-center mt-8">
-                        <p className="text-slate-400 text-sm font-medium">
-                            {isLogin ? "Ainda não é membro? " : "Já tem uma conta? "}
-                            <button
-                                onClick={() => setIsLogin(!isLogin)}
-                                className="text-paraiso-blue font-bold hover:text-paraiso-green transition-colors underline decoration-2 decoration-transparent hover:decoration-paraiso-green underline-offset-4 bg-transparent border-0 cursor-pointer p-0 inline"
-                            >
-                                {isLogin ? "Cadastre-se aqui" : "Faça Login"}
-                            </button>
-                        </p>
-                    </div>
-                </motion.div>
-            </div>
-
-            {/* Right Content - Image Area with Unique Shape */}
-            <div className="hidden lg:block w-1/2 relative h-screen p-4">
-                <motion.div
-                    initial={{ x: 100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="relative w-full h-full rounded-[3rem] overflow-hidden shadow-2xl"
-                >
-                    {/* Image */}
-                    <img
-                        src="/BgIgrejaParaiso.webp"
-                        alt="Worship"
-                        className="w-full h-full object-cover scale-105 hover:scale-100 transition-transform duration-[20s] ease-linear"
-                    />
-
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-paraiso-blue-dark/90 via-paraiso-blue/40 to-transparent mix-blend-multiply"></div>
-
-                    {/* Content Overlay */}
-                    <div className="absolute bottom-0 left-0 w-full p-16 text-white">
-                        <div className="max-w-xl">
-                            <div className="w-20 h-1 bg-paraiso-green mb-8"></div>
-                            <h2 className="text-4xl font-black uppercase tracking-tighter mb-6 leading-tight">
-                                "Venha o Teu Reino"
-                            </h2>
-                            <p className="text-lg text-white/80 font-medium leading-relaxed">
-                                Acesse conteúdos exclusivos, mensagens pastorais e fique por dentro de tudo o que acontece em nossa família.
-                            </p>
-                        </div>
-                    </div>
-                </motion.div>
-            </div>
+                    <p className="mt-8 text-sm text-ink-muted">
+                        {isLogin ? "Ainda não tem conta? " : "Já tem conta? "}
+                        <button
+                            type="button"
+                            onClick={() => setIsLogin(!isLogin)}
+                            className="inline cursor-pointer border-0 border-b border-current bg-transparent p-0 pb-0.5 font-medium text-ink transition-colors hover:text-detail"
+                        >
+                            {isLogin ? "Criar conta" : "Entrar"}
+                        </button>
+                    </p>
+                </div>
+            </main>
         </div>
-    )
+    );
 }

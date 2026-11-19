@@ -1,7 +1,6 @@
 import ImageWithFallback from "@/components/ImageWithFallback";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { getSiteContent } from "@/lib/site-content/data";
+import { SectionLabel, SectionTitle, Highlight, Period } from "@/components/site/Editorial";
 
 export const metadata = {
   title: "Time Pastoral | Igreja Paraíso",
@@ -13,59 +12,54 @@ export default async function TimePastoralPage() {
   const { pastors } = site;
 
   return (
-    <div className="bg-slate-50 dark:bg-paraiso-blue-deep min-h-screen pb-24 pt-28">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-paraiso-green transition-colors mb-8 text-sm font-bold uppercase tracking-widest"
-        >
-          <ArrowLeft size={16} /> Voltar para o início
-        </Link>
-
-        <div className="text-center max-w-3xl mx-auto mb-20 space-y-6">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-paraiso-green/10 text-paraiso-green text-xs font-black uppercase tracking-widest border border-paraiso-green/20">
+    <div className="bg-paper text-ink">
+      <header className="mx-auto max-w-[82rem] px-5 pb-16 pt-32 md:px-16 md:pb-24 md:pt-40">
+        {pastors.badge ? (
+          <SectionLabel numbered={false} className="mb-6">
             {pastors.badge}
-          </span>
-          <h1 className="text-4xl md:text-5xl font-black text-paraiso-blue-dark dark:text-white tracking-tighter uppercase leading-none">
-            {pastors.titlePart1}{" "}
-            <span className="text-paraiso-green italic font-serif lowercase">
-              {pastors.titleHighlight}
-            </span>
-          </h1>
-          <p className="text-slate-500 dark:text-slate-300 text-lg font-medium leading-relaxed">
+          </SectionLabel>
+        ) : null}
+        <SectionTitle as="h1" size="xl" className="max-w-[56rem]">
+          {pastors.titlePart1} <Highlight>{pastors.titleHighlight}</Highlight>
+          <Period />
+        </SectionTitle>
+        {pastors.intro ? (
+          <p className="m-0 mt-8 max-w-[40rem] text-[17px] leading-[1.65] text-ink-muted">
             {pastors.intro}
           </p>
-        </div>
+        ) : null}
+      </header>
 
-        {/* Grid limpa: apenas foto e nome (sem cargo, sem campus). */}
-        {pastors.items.length === 0 ? (
-          <p className="text-center text-slate-500 dark:text-slate-300 font-medium">
-            Nenhum pastor disponível no momento.
-          </p>
-        ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10">
-          {pastors.items.map((pastor) => (
-            <div key={pastor.name} className="group flex flex-col">
-              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[2rem] bg-slate-200 dark:bg-white/5 shadow-md ring-1 ring-slate-100 dark:ring-white/10">
-                <ImageWithFallback
-                  src={pastor.image}
-                  alt={pastor.name}
-                  fill
-                  className="object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                />
-              </div>
-              <h3
-                className="mt-5 text-center font-black text-base md:text-lg text-paraiso-blue-dark dark:text-white uppercase tracking-tight leading-tight"
-                title={pastor.name}
-              >
-                {pastor.name}
-              </h3>
-            </div>
-          ))}
+      <section className="border-t border-hairline">
+        <div className="mx-auto max-w-[82rem] px-5 py-16 md:px-16 md:py-24">
+          {/* Só foto e nome: a API não manda cargo nem campus. */}
+          {pastors.items.length === 0 ? (
+            <p className="m-0 text-ink-muted">Nenhum pastor disponível no momento.</p>
+          ) : (
+            <ul className="m-0 grid list-none grid-cols-2 gap-x-6 gap-y-12 p-0 sm:grid-cols-3 lg:grid-cols-4">
+              {pastors.items.map((pastor) => (
+                <li key={pastor.name} className="group flex flex-col">
+                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md border border-hairline bg-paper-soft">
+                    <ImageWithFallback
+                      src={pastor.image}
+                      alt={pastor.name}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    />
+                  </div>
+                  <h2
+                    className="m-0 mt-5 border-t border-hairline pt-4 text-lg font-medium leading-tight tracking-[-0.01em] text-ink md:text-[22px]"
+                    title={pastor.name}
+                  >
+                    {pastor.name}
+                  </h2>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-        )}
-      </div>
+      </section>
     </div>
   );
 }

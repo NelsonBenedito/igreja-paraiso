@@ -12,13 +12,10 @@ interface ProgramacaoProps {
 const ProgramacaoSection: React.FC<ProgramacaoProps> = ({ schedules }) => {
     return (
         <EditorialSection id="agenda" label="Agenda">
-            <SectionTitle className="mb-6">
+            <SectionTitle className="mb-10 md:mb-14">
                 Programação semanal
                 <Period />
             </SectionTitle>
-            <p className="mb-10 max-w-xl text-base leading-relaxed text-ink-muted md:mb-14">
-                Acreditamos que participar de uma comunidade é um dos melhores caminhos para encorajar o crescimento espiritual.
-            </p>
 
             {schedules.length === 0 ? (
                 <p className="m-0 border-t border-ink py-10 text-sm text-ink-muted">

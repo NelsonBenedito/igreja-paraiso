@@ -36,21 +36,21 @@ const render = (event: SiteEvent, isRegisteredServer = false) =>
 describe("/evento/[id] — ação de inscrição", () => {
   it("evento futuro oferece a inscrição", () => {
     const html = render(evento({}));
-    expect(html).toContain("Inscrever-se Agora");
+    expect(html).toContain("Inscrever-se");
     expect(html).not.toContain("Evento encerrado");
   });
 
   it("evento já passado mostra \"Evento encerrado\" no lugar do botão", () => {
     const html = render(evento({ date: "2020-03-01" }), true);
     expect(html).toContain("Evento encerrado");
-    expect(html).not.toContain("Inscrever-se Agora");
-    expect(html).not.toContain("Inscrição Confirmada");
+    expect(html).not.toContain("Inscrever-se");
+    expect(html).not.toContain("Inscrição confirmada");
   });
 
   it("prazo de inscrição vencido continua a mostrar \"Inscrições encerradas\"", () => {
     const html = render(evento({ registration_closes_at: "2020-01-01T00:00:00Z" }));
     expect(html).toContain("Inscrições encerradas");
-    expect(html).not.toContain("Inscrever-se Agora");
+    expect(html).not.toContain("Inscrever-se");
   });
 });
 
@@ -59,14 +59,14 @@ describe("/evento/[id] — conteúdo do painel", () => {
     const details = '<p>Programação</p><a href="https://exemplo.com" target="_blank" rel="noopener noreferrer">site</a>';
     const html = render(evento({ details_html: details }));
     expect(html).toContain(details);
-    expect(html).not.toContain("Nenhuma descrição fornecida");
+    expect(html).not.toContain("Sem descrição por enquanto");
   });
 
-  it("details_html tem cor própria no tema escuro (o projeto não usa o plugin de prose)", () => {
+  it("details_html usa a cor de token, que acompanha o tema (o projeto não usa o plugin de prose)", () => {
     const html = render(evento({ details_html: "<p>Programação</p>" }));
     const bloco = html.match(/<div class="([^"]*)"><p>Programação<\/p><\/div>/);
     expect(bloco?.[1].split(" ")).toEqual(
-      expect.arrayContaining(["text-slate-600", "dark:text-slate-300"]),
+      expect.arrayContaining(["text-ink-muted"]),
     );
   });
 

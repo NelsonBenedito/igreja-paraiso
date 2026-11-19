@@ -10,19 +10,19 @@ export interface TermsFieldProps {
 
 export function TermsField({ field, value, onChange, error }: TermsFieldProps) {
   return (
-    <div className="space-y-2 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50/60 dark:bg-white/5 p-4 transition-all">
+    <div className="space-y-2 rounded-md border border-hairline bg-paper-soft p-4 transition-all">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-semibold text-gray-900 dark:text-white">
+        <label className="text-sm font-medium text-ink">
           {field.label}
           {field.required && <span className="ml-1 text-red-500">*</span>}
         </label>
-        <span className="text-[11px] font-medium text-gray-500 dark:text-slate-400 uppercase tracking-wide">
+        <span className="text-[11px] font-medium text-ink-muted uppercase tracking-[0.16em]">
           Termo
         </span>
       </div>
 
       {/* Caixa de rolagem com o texto integral do termo */}
-      <div className="max-h-36 overflow-y-auto rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-slate-900/60 p-3 text-xs leading-relaxed text-gray-700 dark:text-slate-300 whitespace-pre-wrap select-text focus:outline-none">
+      <div className="max-h-36 overflow-y-auto rounded-md border border-hairline bg-paper p-3 text-xs leading-relaxed text-ink-muted whitespace-pre-wrap select-text focus:outline-none">
         {field.termText || "Nenhum texto informado para este termo."}
       </div>
 
@@ -33,9 +33,9 @@ export function TermsField({ field, value, onChange, error }: TermsFieldProps) {
           checked={value}
           required={field.required}
           onChange={(e) => onChange(e.target.checked)}
-          className="h-4 w-4 rounded border-gray-300 text-primary accent-paraiso-green focus:ring-primary cursor-pointer"
+          className="h-4 w-4 rounded border-hairline accent-paraiso-green cursor-pointer"
         />
-        <span className="text-sm text-gray-700 dark:text-slate-300 group-hover:text-gray-900 dark:group-hover:text-white">
+        <span className="text-sm text-ink-muted group-hover:text-ink">
           Li e concordo com os termos acima {field.required && <span className="text-red-500">*</span>}
         </span>
       </label>
