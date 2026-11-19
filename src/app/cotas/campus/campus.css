@@ -234,62 +234,9 @@ html:has(.campus-page) {
   margin: 0 auto;
 }
 
-/* —— Destaque (vídeo) —— */
-/* Capa de ponta a ponta: sai da margem do .cb-shell e encosta na barra */
-.campus-page .cb-shell:has(> .cb-slab--hero) {
+/* Sem capa: a faixa das cotas encosta na barra (sem respiro claro acima) */
+.campus-page .cb-shell:has(#cotas) {
   padding-top: 0;
-}
-.campus-page .cb-slab--hero {
-  padding: 0;
-  border-top: 0;
-  border-radius: 0;
-  overflow: hidden;
-  margin-inline: calc(-1 * var(--cb-gutter));
-}
-.campus-page .cb-hero-media {
-  position: relative;
-  min-height: clamp(320px, 62vh, 620px);
-  overflow: hidden;
-}
-.campus-page .cb-slab--hero .hero-video {
-  width: 100%;
-  height: clamp(320px, 62vh, 620px);
-  object-fit: cover;
-  display: block;
-}
-.campus-page .cb-hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(10, 10, 10, 0.42);
-}
-.campus-page .cb-hero-content {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 1.5rem;
-  padding: 1.25rem;
-}
-.campus-page .cb-hero-logo {
-  width: min(70vw, 430px);
-  height: auto;
-  margin: 0 auto;
-}
-/* Sobre o vídeo a pílula inverte: papel + tinta */
-.campus-page .cb-hero-content .cb-hero-cta {
-  background: var(--paper);
-  color: var(--ink);
-}
-.campus-page .cb-hero-content .cb-hero-cta:hover {
-  background: var(--white);
-  color: var(--ink);
-}
-.campus-page .cb-hero-bar {
-  display: none;
 }
 
 /* —— Cabeçalho de seção —— */
@@ -1023,9 +970,6 @@ html:has(.campus-page) {
     aspect-ratio: 4 / 3;
     max-height: min(42vh, 320px);
   }
-  .campus-page .cb-hero-logo {
-    width: min(82vw, 360px);
-  }
   /* No celular a nav fica com logo + "Contribuir" */
   .campus-page .nav-links li:not(:last-child) {
     display: none;
@@ -1198,11 +1142,6 @@ html:has(.campus-page) {
 }
 .campus-page .cotas-contribuir__cta-secondary:hover {
   text-decoration-color: var(--ink);
-}
-
-/* Foco visível sobre o vídeo do destaque */
-.campus-page .cb-hero-content a:focus-visible {
-  outline-color: var(--paper);
 }
 
 /* —— Modo escuro (tema do site: classe .dark no <html>) —— */
