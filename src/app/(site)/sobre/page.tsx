@@ -11,7 +11,7 @@ export default async function AboutPage() {
     const { pastors } = await getSiteContent();
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16 space-y-20">
             {/* Header Section */}
             <div className="text-center max-w-3xl mx-auto space-y-6">
                 <h1 className="text-4xl md:text-5xl font-serif font-bold text-primary">Sobre a Igreja Paraíso</h1>

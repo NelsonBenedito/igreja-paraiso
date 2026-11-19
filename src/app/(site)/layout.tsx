@@ -15,8 +15,8 @@ export default async function SiteLayout({
   const site = await getSiteContent();
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900 transition-colors">
-      <ThemeHandler color="#f1f5f9" />
+    <div className="min-h-screen flex flex-col bg-paper text-ink font-display transition-colors">
+      <ThemeHandler color="#FAFAF7" darkColor="#111311" />
 
       <Header user={user} />
       <main className="flex-1">{children}</main>

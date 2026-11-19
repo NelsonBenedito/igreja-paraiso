@@ -7,6 +7,7 @@ import LatestStream from "@/components/LatestStream";
 import MissionSection from "@/components/MissionSection";
 import CelulasSection from "@/components/CelulasSection";
 import OfertorioSection from "@/components/OfertorioSection";
+import InfoStrip from "@/components/InfoStrip";
 import { createClient } from "@/utils/supabase/server";
 import {
   getActiveSchedules,
@@ -91,9 +92,15 @@ export default async function Home() {
       {/* Hero — fixo, sempre primeiro */}
       <Hero />
 
-      {order.map((id) => (
-        <Fragment key={id}>{blocks[id]}</Fragment>
-      ))}
+      {/* Faixa de informações logo abaixo do Hero */}
+      <InfoStrip contact={site.contact} />
+
+      {/* `secoes-editoriais` numera as seções (01, 02…) na ordem do painel */}
+      <div className="secoes-editoriais">
+        {order.map((id) => (
+          <Fragment key={id}>{blocks[id]}</Fragment>
+        ))}
+      </div>
 
       {/* Endereços / Rodapé → renderizado pelo (site)/layout.tsx */}
     </>

@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
-import Reveal from './Reveal';
-import { ChevronRight, Calendar, ListChecks } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { EditorialSection, Period, SectionTitle } from '@/components/site/Editorial';
 
 import type { SiteSchedule } from '@/lib/events/types';
 
@@ -13,83 +11,62 @@ interface ProgramacaoProps {
 /** Exibe na ordem da API (`sortOrder`, dia da semana e hora), sem reordenar. */
 const ProgramacaoSection: React.FC<ProgramacaoProps> = ({ schedules }) => {
     return (
-        <section id="agenda" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden bg-clip-padding my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative">
-            <div className="absolute top-0 right-0 w-1/3 h-full bg-paraiso-green/[0.03] skew-x-12 translate-x-20 pointer-events-none" />
+        <EditorialSection id="agenda" label="Agenda">
+            <SectionTitle className="mb-6">
+                Programação semanal
+                <Period />
+            </SectionTitle>
+            <p className="mb-10 max-w-xl text-base leading-relaxed text-ink-muted md:mb-14">
+                Acreditamos que participar de uma comunidade é um dos melhores caminhos para encorajar o crescimento espiritual.
+            </p>
 
-            <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 relative z-10">
-                <div className="lg:w-1/3 lg:sticky lg:top-28 lg:self-start">
-                    <Reveal direction="left">
-                        <div className="flex items-center gap-3 mb-5">
-                            <Calendar className="text-paraiso-green" size={22} />
-                            <span className="text-paraiso-green font-black uppercase tracking-widest text-xs">A Igreja em Movimento</span>
-                        </div>
-                        <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-6 leading-[0.85] text-paraiso-blue dark:text-white">
-                            NOSSA <br />
-                            <span className="text-paraiso-green italic font-serif lowercase">agenda</span>
-                        </h2>
-                        <p className="text-slate-500 dark:text-slate-300 text-base mb-8 leading-relaxed font-medium">
-                            Acreditamos que participar de uma comunidade é um dos melhores caminhos para encorajar o crescimento espiritual.
-                        </p>
-                        <button className="flex items-center gap-3 px-8 py-4 bg-paraiso-blue text-white rounded-full font-black uppercase tracking-widest text-xs hover:bg-paraiso-green transition-all group shadow-xl">
-                            TODA NOSSA AGENDA <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                        </button>
-                    </Reveal>
-                </div>
-
-                <div className="lg:w-2/3">
-                    {schedules.length === 0 ? (
-                        <Reveal>
-                            <div className="flex flex-col items-center justify-center h-48 text-slate-400 gap-4">
-                                <ListChecks size={40} className="opacity-30" />
-                                <p className="font-bold uppercase tracking-widest text-xs">Nenhuma programação cadastrada.</p>
-                            </div>
-                        </Reveal>
-                    ) : (
-                        <div className="space-y-1">
-                            {schedules.map((item, idx) => (
-                                <Reveal key={item.id} delay={idx * 0.04} width="100%">
-                                    <motion.div
-                                        whileHover={{ x: 6 }}
-                                        className="flex flex-col sm:flex-row sm:items-center py-6 md:py-8 px-4 md:px-6 border-b border-slate-100 dark:border-white/5 group cursor-pointer rounded-xl transition-all hover:bg-slate-50 dark:hover:bg-white/[0.03]"
-                                    >
-                                        <div className="w-40 mb-2 sm:mb-0 shrink-0">
-                                            <span className="text-paraiso-green font-black uppercase tracking-widest text-xs block mb-0.5">
-                                                {item.day_of_week}
-                                            </span>
-                                            <span className="text-slate-400 font-bold text-lg">
-                                                {item.time_start.slice(0, 5)}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex-1 min-w-0">
-                                            <h4 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-paraiso-blue dark:text-white group-hover:text-paraiso-green transition-colors truncate">
-                                                {item.title}
-                                            </h4>
-                                            {item.location && (
-                                                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px] mt-1">
-                                                    {item.location}
-                                                </p>
-                                            )}
-                                            {item.description && (
-                                                <p className="text-slate-400 text-sm mt-1 font-medium line-clamp-1">
-                                                    {item.description}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        <div className="hidden sm:block sm:opacity-0 group-hover:opacity-100 transition-all ml-4 shrink-0">
-                                            <div className="w-10 h-10 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center text-paraiso-green">
-                                                <ChevronRight size={18} />
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                </Reveal>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
-        </section>
+            {schedules.length === 0 ? (
+                <p className="m-0 border-t border-ink py-10 text-sm text-ink-muted">
+                    Nenhuma programação cadastrada.
+                </p>
+            ) : (
+                <ul className="m-0 list-none border-t border-ink p-0">
+                    {schedules.map((item) => (
+                        <li
+                            key={item.id}
+                            className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-6 gap-y-1 border-b border-hairline py-5 transition-colors hover:bg-ink/[0.02] md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)_minmax(0,2fr)_2.75rem] md:items-center md:py-7"
+                        >
+                            <span className="text-xl font-medium tracking-[-0.02em] md:text-[1.625rem]">
+                                {item.day_of_week}
+                            </span>
+                            <span className="text-xl font-light tabular-nums text-detail md:text-[1.625rem]">
+                                {item.time_start.slice(0, 5)}
+                            </span>
+                            <span className="col-span-2 min-w-0 md:col-span-1">
+                                <span className="block text-sm text-ink-muted md:text-[1.0625rem]">{item.title}</span>
+                                {item.location && (
+                                    <span className="mt-1 block text-xs uppercase tracking-[0.12em] text-ink-muted/80">
+                                        {item.location}
+                                    </span>
+                                )}
+                                {item.description && (
+                                    <span className="mt-1 block text-sm text-ink-muted/80 line-clamp-1">
+                                        {item.description}
+                                    </span>
+                                )}
+                            </span>
+                            <svg
+                                className="hidden justify-self-end text-ink-muted md:block"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                aria-hidden="true"
+                            >
+                                <path d="M7 17L17 7M9 7h8v8" />
+                            </svg>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </EditorialSection>
     );
 };
 

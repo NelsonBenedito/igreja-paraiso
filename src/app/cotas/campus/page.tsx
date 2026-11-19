@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Suspense } from "react";
 import { CampusPagamentoObrigado } from "./CampusPagamentoObrigado";
 import { CotasPaymentRegion } from "./CotasPaymentRegion";
@@ -22,10 +23,10 @@ export default function CotasCampusPage() {
         <a href="#top" className="nav-logo">
           <Image
             className="nav-logo-img"
-            src="/paraiso_logo_branca.png"
+            src="/IgrejaParaiso.webp"
             alt="Campus Paraíso — início"
-            width={200}
-            height={113}
+            width={1529}
+            height={461}
             priority
           />
         </a>
@@ -43,8 +44,8 @@ export default function CotasCampusPage() {
             <a href="#outro-valor">Outro valor</a>
           </li>
           <li>
-            <a href="#contato" className="nav-btn">
-              Participar
+            <a href="#cotas" className="nav-btn">
+              Contribuir
             </a>
           </li>
         </ul>
@@ -79,8 +80,8 @@ export default function CotasCampusPage() {
                 priority
               />
               <h1 className="sr-only">Campus Paraíso</h1>
-              <a href="#cotas" className="cb-hero-cta">
-                Quero participar das cotas
+              <a href="#cotas" className="cb-hero-cta cb-pill--down">
+                Contribuir
               </a>
             </div>
           </div>
@@ -421,7 +422,7 @@ export default function CotasCampusPage() {
               <h4>Navegação</h4>
               <ul>
                 <li>
-                  <a href="/">Início</a>
+                  <Link href="/">Início</Link>
                 </li>
                 <li>
                   <a href="#contato">Participar</a>

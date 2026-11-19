@@ -1,51 +1,82 @@
 'use client';
 import React from 'react';
 import Reveal from '@/components/Reveal';
+import { EditorialSection, Highlight, Period, SectionTitle } from '@/components/site/Editorial';
 import type { SiteMission } from '@/lib/site-content/types';
 
 interface MissionSectionProps {
     content: SiteMission;
 }
 
+/**
+ * Título em 3 partes (a do meio em destaque). O "." final vira o <Period /> verde;
+ * se a última parte termina em outra pontuação (?, !), o ponto não é acrescentado.
+ */
+function EditorialTitleParts({ part1, highlight, part2 }: { part1: string; highlight: string; part2: string }) {
+    const parts = [
+        { text: part1, highlight: false },
+        { text: highlight, highlight: true },
+        { text: part2, highlight: false },
+    ].filter((p) => p.text.trim() !== '');
+    if (parts.length === 0) return null;
+    const last = parts.length - 1;
+    const lastText = parts[last].text.trimEnd();
+    const period = !/[!?…]$/.test(lastText);
+    parts[last] = { ...parts[last], text: lastText.replace(/\.$/, '') };
+    return (
+        <>
+            {parts.map((p, i) => (
+                <React.Fragment key={i}>
+                    {i > 0 && ' '}
+                    {p.highlight ? <Highlight>{p.text}</Highlight> : p.text}
+                </React.Fragment>
+            ))}
+            {period && <Period />}
+        </>
+    );
+}
+
 const MissionSection: React.FC<MissionSectionProps> = ({ content }) => {
     return (
-        <section id="sobre" className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden bg-clip-padding my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative">
-            <div className="absolute -top-24 -right-24 w-96 h-96 bg-paraiso-green rounded-full blur-3xl opacity-10 pointer-events-none" />
+        <EditorialSection id="sobre" label={content.badge || undefined}>
+            <Reveal>
+                <SectionTitle size="xl" className="mb-10 md:mb-14">
+                    <EditorialTitleParts
+                        part1={content.titlePart1}
+                        highlight={content.titleHighlight}
+                        part2={content.titlePart2}
+                    />
+                </SectionTitle>
 
-            <div className="relative z-10">
-                <Reveal>
-                    <div className="max-w-4xl">
-                        <span className="inline-block px-4 py-1 bg-paraiso-green/10 text-paraiso-green text-[10px] font-black uppercase tracking-widest rounded-md mb-6">
-                            {content.badge}
-                        </span>
-
-                        <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-tight mb-6 text-paraiso-blue dark:text-white">
-                            {content.titlePart1}{' '}
-                            <span className="text-paraiso-green italic">{content.titleHighlight}</span>{' '}
-                            {content.titlePart2}
-                        </h2>
-
-                        <p className="text-base md:text-lg text-slate-500 dark:text-slate-300 font-medium mb-4 leading-relaxed">
-                            {content.paragraph1}
-                        </p>
-
-                        <p className="text-base md:text-lg text-slate-500 dark:text-slate-300 font-medium mb-10 leading-relaxed">
-                            {content.paragraph2}
-                        </p>
-
-                        <blockquote className="border-l-4 border-paraiso-green pl-6 mb-8">
-                            <p className="text-lg md:text-2xl font-black italic text-paraiso-blue dark:text-white leading-snug">
-                                &ldquo;{content.quote}&rdquo;
-                            </p>
-                        </blockquote>
-
-                        <p className="text-paraiso-green font-black uppercase tracking-widest text-sm">
-                            {content.signature}
-                        </p>
+                {(content.paragraph1 || content.paragraph2) && (
+                    <div className="flex max-w-[56.25rem] flex-col gap-4 text-base leading-relaxed text-ink-muted md:flex-row md:gap-14 md:text-lg">
+                        {content.paragraph1 && <p className="m-0 md:flex-1">{content.paragraph1}</p>}
+                        {content.paragraph2 && <p className="m-0 md:flex-1">{content.paragraph2}</p>}
                     </div>
-                </Reveal>
-            </div>
-        </section>
+                )}
+
+                {content.quote && (
+                    <figure className="m-0 mt-12 flex flex-col gap-4 border-t border-hairline pt-7 md:mt-24 md:flex-row md:gap-8 md:pt-10">
+                        <span
+                            aria-hidden="true"
+                            className="text-6xl font-light leading-[0.7] text-detail md:text-8xl"
+                        >
+                            &ldquo;
+                        </span>
+                        <div className="min-w-0 flex-1">
+                            <blockquote className="m-0 text-[1.375rem] font-light leading-[1.35] tracking-[-0.02em] md:text-[2.125rem] md:leading-[1.3]">
+                                {content.quote}
+                            </blockquote>
+                            {content.signature && (
+                                <figcaption className="mt-6 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
+                                    {content.signature}
+                                </figcaption>
+                            )}
+                        </div>
+                    </figure>
+                )}
+            </Reveal>
+        </EditorialSection>
     );
 };
 

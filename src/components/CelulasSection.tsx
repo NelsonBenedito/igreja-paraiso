@@ -1,108 +1,153 @@
 'use client';
 import React from 'react';
-import Reveal from '@/components/Reveal';
-import { motion } from 'framer-motion';
-import SiteIcon from '@/components/SiteIcon';
+import ImageWithFallback from '@/components/ImageWithFallback';
+import { EditorialSection, Highlight, Period, PillLink, SectionTitle } from '@/components/site/Editorial';
 import type { SiteCelulas } from '@/lib/site-content/types';
 
 const CELULAS_WHATSAPP_URL =
     'https://wa.me/5527998757008?text=Olá,+gostaria+de+falar+com+o+setor+de+secretaria+de+células!+';
 
+/** Máximo de fotos no arco (desktop); no celular as das pontas somem (7). */
+const MAX_PHOTOS = 9;
+
 interface CelulasSectionProps {
     content: SiteCelulas;
+    /**
+     * URLs das fotos do arco 3D. O contrato do painel ainda não manda fotos de
+     * células, então hoje chega sempre vazio e a galeria não aparece.
+     */
+    photos?: string[];
 }
 
-const CelulasSection: React.FC<CelulasSectionProps> = ({ content }) => {
+/** Título em 3 partes; o "." final vira o <Period /> verde (outra pontuação final dispensa o ponto). */
+function TitleParts({ part1, highlight, part2 }: { part1: string; highlight: string; part2: string }) {
+    const parts = [
+        { text: part1, highlight: false },
+        { text: highlight, highlight: true },
+        { text: part2, highlight: false },
+    ].filter((p) => p.text.trim() !== '');
+    if (parts.length === 0) return null;
+    const last = parts.length - 1;
+    const lastText = parts[last].text.trimEnd();
+    const period = !/[!?…]$/.test(lastText);
+    parts[last] = { ...parts[last], text: lastText.replace(/\.$/, '') };
     return (
-        <section
-            id="celulas"
-            className="w-[calc(100%-2rem)] md:w-[calc(100%-4rem)] lg:w-[calc(100%-8rem)] max-w-[90rem] mx-auto bg-white dark:bg-paraiso-blue-dark rounded-[2.5rem] shadow-sm overflow-hidden bg-clip-padding my-6 md:my-10 py-16 md:py-20 px-6 md:px-12 lg:px-20 border border-slate-100 dark:border-white/5 relative"
-        >
-            <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] bg-paraiso-green/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-paraiso-blue/5 rounded-full blur-3xl pointer-events-none" />
+        <>
+            {parts.map((p, i) => (
+                <React.Fragment key={i}>
+                    {/* A 3.ª parte quebra linha no desktop, como no layout aprovado. */}
+                    {i > 0 && (i === 2 ? <><br className="hidden md:block" /> </> : ' ')}
+                    {p.highlight ? <Highlight>{p.text}</Highlight> : p.text}
+                </React.Fragment>
+            ))}
+            {period && <Period />}
+        </>
+    );
+}
 
-            <div className="relative z-10">
-                <Reveal>
-                    <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-14">
-                        <div>
-                            <span className="inline-block px-4 py-1 bg-paraiso-green/10 text-paraiso-green text-[10px] font-black uppercase tracking-widest rounded-md mb-6">
-                                {content.badge}
-                            </span>
-                            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter leading-tight mb-6 text-paraiso-blue dark:text-white">
-                                {content.titlePart1}{' '}
-                                <span className="text-paraiso-green italic">{content.titleHighlight}</span>{' '}
-                                {content.titlePart2}
-                            </h2>
-                            <p className="text-base text-slate-500 dark:text-slate-300 font-medium leading-relaxed mb-4">
-                                {content.paragraph1}
-                            </p>
-                            <p className="text-base text-slate-500 dark:text-slate-300 font-medium leading-relaxed">
-                                {content.paragraph2}
-                            </p>
-                        </div>
-
-                        <div
-                            className="relative rounded-3xl overflow-hidden p-8 md:p-10 text-white shadow-2xl"
-                            style={{
-                                background: 'linear-gradient(135deg, #2B4364 0%, #3d6b5a 50%, #7C9A40 100%)',
-                            }}
-                        >
-                            <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
-                            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-paraiso-green/20 rounded-full blur-2xl" />
-                            <div className="relative z-10">
-                                <span className="text-5xl font-black text-white/20 leading-none">&ldquo;</span>
-                                <p className="text-lg md:text-xl font-black italic leading-snug -mt-2 mb-4">
-                                    {content.verseText}
-                                </p>
-                                <p className="text-white/60 text-sm font-black uppercase tracking-widest">
-                                    — {content.verseReference}
-                                </p>
-                            </div>
-                        </div>
+/** Fotos em arco, como o interior de um cilindro. Sem fotos, não renderiza nada. */
+function PhotoArc({ photos }: { photos: string[] }) {
+    const list = photos.filter((p) => p.trim() !== '').slice(0, MAX_PHOTOS);
+    if (list.length === 0) return null;
+    const center = (list.length - 1) / 2;
+    return (
+        <div className="mx-auto mt-14 flex h-[21.25rem] w-full items-center justify-center gap-2.5 md:mt-6 md:h-[40rem] md:gap-[22px]">
+            {list.map((src, k) => {
+                const i = k - center;
+                const a = Math.abs(i);
+                const style = {
+                    '--w': `${150 + a * 22}px`,
+                    '--h': `${230 + a * 54}px`,
+                    transform: `perspective(900px) rotateY(${-i * 11}deg)`,
+                } as React.CSSProperties;
+                return (
+                    <div
+                        key={`${k}-${src}`}
+                        style={style}
+                        className={`relative h-[calc(var(--h)*0.6)] w-[calc(var(--w)*0.6)] shrink-0 overflow-hidden rounded-[12px] border border-hairline bg-paper-soft md:h-[var(--h)] md:w-[var(--w)] md:rounded-[18px] ${a > 3 ? 'hidden md:block' : ''}`}
+                    >
+                        <ImageWithFallback
+                            src={src}
+                            alt="Foto de célula"
+                            fill
+                            sizes="(min-width: 768px) 240px, 150px"
+                            className="object-cover"
+                        />
                     </div>
-                </Reveal>
+                );
+            })}
+        </div>
+    );
+}
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
-                    {content.benefits.map((item) => (
-                        <Reveal key={item.titulo}>
-                            <motion.div
-                                whileHover={{ y: -4 }}
-                                transition={{ type: 'spring', stiffness: 300 }}
-                                className="bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10 rounded-2xl p-6 md:p-8 hover:shadow-md transition-shadow"
-                            >
-                                <div className="w-11 h-11 rounded-xl bg-paraiso-green/10 flex items-center justify-center mb-5">
-                                    <SiteIcon name={item.icon} className="w-5 h-5 text-paraiso-green" />
-                                </div>
-                                <h3 className="text-base font-black uppercase tracking-tight text-paraiso-blue dark:text-white mb-2">
-                                    {item.titulo}
-                                </h3>
-                                <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-                                    {item.descricao}
-                                </p>
-                            </motion.div>
-                        </Reveal>
+const CelulasSection: React.FC<CelulasSectionProps> = ({ content, photos = [] }) => {
+    return (
+        <EditorialSection
+            id="celulas"
+            label={content.badge || undefined}
+            layout="stack"
+            className="overflow-hidden"
+            innerClassName="flex flex-col items-center text-center"
+        >
+            <SectionTitle size="xl" className="mb-7 lg:text-[6.5rem] lg:leading-[0.95] lg:tracking-[-0.05em]">
+                <TitleParts
+                    part1={content.titlePart1}
+                    highlight={content.titleHighlight}
+                    part2={content.titlePart2}
+                />
+            </SectionTitle>
+
+            {content.paragraph1 && (
+                <p className="m-0 max-w-[42.5rem] text-base leading-relaxed text-ink-muted md:text-lg">
+                    {content.paragraph1}
+                </p>
+            )}
+            {content.paragraph2 && (
+                <p className="m-0 mt-3 max-w-[42.5rem] text-base leading-relaxed text-ink-muted md:text-lg">
+                    {content.paragraph2}
+                </p>
+            )}
+
+            {content.ctaLabel && (
+                <PillLink href={CELULAS_WHATSAPP_URL} variant="soft" className="mt-10">
+                    {content.ctaLabel}
+                </PillLink>
+            )}
+
+            <PhotoArc photos={photos} />
+
+            {content.benefits.length > 0 && (
+                <div className="mt-14 grid w-full grid-cols-1 border-t border-hairline text-left sm:grid-cols-2 lg:grid-cols-4">
+                    {content.benefits.map((item, idx) => (
+                        <div
+                            key={`${idx}-${item.titulo}`}
+                            className="flex flex-col gap-2.5 border-b border-hairline py-5 pr-6 sm:border-b-0 sm:pt-7"
+                        >
+                            <span className="text-xs font-medium tracking-[0.16em] text-detail">
+                                {String(idx + 1).padStart(2, '0')}
+                            </span>
+                            <h3 className="m-0 text-lg font-medium tracking-[-0.01em] md:text-[1.1875rem]">
+                                {item.titulo}
+                            </h3>
+                            {item.descricao && (
+                                <p className="m-0 text-sm leading-relaxed text-ink-muted">{item.descricao}</p>
+                            )}
+                        </div>
                     ))}
                 </div>
+            )}
 
-                <Reveal>
-                    <div className="flex flex-col sm:flex-row items-center gap-6">
-                        <motion.a
-                            href={CELULAS_WHATSAPP_URL}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="flex items-center gap-5 text-paraiso-green font-black uppercase tracking-widest text-sm group"
-                        >
-                            <div className="w-14 h-14 rounded-full bg-paraiso-green text-white flex items-center justify-center group-hover:bg-paraiso-blue transition-all shadow-xl">
-                                <span className="text-xl">→</span>
-                            </div>
-                            {content.ctaLabel}
-                        </motion.a>
-                    </div>
-                </Reveal>
-            </div>
-        </section>
+            {content.verseText && (
+                <p className="mx-auto mb-0 mt-16 max-w-[40rem] text-center text-xl font-light italic leading-normal md:mt-[4.5rem] md:text-[1.375rem]">
+                    &ldquo;{content.verseText}&rdquo;
+                    {content.verseReference && (
+                        <span className="mt-3 block text-xs font-medium not-italic uppercase tracking-[0.16em] text-ink-muted">
+                            {content.verseReference}
+                        </span>
+                    )}
+                </p>
+            )}
+        </EditorialSection>
     );
 };
 
