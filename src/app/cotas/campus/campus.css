@@ -26,6 +26,10 @@
   --pill-arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E");
   --pill-arrow-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M6 13l6 6 6-6'/%3E%3C/svg%3E");
 
+  --pill-hover: #262626;
+  --input-placeholder: rgba(10, 10, 10, 0.4);
+  --input-focus-bg: rgba(10, 10, 10, 0.03);
+
   color-scheme: light;
   min-height: 100vh;
   background: var(--paper);
@@ -110,7 +114,7 @@ html:has(.campus-page) {
 .campus-page .cotas-contribuir__cta-primary:hover,
 .campus-page .cotas-contribuir__retry:hover,
 .campus-page .cotas-campaign-missing__link:hover {
-  background: #262626;
+  background: var(--pill-hover);
   color: var(--paper);
 }
 .campus-page .cb-pill:hover::before,
@@ -231,11 +235,16 @@ html:has(.campus-page) {
 }
 
 /* —— Destaque (vídeo) —— */
+/* Capa de ponta a ponta: sai da margem do .cb-shell e encosta na barra */
+.campus-page .cb-shell:has(> .cb-slab--hero) {
+  padding-top: 0;
+}
 .campus-page .cb-slab--hero {
   padding: 0;
   border-top: 0;
-  border-radius: var(--cb-radius-media);
+  border-radius: 0;
   overflow: hidden;
+  margin-inline: calc(-1 * var(--cb-gutter));
 }
 .campus-page .cb-hero-media {
   position: relative;
@@ -656,7 +665,7 @@ html:has(.campus-page) {
   transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
 }
 .campus-page .cb-outro-valor__input::placeholder {
-  color: rgba(10, 10, 10, 0.4);
+  color: var(--input-placeholder);
 }
 .campus-page .cb-outro-valor__input--touch {
   font-size: 1.15rem;
@@ -664,7 +673,7 @@ html:has(.campus-page) {
 .campus-page .cb-outro-valor__input:focus {
   outline: none;
   box-shadow: inset 0 -2px 0 var(--ink);
-  background: rgba(10, 10, 10, 0.03);
+  background: var(--input-focus-bg);
 }
 .campus-page .cb-outro-valor__input:disabled {
   opacity: 0.5;
@@ -1194,4 +1203,67 @@ html:has(.campus-page) {
 /* Foco visível sobre o vídeo do destaque */
 .campus-page .cb-hero-content a:focus-visible {
   outline-color: var(--paper);
+}
+
+/* —— Modo escuro (tema do site: classe .dark no <html>) —— */
+.dark .campus-page {
+  --paper: #111311;
+  --ink: #f2f1ec;
+  --ink-muted: rgba(242, 241, 236, 0.66);
+  --hairline: rgba(242, 241, 236, 0.14);
+  --hairline-strong: rgba(242, 241, 236, 0.28);
+  --soft: #171a17;
+  --olive-dark: #a1bc6b;
+  --steel: #9fb4d4;
+  --white: #ffffff;
+  --warn: #d9a45b;
+  --danger: #e08a8a;
+  --pill-hover: #d9d8d2;
+  --input-placeholder: rgba(242, 241, 236, 0.4);
+  --input-focus-bg: rgba(242, 241, 236, 0.04);
+  color-scheme: dark;
+}
+html.dark:has(.campus-page) {
+  background: #111311;
+  color-scheme: dark;
+}
+
+/* Logo da barra: colorido no claro, branco no escuro */
+.campus-page .nav-logo-img--dark {
+  display: none;
+}
+.dark .campus-page .nav-logo-img--light {
+  display: none;
+}
+.dark .campus-page .nav-logo-img--dark {
+  display: block;
+}
+
+/* Botão claro/escuro da barra */
+.campus-page .nav-theme {
+  display: flex;
+}
+.campus-page .cb-theme-toggle {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: transparent;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.campus-page .cb-theme-toggle:hover {
+  border-color: var(--hairline-strong);
+}
+.campus-page .cb-theme-toggle:focus-visible {
+  outline: 2px solid var(--steel);
+  outline-offset: 2px;
+}
+/* No celular os links somem, mas o botão de tema fica (ao lado do Contribuir) */
+.campus-page .nav-links li.nav-theme {
+  display: flex;
 }
