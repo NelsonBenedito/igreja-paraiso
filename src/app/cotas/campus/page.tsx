@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { CampusPagamentoObrigado } from "./CampusPagamentoObrigado";
 import { CotasPaymentRegion } from "./CotasPaymentRegion";
+import { CotasThemeToggle } from "./CotasThemeToggle";
 import "./campus.css";
 
 export const metadata: Metadata = {
@@ -20,17 +21,28 @@ export default function CotasCampusPage() {
   return (
     <main className="campus-page">
       <nav id="top">
-        <a href="#top" className="nav-logo">
+        <Link href="/" className="nav-logo" aria-label="Igreja Paraíso — site principal">
           <Image
-            className="nav-logo-img"
+            className="nav-logo-img nav-logo-img--light"
             src="/IgrejaParaiso.webp"
-            alt="Campus Paraíso — início"
+            alt=""
             width={1529}
             height={461}
             priority
           />
-        </a>
+          <Image
+            className="nav-logo-img nav-logo-img--dark"
+            src="/paraiso_logo_branca.png"
+            alt=""
+            width={1920}
+            height={551}
+            priority
+          />
+        </Link>
         <ul className="nav-links">
+          <li className="nav-theme">
+            <CotasThemeToggle />
+          </li>
           <li>
             <a href="#visao">A Visão</a>
           </li>
