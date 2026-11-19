@@ -10,6 +10,20 @@ interface MissionsProps {
     content: SiteChurches;
 }
 
+/** "Igreja Paraíso — Caramuru" → "Caramuru": o prefixo se repete em todo cartão. */
+function shortName(name: string): string {
+    const parts = name.split(/\s+[—–-]\s+/);
+    return parts.length > 1 ? parts.slice(1).join(' — ') : name;
+}
+
+/** Esconde a cidade quando ela só repete o nome ("Caramuru" / "Caramuru"). */
+function showLocation(name: string, location: string): boolean {
+    const loc = location.trim();
+    if (!loc) return false;
+    const short = shortName(name).toLowerCase();
+    return !loc.toLowerCase().startsWith(short);
+}
+
 const Missions: React.FC<MissionsProps> = ({ content }) => {
     const [width, setWidth] = useState(0);
     const carouselRef = useRef<HTMLDivElement>(null);
@@ -75,32 +89,31 @@ const Missions: React.FC<MissionsProps> = ({ content }) => {
                                 </div>
 
                                 {/* Missões = sobre o lugar. O time pastoral vive em /time-pastoral. */}
-                                <div className="mt-5 flex flex-1 flex-col gap-5 border-t border-hairline pt-5">
+                                <div className="mt-5 flex flex-1 flex-col gap-3 border-t border-hairline pt-5">
                                     <span
                                         className={`text-[11px] font-medium uppercase tracking-[0.16em] ${church.isHeadquarters ? 'text-detail' : 'text-detail-blue'}`}
                                     >
-                                        {church.isHeadquarters ? 'Sede' : 'Igreja / Filial'}
+                                        {church.isHeadquarters ? 'Sede' : 'Filial'}
                                     </span>
                                     <span>
                                         <span className="block text-[22px] font-medium leading-tight tracking-[-0.01em] text-ink">
-                                            {church.name}
+                                            {shortName(church.name)}
                                         </span>
-                                        <span className="mt-1.5 block truncate text-sm text-ink-muted">
-                                            {church.location}
-                                        </span>
+                                        {showLocation(church.name, church.location) && (
+                                            <span className="mt-1.5 block truncate text-sm text-ink-muted">
+                                                {church.location}
+                                            </span>
+                                        )}
                                     </span>
-                                    <div className="mt-auto border-t border-hairline pt-4">
-                                        <TextLink href="/nossas-igrejas">Ver todas as igrejas</TextLink>
-                                    </div>
                                 </div>
                             </motion.div>
                         ))}
                     </motion.div>
                 </motion.div>
 
-                <p className="mt-2 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
-                    ← Arraste para explorar →
-                </p>
+                <div className="mt-4 border-t border-hairline pt-6">
+                    <TextLink href="/nossas-igrejas">Ver todas as igrejas</TextLink>
+                </div>
             </div>
         </EditorialSection>
     );

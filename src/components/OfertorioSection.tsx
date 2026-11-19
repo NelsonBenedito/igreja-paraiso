@@ -61,17 +61,14 @@ const OfertorioSection: React.FC<OfertorioSectionProps> = ({ content }) => {
 
                         {/* Campanha de cotas — fora do contrato site-content; mantida local */}
                         <div className="border-t border-hairline pt-8">
-                            <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
-                                Projeto de Expansão
-                            </p>
                             <h3 className="m-0 mb-2 text-xl font-semibold tracking-tight text-ink">
-                                Campanha de Cotas do Novo Campus
+                                Campus Paraíso
                             </h3>
                             <p className="mb-8 text-sm leading-relaxed text-ink-muted md:text-base">
-                                Faça parte de algo maior! Ajude a edificar a nova estrutura da nossa sede e áreas geracionais. Adquira ou apoie através das cotas exclusivas de expansão.
+                                Cotas mensais para construir o novo campus.
                             </p>
                             <PillLink href="/cotas/campus" variant="ink">
-                                Conhecer Campanha
+                                Ver as cotas
                             </PillLink>
                         </div>
                     </Reveal>

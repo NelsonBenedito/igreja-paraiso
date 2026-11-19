@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-    Calendar, Clock, MapPin, ChevronLeft, UserPlus, CheckCircle2,
+    Calendar, MapPin, ChevronLeft, CheckCircle2, ArrowRight,
     Globe, Monitor, Video, Share2, ExternalLink,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -18,9 +18,9 @@ interface Props {
 }
 
 const FORMAT_LABELS: Record<string, { label: string; icon: React.ReactNode }> = {
-    IN_PERSON: { label: 'Presencial', icon: <MapPin size={14} /> },
-    ONLINE: { label: 'Online', icon: <Globe size={14} /> },
-    HYBRID: { label: 'Híbrido', icon: <Monitor size={14} /> },
+    IN_PERSON: { label: 'Presencial', icon: <MapPin size={13} /> },
+    ONLINE: { label: 'Online', icon: <Globe size={13} /> },
+    HYBRID: { label: 'Híbrido', icon: <Monitor size={13} /> },
 };
 
 export default function EventoClient({ event, isRegisteredServer }: Props) {
@@ -51,248 +51,207 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
             await navigator.share({ title: event.title, url });
         } else {
             await navigator.clipboard.writeText(url);
-            alert('Link copiado!');
+            alert('Link copiado.');
         }
     };
 
+    const timeLabel = event.time_start
+        ? `${event.time_start.slice(0, 5)}${event.time_end ? ` – ${event.time_end.slice(0, 5)}` : ''}`
+        : null;
+    const placeLabel = event.location || (event.format !== 'ONLINE' ? 'Local a definir' : null);
+
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-paraiso-blue-deep pt-24 pb-32">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-20">
+        <div className="min-h-screen bg-paper text-ink">
+            <div className="mx-auto max-w-[82rem] px-5 pb-24 pt-32 md:px-16 md:pb-32 md:pt-40">
                 {/* Voltar */}
                 <Link
                     href="/"
-                    className="inline-flex items-center gap-2 text-slate-500 hover:text-paraiso-green transition-colors mb-8 text-sm font-bold uppercase tracking-widest"
+                    className="mb-10 inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted transition-colors hover:text-ink"
                 >
-                    <ChevronLeft size={16} /> Voltar para o início
+                    <ChevronLeft size={14} /> Início
                 </Link>
 
-                <div className="bg-white dark:bg-paraiso-blue-dark rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border border-slate-100 dark:border-white/5">
-                    {/* Hero */}
-                    <div className="relative h-[300px] sm:h-[400px] md:h-[500px] w-full">
-                        {heroImageUrl ? (
-                            <img
-                                src={heroImageUrl}
-                                alt={event.title}
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-paraiso-blue via-paraiso-blue-dark to-paraiso-green/30 flex items-center justify-center">
-                                <Calendar size={80} className="text-white/20" />
+                {/* Cabeçalho */}
+                <header className="border-b border-hairline pb-10 md:pb-14">
+                    <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
+                        {heroTag && (
+                            <span className="text-detail">{heroTag}</span>
+                        )}
+                        <span className="inline-flex items-center gap-1.5">
+                            {formatInfo.icon} {formatInfo.label}
+                        </span>
+                        {/* A primeira tag já é a etiqueta em destaque. */}
+                        {event.tags.slice(1).map(t => (
+                            <span key={t.id}>{t.name}</span>
+                        ))}
+                    </div>
+
+                    <h1 className="m-0 max-w-5xl text-[2.5rem] font-semibold leading-[1.02] tracking-[-0.04em] text-ink md:text-[4.5rem]">
+                        {event.title}
+                    </h1>
+
+                    <dl className="mt-10 grid gap-6 sm:grid-cols-3 sm:gap-10">
+                        <div>
+                            <dt className="mb-1.5 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">Data</dt>
+                            <dd className="m-0 text-lg font-medium text-ink">{formatEventDate(event.date)}</dd>
+                        </div>
+                        {timeLabel && (
+                            <div>
+                                <dt className="mb-1.5 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">Horário</dt>
+                                <dd className="m-0 text-lg font-medium text-ink">{timeLabel}</dd>
                             </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-
-                        <div className="absolute bottom-0 left-0 w-full p-6 sm:p-10 md:p-16">
-                            <div className="flex flex-wrap items-center gap-2 mb-4">
-                                {heroTag && (
-                                    <span className="px-3 py-1.5 bg-paraiso-green text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                                        {heroTag}
-                                    </span>
-                                )}
-                                <span className="px-3 py-1.5 bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider rounded-full flex items-center gap-1.5">
-                                    {formatInfo.icon} {formatInfo.label}
-                                </span>
-                                {/* A primeira tag já é a etiqueta em destaque. */}
-                                {event.tags.slice(1).map(t => (
-                                    <span
-                                        key={t.id}
-                                        className="px-3 py-1.5 bg-white/10 text-white/80 text-[10px] font-bold uppercase tracking-wider rounded-full"
-                                    >
-                                        {t.name}
-                                    </span>
-                                ))}
+                        {placeLabel && (
+                            <div>
+                                <dt className="mb-1.5 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">Local</dt>
+                                <dd className="m-0 text-lg font-medium text-ink">{placeLabel}</dd>
                             </div>
+                        )}
+                    </dl>
+                </header>
 
-                            <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-white uppercase tracking-tighter leading-none mb-4">
-                                {event.title}
-                            </h1>
-
-                            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-white/80 font-bold text-sm">
-                                <div className="flex items-center gap-2">
-                                    <Calendar size={18} className="text-paraiso-green" />
-                                    <span>{formatEventDate(event.date)}</span>
-                                </div>
-                                {event.time_start && (
-                                    <div className="flex items-center gap-2">
-                                        <Clock size={18} className="text-paraiso-green" />
-                                        <span>
-                                            {event.time_start.slice(0, 5)}
-                                            {event.time_end && ` - ${event.time_end.slice(0, 5)}`}
-                                        </span>
-                                    </div>
-                                )}
-                                {event.location && (
-                                    <div className="flex items-center gap-2">
-                                        <MapPin size={18} className="text-paraiso-green" />
-                                        <span className="line-clamp-1">{event.location}</span>
-                                    </div>
-                                )}
-                            </div>
+                {/* Capa */}
+                <div className="mt-10 aspect-[16/9] w-full overflow-hidden rounded-md border border-hairline bg-paper-soft md:mt-14 md:aspect-[21/9]">
+                    {heroImageUrl ? (
+                        <img
+                            src={heroImageUrl}
+                            alt={event.title}
+                            className="h-full w-full object-cover"
+                        />
+                    ) : (
+                        <div className="flex h-full w-full items-center justify-center">
+                            <Calendar size={56} className="text-ink-muted/40" />
                         </div>
-                    </div>
+                    )}
+                </div>
 
-                    {/* Conteúdo */}
-                    <div className="p-6 sm:p-10 md:p-16 grid md:grid-cols-3 gap-8 md:gap-12">
-                        {/* Coluna principal */}
-                        <div className="md:col-span-2 space-y-8">
-                            {/* Descrição curta */}
-                            {event.short_description && (
-                                <p className="text-lg sm:text-xl text-slate-700 dark:text-slate-200 font-medium leading-relaxed">
-                                    {event.short_description}
+                {/* Conteúdo */}
+                <div className="mt-14 grid gap-12 md:mt-20 lg:grid-cols-3 lg:gap-16">
+                    {/* Coluna principal */}
+                    <div className="space-y-12 lg:col-span-2">
+                        {/* Descrição curta */}
+                        {event.short_description && (
+                            <p className="m-0 text-xl font-medium leading-relaxed tracking-[-0.01em] text-ink md:text-2xl">
+                                {event.short_description}
+                            </p>
+                        )}
+
+                        {/* Sobre o evento */}
+                        <div>
+                            <h2 className="mb-6 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
+                                <span className="text-detail" aria-hidden="true">●</span> Sobre o evento
+                            </h2>
+                            {/* Sem o plugin de typography, `prose` não aplica nada: cores explícitas. */}
+                            {event.details_html ? (
+                                <div
+                                    className="text-ink-muted leading-relaxed [&_a]:text-detail [&_a]:underline [&_p]:mb-4 [&_strong]:text-ink"
+                                    dangerouslySetInnerHTML={{ __html: event.details_html }}
+                                />
+                            ) : event.description ? (
+                                <div className="whitespace-pre-wrap text-base leading-relaxed text-ink-muted sm:text-lg">
+                                    {event.description}
+                                </div>
+                            ) : (
+                                <p className="text-ink-muted">
+                                    Sem descrição por enquanto.
                                 </p>
                             )}
-
-                            {/* Sobre o Evento */}
-                            <div>
-                                <h2 className="text-xl sm:text-2xl font-black text-paraiso-blue dark:text-white uppercase tracking-widest mb-6">
-                                    Sobre o Evento
-                                </h2>
-                                {/* Sem o plugin de typography, `prose` não aplica nada: cores explícitas. */}
-                                {event.details_html ? (
-                                    <div
-                                        className="text-slate-600 dark:text-slate-300 leading-relaxed [&_a]:text-paraiso-green [&_a]:underline"
-                                        dangerouslySetInnerHTML={{ __html: event.details_html }}
-                                    />
-                                ) : event.description ? (
-                                    <div className="text-slate-600 dark:text-slate-300 leading-relaxed font-medium whitespace-pre-wrap text-base sm:text-lg">
-                                        {event.description}
-                                    </div>
-                                ) : (
-                                    <p className="text-slate-400 dark:text-slate-500 italic">
-                                        Nenhuma descrição fornecida para este evento.
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Vídeo */}
-                            {(videoEmbedUrl || videoLinkUrl) && (
-                                <div>
-                                    <h3 className="text-sm font-black text-paraiso-green uppercase tracking-widest mb-4 flex items-center gap-2">
-                                        <Video size={16} /> Vídeo
-                                    </h3>
-                                    {videoEmbedUrl ? (
-                                        <div className="aspect-video rounded-2xl overflow-hidden bg-black">
-                                            <iframe
-                                                src={videoEmbedUrl}
-                                                title={`Vídeo: ${event.title}`}
-                                                className="w-full h-full"
-                                                allowFullScreen
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            />
-                                        </div>
-                                    ) : videoLinkUrl ? (
-                                        <a
-                                            href={videoLinkUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-2 text-paraiso-green font-bold text-sm hover:underline"
-                                        >
-                                            <ExternalLink size={16} /> Assistir ao vídeo
-                                        </a>
-                                    ) : null}
-                                </div>
-                            )}
                         </div>
 
-                        {/* Sidebar */}
-                        <div className="space-y-6">
-                            <div className="bg-slate-50 dark:bg-white/5 p-6 sm:p-8 rounded-2xl sm:rounded-3xl h-fit space-y-6 sticky top-28">
-                                {/* Data e hora */}
-                                <div>
-                                    <h3 className="text-xs font-black text-paraiso-green uppercase tracking-widest mb-3">
-                                        Data e Horário
-                                    </h3>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-3 text-slate-700 dark:text-white font-bold">
-                                            <Calendar size={20} className="text-paraiso-green shrink-0" />
-                                            <span>{formatEventDate(event.date)}</span>
-                                        </div>
-                                        {event.time_start && (
-                                            <div className="flex items-center gap-3 text-slate-700 dark:text-white font-bold">
-                                                <Clock size={20} className="text-paraiso-green shrink-0" />
-                                                <span>
-                                                    {event.time_start.slice(0, 5)}
-                                                    {event.time_end && ` às ${event.time_end.slice(0, 5)}`}
-                                                </span>
-                                            </div>
-                                        )}
+                        {/* Vídeo */}
+                        {(videoEmbedUrl || videoLinkUrl) && (
+                            <div>
+                                <h3 className="mb-6 flex items-center gap-2 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
+                                    <Video size={14} className="text-detail" /> Vídeo
+                                </h3>
+                                {videoEmbedUrl ? (
+                                    <div className="aspect-video overflow-hidden rounded-md border border-hairline bg-black">
+                                        <iframe
+                                            src={videoEmbedUrl}
+                                            title={`Vídeo: ${event.title}`}
+                                            className="w-full h-full"
+                                            allowFullScreen
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        />
                                     </div>
-                                </div>
-
-                                {/* Local */}
-                                {(event.location || event.format !== 'ONLINE') && (
-                                    <div>
-                                        <h3 className="text-xs font-black text-paraiso-green uppercase tracking-widest mb-3">
-                                            Localização
-                                        </h3>
-                                        <div className="flex items-start gap-3 text-slate-700 dark:text-white font-bold">
-                                            <MapPin size={20} className="text-paraiso-green shrink-0 mt-0.5" />
-                                            <span>{event.location || 'Local a definir'}</span>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Link online */}
-                                {event.online_url && (event.format === 'ONLINE' || event.format === 'HYBRID') && (
-                                    <div>
-                                        <h3 className="text-xs font-black text-paraiso-green uppercase tracking-widest mb-3">
-                                            Transmissão Online
-                                        </h3>
-                                        <a
-                                            href={event.online_url}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="flex items-center gap-2 text-paraiso-green font-bold text-sm hover:underline"
-                                        >
-                                            <ExternalLink size={16} /> Acessar link
-                                        </a>
-                                    </div>
-                                )}
-
-                                {/* Termos */}
-                                {event.terms_url && (
+                                ) : videoLinkUrl ? (
                                     <a
-                                        href={event.terms_url}
+                                        href={videoLinkUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 border-b border-current pb-1 text-sm font-medium text-ink transition-colors hover:text-detail"
+                                    >
+                                        <ExternalLink size={14} /> Assistir ao vídeo
+                                    </a>
+                                ) : null}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Lateral */}
+                    <aside>
+                        <div className="sticky top-28 space-y-6 border-t border-ink pt-6">
+                            {/* Link online */}
+                            {event.online_url && (event.format === 'ONLINE' || event.format === 'HYBRID') && (
+                                <div>
+                                    <h3 className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
+                                        Online
+                                    </h3>
+                                    <a
+                                        href={event.online_url}
                                         target="_blank"
                                         rel="noreferrer"
-                                        className="block text-xs text-slate-400 hover:text-paraiso-green transition-colors underline"
+                                        className="inline-flex items-center gap-1.5 border-b border-current pb-1 text-sm font-medium text-ink transition-colors hover:text-detail"
                                     >
-                                        Termos e condições
+                                        <ExternalLink size={14} /> Acessar transmissão
                                     </a>
-                                )}
-
-                                {/* Ações */}
-                                <div className="pt-6 border-t border-slate-200 dark:border-white/10 space-y-3">
-                                    {isFinished || isRegistrationClosed ? (
-                                        <div className="w-full text-center py-4 rounded-full bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest text-xs">
-                                            {isFinished ? 'Evento encerrado' : 'Inscrições encerradas'}
-                                        </div>
-                                    ) : isRegistered ? (
-                                        <div className="w-full flex items-center justify-center gap-2 py-4 rounded-full bg-paraiso-green/10 text-paraiso-green font-black uppercase tracking-widest text-xs border border-paraiso-green/30">
-                                            <CheckCircle2 size={16} />
-                                            Inscrição Confirmada
-                                        </div>
-                                    ) : (
-                                        <motion.button
-                                            whileHover={{ scale: 1.02 }}
-                                            whileTap={{ scale: 0.98 }}
-                                            onClick={() => setIsModalOpen(true)}
-                                            className="w-full flex items-center justify-center gap-3 py-4 rounded-full bg-paraiso-green text-white font-black uppercase tracking-widest text-sm hover:bg-paraiso-blue transition-all shadow-xl"
-                                        >
-                                            <UserPlus size={18} />
-                                            Inscrever-se Agora
-                                        </motion.button>
-                                    )}
-                                    <button
-                                        onClick={handleShare}
-                                        className="w-full flex items-center justify-center gap-2 py-3 rounded-full border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 font-bold text-xs uppercase tracking-wider hover:border-paraiso-green hover:text-paraiso-green transition-all"
-                                    >
-                                        <Share2 size={14} /> Compartilhar
-                                    </button>
                                 </div>
+                            )}
+
+                            {/* Ações */}
+                            <div className="space-y-3">
+                                {isFinished || isRegistrationClosed ? (
+                                    <div className="w-full rounded-full border border-hairline bg-paper-soft py-4 text-center text-sm font-medium text-ink-muted">
+                                        {isFinished ? 'Evento encerrado' : 'Inscrições encerradas'}
+                                    </div>
+                                ) : isRegistered ? (
+                                    <div className="flex w-full items-center justify-center gap-2 rounded-full border border-hairline bg-paper-soft py-4 text-sm font-medium text-detail">
+                                        <CheckCircle2 size={16} />
+                                        Inscrição confirmada
+                                    </div>
+                                ) : (
+                                    <motion.button
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => setIsModalOpen(true)}
+                                        className="flex min-h-12 w-full items-center gap-3.5 rounded-full bg-ink py-1.5 pl-1.5 pr-6 text-sm font-medium text-paper transition-opacity hover:opacity-90"
+                                    >
+                                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-paraiso-green text-white">
+                                            <ArrowRight size={15} />
+                                        </span>
+                                        Inscrever-se
+                                    </motion.button>
+                                )}
+                                <button
+                                    onClick={handleShare}
+                                    className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-hairline bg-paper-soft text-sm font-medium text-ink transition-colors hover:border-ink/30"
+                                >
+                                    <Share2 size={14} /> Compartilhar
+                                </button>
                             </div>
+
+                            {/* Termos */}
+                            {event.terms_url && (
+                                <a
+                                    href={event.terms_url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="block text-xs text-ink-muted underline transition-colors hover:text-ink"
+                                >
+                                    Termos e condições
+                                </a>
+                            )}
                         </div>
-                    </div>
+                    </aside>
                 </div>
             </div>
 

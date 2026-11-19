@@ -47,7 +47,7 @@ const PAYMENT_OPTIONS: Array<{ key: Exclude<BillingType, 'UNDEFINED'>; label: st
 ];
 
 const inputClass =
-    'w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-paraiso-green transition-colors';
+    'w-full pl-11 pr-4 py-3.5 bg-paper-soft border border-hairline rounded-md text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-ink transition-colors';
 
 const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) => {
     const supabase = createClient();
@@ -426,7 +426,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
     const renderCustomField = (field: PublicTicketFieldDto) => {
         const value = fieldValues[field.fieldId] ?? '';
         const set = (v: string) => setFieldValues(prev => ({ ...prev, [field.fieldId]: v }));
-        const base = 'w-full px-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-sm text-slate-800 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-paraiso-green transition-colors';
+        const base = 'w-full px-4 py-3.5 bg-paper-soft border border-hairline rounded-md text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-ink transition-colors';
 
         if (field.type === 'TERMS') {
             return (
@@ -442,7 +442,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
 
         return (
             <div key={field.fieldId} className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <label className="text-xs font-medium text-ink-muted uppercase tracking-[0.16em]">
                     {field.label}{field.required && <span className="text-red-500 ml-1">*</span>}
                 </label>
                 {field.type === 'SELECT' ? (
@@ -453,7 +453,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                 ) : field.type === 'TEXTAREA' ? (
                     <textarea rows={2} required={field.required} value={value} onChange={e => set(e.target.value)} className={`${base} resize-none`} />
                 ) : field.type === 'CHECKBOX' ? (
-                    <label className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-300 cursor-pointer">
+                    <label className="flex items-center gap-3 text-sm text-ink-muted cursor-pointer">
                         <input
                             type="checkbox"
                             required={field.required}
@@ -484,7 +484,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+                        className="fixed inset-0 z-50 bg-black/60"
                         onClick={status === 'awaiting_payment' ? undefined : onClose}
                     />
 
@@ -495,7 +495,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                         className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
                     >
-                        <div className="relative w-full max-w-lg bg-white dark:bg-[#0f1a2a] rounded-3xl shadow-2xl overflow-hidden pointer-events-auto max-h-[90vh] overflow-y-auto">
+                        <div className="relative w-full max-w-lg bg-paper text-ink font-display border border-hairline rounded-md overflow-hidden pointer-events-auto max-h-[90vh] overflow-y-auto">
 
                             {/* Header */}
                             <div
@@ -508,11 +508,11 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                             >
                                 <div className="flex-1">
                                     {headerTag && (
-                                        <span className="px-3 py-1 bg-paraiso-green text-white text-[10px] font-black uppercase tracking-widest rounded-full mb-2 inline-block">
+                                        <span className="px-2.5 py-1 bg-paraiso-green text-white text-[11px] font-medium uppercase tracking-[0.12em] rounded-full mb-2 inline-block">
                                             {headerTag}
                                         </span>
                                     )}
-                                    <h2 className="text-xl font-black text-white leading-tight">{event.title}</h2>
+                                    <h2 className="text-2xl font-semibold tracking-[-0.03em] text-white leading-tight">{event.title}</h2>
                                     <p className="text-white/70 text-xs mt-1">{formatEventDate(event.date)}</p>
                                 </div>
                                 <button
@@ -527,10 +527,10 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                 {/* Inscrição gratuita confirmada */}
                                 {status === 'success' && (
                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-6">
-                                        <CheckCircle2 className="w-16 h-16 text-paraiso-green mx-auto" />
+                                        <CheckCircle2 className="w-12 h-12 text-detail mx-auto" />
                                         <div>
-                                            <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Inscrição confirmada!</h3>
-                                            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed mb-4">
+                                            <h3 className="text-2xl font-semibold tracking-[-0.03em] text-ink mb-2">Inscrição confirmada!</h3>
+                                            <p className="text-ink-muted text-sm leading-relaxed mb-4">
                                                 Sua inscrição para <strong>{event.title}</strong> foi realizada com sucesso.
                                             </p>
                                             {communityLink && (
@@ -538,13 +538,13 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                     href={communityLink}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="w-full py-4 bg-paraiso-green text-white font-black text-sm rounded-xl flex items-center justify-center gap-2 hover:bg-paraiso-blue transition-all"
+                                                    className="w-full py-4 bg-ink text-paper font-medium text-sm rounded-full flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
                                                 >
                                                     <Users size={18} /> Entrar no grupo
                                                 </a>
                                             )}
                                         </div>
-                                        <button onClick={onClose} className="px-8 py-3 w-full bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-paraiso-blue transition-all">
+                                        <button onClick={onClose} className="px-8 py-3 w-full bg-ink text-paper font-medium text-sm rounded-full hover:opacity-90 transition-opacity">
                                             Fechar
                                         </button>
                                     </motion.div>
@@ -554,19 +554,19 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                 {status === 'awaiting_payment' && checkoutResponse && (
                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
                                         <div className="text-center">
-                                            <Clock className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-                                            <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-1">Aguardando pagamento</h3>
-                                            <p className="text-slate-500 dark:text-slate-400 text-sm">
+                                            <Clock className="w-10 h-10 text-ink-muted mx-auto mb-3" />
+                                            <h3 className="text-2xl font-semibold tracking-[-0.03em] text-ink mb-1">Aguardando pagamento</h3>
+                                            <p className="text-ink-muted text-sm">
                                                 Sua vaga fica reservada até a confirmação. Não feche esta janela.
                                             </p>
-                                            <p className="text-lg font-black text-paraiso-blue dark:text-white mt-3">
+                                            <p className="text-lg font-semibold text-ink mt-3">
                                                 {formatCurrency(Math.round(checkoutResponse.value * 100))}
                                             </p>
                                         </div>
 
                                         {hasPixData && (
-                                             <div className="bg-slate-50 dark:bg-white/5 p-4 rounded-2xl border border-slate-200 dark:border-white/10 space-y-4">
-                                                <p className="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2">
+                                             <div className="bg-paper-soft p-4 rounded-md border border-hairline space-y-4">
+                                                <p className="text-sm font-medium text-ink flex items-center justify-center gap-2">
                                                     <QrCode size={18} /> Pague via PIX
                                                 </p>
                                                 {pix?.encodedImage && (
@@ -580,7 +580,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                 {pix?.payload && (
                                                     <button
                                                         onClick={() => copyToClipboard(pix.payload!)}
-                                                        className="w-full py-3 bg-white dark:bg-white/10 text-paraiso-blue dark:text-white text-sm font-bold rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+                                                        className="w-full py-3 bg-paper text-ink text-sm font-medium rounded-full border border-hairline hover:border-ink/30 transition-colors flex items-center justify-center gap-2"
                                                     >
                                                         <Copy size={16} /> {copied ? 'Código copiado!' : 'Copiar código PIX'}
                                                     </button>
@@ -593,24 +593,24 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                 href={checkoutResponse.bankSlipUrl || checkoutResponse.invoiceUrl || '#'}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                className="w-full py-4 bg-paraiso-blue text-white font-black text-sm rounded-xl flex items-center justify-center gap-2 hover:bg-paraiso-blue-dark transition-all"
+                                                className="w-full py-4 bg-ink text-paper font-medium text-sm rounded-full flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
                                             >
                                                 <ExternalLink size={18} /> Acessar cobrança
                                             </a>
                                         )}
 
                                         {!hasPixData && !checkoutResponse.bankSlipUrl && !checkoutResponse.invoiceUrl && (
-                                            <p className="text-xs text-center text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 p-3 rounded-xl">
+                                            <p className="text-xs text-center text-ink-muted bg-paper-soft border border-hairline p-3 rounded-md">
                                                 Não recebemos os dados de pagamento. Verifique seu e-mail ou entre em contato com a igreja
                                                 informando o pedido <strong>{checkoutResponse.orderId}</strong>.
                                             </p>
                                         )}
 
-                                        <p className="text-xs text-center text-slate-400 flex items-center justify-center gap-2">
+                                        <p className="text-xs text-center text-ink-muted flex items-center justify-center gap-2">
                                             <Loader2 size={14} className="animate-spin" />
                                             Verificando pagamento automaticamente…
                                         </p>
-                                        <p className="text-[10px] text-center text-slate-400">
+                                        <p className="text-[11px] text-center text-ink-muted">
                                             Pedido: {checkoutResponse.orderId}
                                         </p>
                                     </motion.div>
@@ -619,17 +619,17 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                 {/* Pagamento ou inscrição confirmada */}
                                 {status === 'paid' && (
                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-6">
-                                        <CheckCircle2 className="w-16 h-16 text-paraiso-green mx-auto" />
+                                        <CheckCircle2 className="w-12 h-12 text-detail mx-auto" />
                                         <div>
-                                            <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">
+                                            <h3 className="text-2xl font-semibold tracking-[-0.03em] text-ink mb-2">
                                                 {finalTotalCents === 0 ? 'Inscrição confirmada!' : 'Pagamento confirmado!'}
                                             </h3>
-                                            <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
+                                            <p className="text-ink-muted text-sm leading-relaxed">
                                                 Sua inscrição para <strong>{event.title}</strong> está garantida.
                                                 Os bilhetes foram enviados para <strong>{form.email.trim().toLowerCase()}</strong>.
                                             </p>
                                         </div>
-                                        <button onClick={onClose} className="px-8 py-3 w-full bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-paraiso-blue transition-all">
+                                        <button onClick={onClose} className="px-8 py-3 w-full bg-ink text-paper font-medium text-sm rounded-full hover:opacity-90 transition-opacity">
                                             Fechar
                                         </button>
                                     </motion.div>
@@ -638,18 +638,18 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                 {/* Pagamento falhou ou expirou */}
                                 {status === 'payment_failed' && (
                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
-                                        <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />
+                                        <AlertCircle className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto" />
                                         <div>
-                                            <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">
+                                            <h3 className="text-2xl font-semibold tracking-[-0.03em] text-ink mb-2">
                                                 {paymentStatus === 'EXPIRED' ? 'Cobrança expirada' : 'Pagamento não concluído'}
                                             </h3>
-                                            <p className="text-slate-500 dark:text-slate-400 text-sm">
+                                            <p className="text-ink-muted text-sm">
                                                 {paymentStatus === 'EXPIRED'
                                                     ? 'O prazo para pagamento terminou e a reserva foi liberada.'
                                                     : 'Não conseguimos confirmar seu pagamento.'} Você pode tentar novamente.
                                             </p>
                                         </div>
-                                        <button onClick={reset} className="px-8 py-3 w-full bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-paraiso-blue transition-all">
+                                        <button onClick={reset} className="px-8 py-3 w-full bg-ink text-paper font-medium text-sm rounded-full hover:opacity-90 transition-opacity">
                                             Tentar novamente
                                         </button>
                                     </motion.div>
@@ -658,14 +658,14 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                 {/* Esgotado durante o checkout */}
                                 {status === 'sold_out' && (
                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
-                                        <AlertCircle className="w-16 h-16 text-amber-500 mx-auto" />
+                                        <AlertCircle className="w-12 h-12 text-ink-muted mx-auto" />
                                         <div>
-                                            <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Ingressos esgotados</h3>
-                                            <p className="text-slate-500 dark:text-slate-400 text-sm">
+                                            <h3 className="text-2xl font-semibold tracking-[-0.03em] text-ink mb-2">Ingressos esgotados</h3>
+                                            <p className="text-ink-muted text-sm">
                                                 As últimas vagas foram preenchidas enquanto você preenchia o formulário.
                                             </p>
                                         </div>
-                                        <button onClick={refetchTickets} className="px-8 py-3 w-full bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-paraiso-blue transition-all">
+                                        <button onClick={refetchTickets} className="px-8 py-3 w-full bg-ink text-paper font-medium text-sm rounded-full hover:opacity-90 transition-opacity">
                                             Ver ingressos disponíveis
                                         </button>
                                     </motion.div>
@@ -674,13 +674,13 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                 {/* Já inscrito */}
                                 {status === 'duplicate' && (
                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
-                                        <AlertCircle className="w-16 h-16 text-amber-500 mx-auto" />
+                                        <AlertCircle className="w-12 h-12 text-ink-muted mx-auto" />
                                         <div>
-                                            <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Você já está inscrito!</h3>
-                                            <p className="text-slate-500 dark:text-slate-400 text-sm">Este e-mail já foi cadastrado para este evento.</p>
+                                            <h3 className="text-2xl font-semibold tracking-[-0.03em] text-ink mb-2">Você já está inscrito!</h3>
+                                            <p className="text-ink-muted text-sm">Este e-mail já foi cadastrado para este evento.</p>
                                         </div>
                                         <div className="flex gap-3 justify-center">
-                                            <button onClick={reset} className="px-6 py-3 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 font-bold text-xs rounded-full hover:border-paraiso-green transition-all">
+                                            <button onClick={reset} className="px-6 py-3 border border-hairline text-ink font-medium text-sm rounded-full hover:border-ink/30 transition-colors">
                                                 Tentar outro e-mail
                                             </button>
                                         </div>
@@ -690,14 +690,14 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                 {/* Erro */}
                                 {status === 'error' && (
                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
-                                        <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />
+                                        <AlertCircle className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto" />
                                         <div>
-                                            <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Ocorreu um erro</h3>
-                                            <p className="text-slate-500 dark:text-slate-400 text-sm">
+                                            <h3 className="text-2xl font-semibold tracking-[-0.03em] text-ink mb-2">Ocorreu um erro</h3>
+                                            <p className="text-ink-muted text-sm">
                                                 {errorMessage ?? 'Não foi possível realizar sua inscrição. Tente novamente.'}
                                             </p>
                                         </div>
-                                        <button onClick={reset} className="px-8 py-3 bg-red-500 text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-red-600 transition-all">
+                                        <button onClick={reset} className="px-8 py-3 bg-ink text-paper font-medium text-sm rounded-full hover:opacity-90 transition-opacity">
                                             Tentar novamente
                                         </button>
                                     </motion.div>
@@ -706,14 +706,14 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                 {/* Falha ao carregar ingressos */}
                                 {ticketsError && (status === 'idle' || status === 'loading') && (
                                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
-                                        <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />
+                                        <AlertCircle className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto" />
                                         <div>
-                                            <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Ocorreu um erro</h3>
-                                            <p className="text-slate-500 dark:text-slate-400 text-sm">
+                                            <h3 className="text-2xl font-semibold tracking-[-0.03em] text-ink mb-2">Ocorreu um erro</h3>
+                                            <p className="text-ink-muted text-sm">
                                                 Não foi possível carregar os ingressos. Tente novamente.
                                             </p>
                                         </div>
-                                        <button onClick={refetchTickets} className="px-8 py-3 bg-red-500 text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-red-600 transition-all">
+                                        <button onClick={refetchTickets} className="px-8 py-3 bg-ink text-paper font-medium text-sm rounded-full hover:opacity-90 transition-opacity">
                                             Tentar novamente
                                         </button>
                                     </motion.div>
@@ -722,17 +722,17 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                 {/* Formulário */}
                                 {!ticketsError && (status === 'idle' || status === 'loading') && (
                                     <form onSubmit={handleSubmit} className="space-y-4">
-                                        <p className="text-slate-500 dark:text-slate-400 text-sm mb-4">
+                                        <p className="text-ink-muted text-sm mb-4">
                                             Preencha seus dados para garantir sua vaga.
                                         </p>
 
                                         {isLoadingTickets ? (
                                             <div className="flex items-center justify-center py-4">
-                                                <Loader2 size={24} className="animate-spin text-paraiso-green" />
+                                                <Loader2 size={24} className="animate-spin text-detail" />
                                             </div>
                                         ) : tickets.length > 0 ? (
                                             <div className="space-y-2 mb-6">
-                                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                                <label className="text-xs font-medium text-ink-muted uppercase tracking-[0.16em]">
                                                     Selecione o Ingresso
                                                 </label>
                                                 <div className="space-y-2">
@@ -744,35 +744,35 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                             <div
                                                                 key={ticket.id}
                                                                 onClick={() => !soldOut && setSelectedTicketId(ticket.id)}
-                                                                className={`border p-4 rounded-2xl flex items-center justify-between transition-all ${
+                                                                className={`border p-4 rounded-md flex items-center justify-between transition-all ${
                                                                     soldOut
-                                                                        ? 'opacity-50 cursor-not-allowed border-slate-200 dark:border-white/10'
+                                                                        ? 'opacity-50 cursor-not-allowed border-hairline'
                                                                         : isSelected
-                                                                            ? 'cursor-pointer border-paraiso-green bg-paraiso-green/5 dark:bg-paraiso-green/10'
-                                                                            : 'cursor-pointer border-slate-200 dark:border-white/10 hover:border-paraiso-green/50'
+                                                                            ? 'cursor-pointer border-paraiso-green bg-paper-soft'
+                                                                            : 'cursor-pointer border-hairline hover:border-ink/30'
                                                                 }`}
                                                             >
                                                                 <div className="flex items-center gap-3">
-                                                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-paraiso-green' : 'border-slate-300'}`}>
+                                                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-paraiso-green' : 'border-hairline'}`}>
                                                                         {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-paraiso-green" />}
                                                                     </div>
                                                                     <div>
-                                                                        <h4 className={`font-bold text-sm ${isSelected ? 'text-paraiso-green' : 'text-slate-700 dark:text-white'}`}>
+                                                                        <h4 className={`font-bold text-sm ${isSelected ? 'text-detail' : 'text-ink'}`}>
                                                                             {ticket.name}
                                                                             {soldOut && <span className="ml-2 text-xs text-red-500 font-bold">Esgotado</span>}
                                                                         </h4>
                                                                         {ticket.description && (
-                                                                            <p className="text-xs text-slate-500 line-clamp-1">{ticket.description}</p>
+                                                                            <p className="text-xs text-ink-muted line-clamp-1">{ticket.description}</p>
                                                                         )}
                                                                         {ticket.quantityRemaining != null && !soldOut && (
-                                                                            <p className="text-[10px] text-slate-400 mt-0.5">
+                                                                            <p className="text-[11px] text-ink-muted mt-0.5">
                                                                                 {ticket.quantityRemaining} restante{ticket.quantityRemaining !== 1 ? 's' : ''}
                                                                             </p>
                                                                         )}
                                                                     </div>
                                                                 </div>
                                                                 <div className="text-right">
-                                                                    <span className="font-black text-slate-800 dark:text-white">
+                                                                    <span className="font-semibold text-ink">
                                                                         {price > 0 ? formatCurrency(price) : 'Grátis'}
                                                                     </span>
                                                                 </div>
@@ -785,12 +785,12 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
 
                                         {/* Quantidade — só quando o ingresso permite mais de um */}
                                         {selectedTicket && maxQuantity > 1 && (
-                                            <div className="flex items-center justify-between bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-4 py-3">
+                                            <div className="flex items-center justify-between bg-paper-soft border border-hairline rounded-md px-4 py-3">
                                                 <div>
-                                                    <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+                                                    <label className="text-xs font-medium text-ink-muted uppercase tracking-[0.16em] block">
                                                         Quantidade
                                                     </label>
-                                                    <span className="text-[10px] text-slate-400">
+                                                    <span className="text-[11px] text-ink-muted">
                                                         {minQuantity > 1 && `mín. ${minQuantity} · `}máx. {maxQuantity}
                                                     </span>
                                                 </div>
@@ -799,14 +799,14 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                         type="button"
                                                         onClick={() => setQuantity(q => Math.max(minQuantity, q - 1))}
                                                         disabled={quantity <= minQuantity}
-                                                        className="w-9 h-9 rounded-full border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 font-black disabled:opacity-40 hover:border-paraiso-green transition-all"
+                                                        className="w-9 h-9 rounded-full border border-hairline text-ink font-semibold disabled:opacity-40 hover:border-ink/30 transition-colors"
                                                     >−</button>
-                                                    <span className="w-8 text-center font-black text-slate-800 dark:text-white">{quantity}</span>
+                                                    <span className="w-8 text-center font-semibold text-ink">{quantity}</span>
                                                     <button
                                                         type="button"
                                                         onClick={() => setQuantity(q => Math.min(maxQuantity, q + 1))}
                                                         disabled={quantity >= maxQuantity}
-                                                        className="w-9 h-9 rounded-full border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 font-black disabled:opacity-40 hover:border-paraiso-green transition-all"
+                                                        className="w-9 h-9 rounded-full border border-hairline text-ink font-semibold disabled:opacity-40 hover:border-ink/30 transition-colors"
                                                     >+</button>
                                                 </div>
                                             </div>
@@ -814,7 +814,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
 
                                         {/* Nome */}
                                         <div className="relative">
-                                            <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                            <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted" />
                                             <input
                                                 required
                                                 type="text"
@@ -827,7 +827,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
 
                                         {/* Email */}
                                         <div className="relative">
-                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted" />
                                             <input
                                                 required
                                                 type="email"
@@ -840,7 +840,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
 
                                         {/* Telefone */}
                                         <div className="relative">
-                                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted" />
                                             <input
                                                 type="tel"
                                                 placeholder="Telefone / WhatsApp (opcional)"
@@ -853,12 +853,12 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                         {/* Nome de cada participante */}
                                         {quantity > 1 && (
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                                <label className="text-xs font-medium text-ink-muted uppercase tracking-[0.16em]">
                                                     Nome dos participantes
                                                 </label>
                                                 {Array.from({ length: quantity }).map((_, i) => (
                                                     <div key={i} className="relative">
-                                                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted" />
                                                         <input
                                                             type="text"
                                                             placeholder={i === 0 ? `Ingresso 1 (você)` : `Ingresso ${i + 1}`}
@@ -872,7 +872,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                         />
                                                     </div>
                                                 ))}
-                                                <p className="text-[10px] text-slate-400">
+                                                <p className="text-[11px] text-ink-muted">
                                                     Em branco, o ingresso fica no nome do responsável pela compra.
                                                 </p>
                                             </div>
@@ -895,7 +895,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                 >
                                                     {/* CPF */}
                                                     <div className="relative mt-4">
-                                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted" />
                                                         <input
                                                             required={isPaid}
                                                             type="text"
@@ -916,7 +916,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
 
                                                         return options.length > 0 ? (
                                                             <div className="space-y-2">
-                                                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                                                <label className="text-xs font-medium text-ink-muted uppercase tracking-[0.16em]">
                                                                     Forma de Pagamento
                                                                 </label>
                                                                 <div className={`grid gap-2 ${options.length === 1 ? 'grid-cols-1' : options.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
@@ -925,10 +925,10 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                                             key={opt.key}
                                                                             type="button"
                                                                             onClick={() => setForm({ ...form, billingType: opt.key })}
-                                                                            className={`py-3 px-2 rounded-xl border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                                                                            className={`py-3 px-2 rounded-md border text-sm font-medium flex items-center justify-center gap-2 transition-all ${
                                                                                 form.billingType === opt.key
-                                                                                    ? 'border-paraiso-green bg-paraiso-green/10 text-paraiso-green'
-                                                                                    : 'border-slate-200 dark:border-white/10 text-slate-500 hover:border-paraiso-green/50'
+                                                                                    ? 'border-paraiso-green bg-paper-soft text-ink'
+                                                                                    : 'border-hairline text-ink-muted hover:border-ink/30'
                                                                             }`}
                                                                         >
                                                                             {opt.icon} {opt.label}
@@ -942,13 +942,13 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                     {/* Parcelamento — só no cartão, se o total for > 0 e se o ingresso permitir */}
                                                     {finalTotalCents > 0 && form.billingType === 'CREDIT_CARD' && (selectedTicket?.maxInstallments ?? 1) > 1 && (
                                                         <div className="space-y-2">
-                                                            <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                                            <label className="text-xs font-medium text-ink-muted uppercase tracking-[0.16em]">
                                                                 Parcelamento
                                                             </label>
                                                             <select
                                                                 value={installmentCount}
                                                                 onChange={(e) => setInstallmentCount(Number(e.target.value))}
-                                                                className="w-full px-4 py-3.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl text-sm text-slate-800 dark:text-white focus:outline-none focus:border-paraiso-green transition-colors"
+                                                                className="w-full px-4 py-3.5 bg-paper-soft border border-hairline rounded-md text-sm text-ink focus:outline-none focus:border-ink transition-colors"
                                                             >
                                                                 {Array.from({ length: selectedTicket?.maxInstallments ?? 1 }).map((_, i) => (
                                                                     <option key={i + 1} value={i + 1}>
@@ -965,7 +965,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
 
                                         {/* Mensagem */}
                                         <div className="relative mt-4">
-                                            <MessageSquare className="absolute left-4 top-3.5 w-4 h-4 text-slate-400" />
+                                            <MessageSquare className="absolute left-4 top-3.5 w-4 h-4 text-ink-muted" />
                                             <textarea
                                                 rows={2}
                                                 placeholder="Alguma observação? (opcional)"
@@ -983,15 +983,15 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                         <button
                                                             type="button"
                                                             onClick={() => setIsCouponOpen(true)}
-                                                            className="text-xs font-bold text-paraiso-green hover:underline flex items-center gap-1.5 transition-all"
+                                                            className="text-xs font-medium text-ink border-b border-current pb-0.5 hover:text-detail flex items-center gap-1.5 transition-colors"
                                                         >
                                                             <Tag size={13} /> Possui um cupom de desconto?
                                                         </button>
                                                     ) : (
                                                         <div className="space-y-2">
                                                             <div className="flex items-center justify-between">
-                                                                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                                                                    <Tag size={13} className="text-paraiso-green" /> Cupom de Desconto
+                                                                <label className="text-xs font-medium text-ink-muted uppercase tracking-[0.16em] flex items-center gap-1.5">
+                                                                    <Tag size={13} className="text-detail" /> Cupom de Desconto
                                                                 </label>
                                                                 <button
                                                                     type="button"
@@ -999,7 +999,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                                         setIsCouponOpen(false);
                                                                         setCouponError(null);
                                                                     }}
-                                                                    className="text-[11px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                                                    className="text-[11px] text-ink-muted hover:text-ink"
                                                                 >
                                                                     Cancelar
                                                                 </button>
@@ -1020,13 +1020,13 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                                         }
                                                                     }}
                                                                     disabled={isValidatingCoupon}
-                                                                    className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold uppercase placeholder:normal-case placeholder:font-normal text-slate-800 dark:text-white focus:outline-none focus:border-paraiso-green transition-colors"
+                                                                    className="flex-1 px-4 py-2.5 bg-paper-soft border border-hairline rounded-md text-sm font-medium uppercase placeholder:normal-case placeholder:font-normal text-ink focus:outline-none focus:border-ink transition-colors"
                                                                 />
                                                                 <button
                                                                     type="button"
                                                                     onClick={handleApplyCoupon}
                                                                     disabled={!couponInput.trim() || isValidatingCoupon}
-                                                                    className="px-5 py-2.5 bg-paraiso-green text-white font-black text-xs uppercase tracking-wider rounded-xl hover:bg-paraiso-blue transition-all disabled:opacity-50 flex items-center gap-1.5 shrink-0"
+                                                                    className="px-5 py-2.5 bg-ink text-paper font-medium text-sm rounded-full hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-1.5 shrink-0"
                                                                 >
                                                                     {isValidatingCoupon ? (
                                                                         <Loader2 size={14} className="animate-spin" />
@@ -1036,7 +1036,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                                 </button>
                                                             </div>
                                                             {couponError && (
-                                                                <p className="text-xs text-red-500 font-medium flex items-center gap-1.5">
+                                                                <p className="text-xs text-red-600 dark:text-red-400 font-medium flex items-center gap-1.5">
                                                                     <AlertCircle size={13} className="shrink-0" />
                                                                     {couponError}
                                                                 </p>
@@ -1044,18 +1044,18 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                         </div>
                                                     )
                                                 ) : (
-                                                    <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-xl text-emerald-800 dark:text-emerald-300">
-                                                        <div className="flex items-center gap-2 text-xs font-bold">
-                                                            <Tag size={14} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                                    <div className="flex items-center justify-between p-3 bg-paper-soft border border-hairline rounded-md text-ink">
+                                                        <div className="flex items-center gap-2 text-xs font-medium">
+                                                            <Tag size={14} className="text-detail shrink-0" />
                                                             <span>
-                                                                Cupom <strong className="font-black">{appliedCoupon.code}</strong> aplicado (-{formatCurrency(appliedCoupon.discountCents)})
+                                                                Cupom <strong className="font-semibold">{appliedCoupon.code}</strong> aplicado (-{formatCurrency(appliedCoupon.discountCents)})
                                                             </span>
                                                         </div>
                                                         <button
                                                             type="button"
                                                             onClick={handleRemoveCoupon}
                                                             title="Remover cupom"
-                                                            className="p-1 rounded-lg text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200/50 dark:hover:bg-emerald-500/20 transition-all"
+                                                            className="p-1 rounded-full text-ink-muted hover:text-ink transition-colors"
                                                         >
                                                             <X size={14} />
                                                         </button>
@@ -1065,33 +1065,33 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                         )}
 
                                         {errorMessage && (
-                                            <p className="text-xs text-red-500 bg-red-50 dark:bg-red-500/10 p-3 rounded-xl flex items-center gap-2">
+                                            <p className="text-xs text-red-600 dark:text-red-400 border border-red-600/30 dark:border-red-400/30 p-3 rounded-md flex items-center gap-2">
                                                 <AlertCircle size={14} className="shrink-0" /> {errorMessage}
                                             </p>
                                         )}
 
                                         {/* Resumo financeiro */}
                                         {isPaid && (
-                                            <div className="pt-3 border-t border-slate-200 dark:border-white/10 space-y-1.5">
+                                            <div className="pt-3 border-t border-hairline space-y-1.5">
                                                 {appliedCoupon ? (
                                                     <>
-                                                        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                                                        <div className="flex items-center justify-between text-xs text-ink-muted">
                                                             <span>Subtotal dos ingressos</span>
-                                                            <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(subtotalCents)}</span>
+                                                            <span className="font-medium text-ink">{formatCurrency(subtotalCents)}</span>
                                                         </div>
-                                                        <div className="flex items-center justify-between text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+                                                        <div className="flex items-center justify-between text-xs text-detail font-medium">
                                                             <span>Desconto (Cupom)</span>
                                                             <span>- {formatCurrency(appliedCoupon.discountCents)}</span>
                                                         </div>
-                                                        <div className="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-white/10">
-                                                            <span className="text-xs font-bold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Total a pagar</span>
-                                                            <span className="text-xl font-black text-paraiso-blue dark:text-white">{formatCurrency(finalTotalCents)}</span>
+                                                        <div className="flex items-center justify-between pt-2 border-t border-hairline">
+                                                            <span className="text-xs font-medium text-ink-muted uppercase tracking-[0.16em]">Total a pagar</span>
+                                                            <span className="text-xl font-semibold tracking-[-0.02em] text-ink">{formatCurrency(finalTotalCents)}</span>
                                                         </div>
                                                     </>
                                                 ) : (
                                                     <div className="flex items-center justify-between px-1">
-                                                        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total</span>
-                                                        <span className="text-xl font-black text-paraiso-blue dark:text-white">{formatCurrency(subtotalCents)}</span>
+                                                        <span className="text-xs font-medium text-ink-muted uppercase tracking-[0.16em]">Total</span>
+                                                        <span className="text-xl font-semibold tracking-[-0.02em] text-ink">{formatCurrency(subtotalCents)}</span>
                                                     </div>
                                                 )}
                                             </div>
@@ -1100,7 +1100,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                         <button
                                             type="submit"
                                             disabled={status === 'loading' || isLoadingTickets || (tickets.length > 0 && !selectedTicketId)}
-                                            className="w-full py-4 mt-4 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-paraiso-blue transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg"
+                                            className="w-full py-4 mt-4 bg-ink text-paper font-medium text-sm rounded-full hover:opacity-90 transition-opacity disabled:opacity-60 flex items-center justify-center gap-2"
                                         >
                                             {status === 'loading' ? (
                                                 <><Loader2 size={16} className="animate-spin" /> Processando...</>
@@ -1112,9 +1112,9 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                         </button>
 
                                         {event.terms_url && (
-                                            <p className="text-[10px] text-center text-slate-400">
+                                            <p className="text-[11px] text-center text-ink-muted">
                                                 Ao continuar você concorda com os{' '}
-                                                <a href={event.terms_url} target="_blank" rel="noreferrer" className="underline hover:text-paraiso-green">
+                                                <a href={event.terms_url} target="_blank" rel="noreferrer" className="underline hover:text-ink">
                                                     termos do evento
                                                 </a>.
                                             </p>

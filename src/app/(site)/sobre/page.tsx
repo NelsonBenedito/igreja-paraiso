@@ -1,9 +1,13 @@
-
 import Image from "next/image";
-import { Instagram, GraduationCap, Heart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import ImageWithFallback from "@/components/ImageWithFallback";
+import {
+    EditorialSection,
+    Highlight,
+    Period,
+    SectionLabel,
+    SectionTitle,
+    TextLink,
+} from "@/components/site/Editorial";
 import { getSiteContent } from "@/lib/site-content/data";
 
 export default async function AboutPage() {
@@ -11,73 +15,23 @@ export default async function AboutPage() {
     const { pastors } = await getSiteContent();
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16 space-y-20">
-            {/* Header Section */}
-            <div className="text-center max-w-3xl mx-auto space-y-6">
-                <h1 className="text-4xl md:text-5xl font-serif font-bold text-primary">Sobre a Igreja Paraíso</h1>
-                <p className="text-xl text-muted-foreground leading-relaxed">
-                    &quot;Casa de Deus, minha família.&quot;
+        <div className="bg-paper text-ink">
+            <header className="mx-auto max-w-[82rem] px-5 pt-32 pb-16 md:px-16 md:pt-40 md:pb-24">
+                <SectionLabel numbered={false} className="mb-6">
+                    A igreja
+                </SectionLabel>
+                <SectionTitle as="h1" size="xl">
+                    Sobre a Igreja <Highlight>Paraíso</Highlight>
+                    <Period />
+                </SectionTitle>
+                <p className="mt-6 max-w-xl text-base leading-relaxed text-ink-muted md:text-lg">
+                    Casa de Deus, minha família.
                 </p>
-            </div>
+            </header>
 
-            {/* Senior Pastor Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center">
-                <div className="order-2 md:order-1 space-y-8">
-                    <div className="space-y-4">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold tracking-wide uppercase">
-                            Presidente
-                        </div>
-                        <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">
-                            Pr. Evandro Menezes
-                        </h2>
-                        <p className="text-lg text-muted-foreground leading-relaxed">
-                            Líder visionário e dedicado ao ministério pastoral, o Pr. Evandro tem servido a esta geração com paixão pelo Evangelho e amor pelas pessoas.
-                        </p>
-                    </div>
-
-                    <div className="space-y-4">
-                        <Card className="border-none shadow-sm bg-muted/50">
-                            <CardContent className="p-4 flex items-start gap-4">
-                                <GraduationCap className="w-6 h-6 text-primary shrink-0 mt-1" />
-                                <div>
-                                    <h3 className="font-semibold text-foreground">Formação Acadêmica</h3>
-                                    <p className="text-muted-foreground text-sm">
-                                        Mestre em Teologia pela <strong>Eastern University</strong> (Pensilvânia - EUA).
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="border-none shadow-sm bg-muted/50">
-                            <CardContent className="p-4 flex items-start gap-4">
-                                <Heart className="w-6 h-6 text-primary shrink-0 mt-1" />
-                                <div>
-                                    <h3 className="font-semibold text-foreground">Família</h3>
-                                    <p className="text-muted-foreground text-sm">
-                                        Casado com <strong>Ricelle Menezes Gonçalves</strong>, sua parceira de vida e ministério.
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    <div className="pt-2">
-                        <Button variant="outline" className="gap-2" asChild>
-                            <a
-                                href="https://www.instagram.com/prevandromenezes/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <Instagram className="w-4 h-4" />
-                                Siga no Instagram
-                            </a>
-                        </Button>
-                    </div>
-                </div>
-
-                {/* Image Section */}
-                <div className="order-1 md:order-2">
-                    <div className="relative aspect-[4/5] bg-muted rounded-2xl overflow-hidden shadow-2xl ring-1 ring-border/50 rotate-3 transition-transform hover:rotate-0 duration-500">
+            <EditorialSection label="Presidente" numbered={false}>
+                <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-16">
+                    <div className="relative aspect-[4/5] overflow-hidden border border-hairline bg-paper-soft">
                         <Image
                             src="/pastor.jpg"
                             alt="Pr. Evandro Menezes"
@@ -87,48 +41,82 @@ export default async function AboutPage() {
                             priority
                         />
                     </div>
-                </div>
-            </div>
 
-            {/* Missions/Branch Churches Section */}
-            <div className="space-y-12">
-                <div className="text-center max-w-2xl mx-auto space-y-4">
-                    <h2 className="text-3xl md:text-4xl font-serif font-bold text-foreground">Nossos Pastores e Missões</h2>
-                    <p className="text-muted-foreground text-lg">
-                        Conheça os líderes que cuidam das nossas igrejas filiais e missões.
-                    </p>
+                    <div className="flex flex-col justify-end">
+                        <SectionTitle className="mb-10">
+                            Pr. Evandro Menezes
+                            <Period />
+                        </SectionTitle>
+
+                        <dl className="m-0 border-t border-ink">
+                            <div className="grid grid-cols-1 gap-1 border-b border-hairline py-5 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-6">
+                                <dt className="text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
+                                    Formação
+                                </dt>
+                                <dd className="m-0 text-base leading-relaxed">
+                                    Mestre em Teologia pela Eastern University (Pensilvânia, EUA).
+                                </dd>
+                            </div>
+                            <div className="grid grid-cols-1 gap-1 border-b border-hairline py-5 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-6">
+                                <dt className="text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
+                                    Família
+                                </dt>
+                                <dd className="m-0 text-base leading-relaxed">
+                                    Casado com Ricelle Menezes Gonçalves.
+                                </dd>
+                            </div>
+                        </dl>
+
+                        <div className="mt-8">
+                            <TextLink href="https://www.instagram.com/prevandromenezes/">Instagram</TextLink>
+                        </div>
+                    </div>
                 </div>
+            </EditorialSection>
+
+            <EditorialSection label="Pastores" numbered={false} tone="soft">
+                <SectionTitle className="mb-6">
+                    Pastores e <Highlight>missões</Highlight>
+                    <Period />
+                </SectionTitle>
+                <p className="mb-10 max-w-xl text-base leading-relaxed text-ink-muted md:mb-14">
+                    Quem cuida das igrejas filiais e das missões.
+                </p>
 
                 {pastors.items.length === 0 ? (
-                    <p className="text-center text-muted-foreground">Nenhum pastor disponível no momento.</p>
+                    <p className="m-0 border-t border-ink py-10 text-sm text-ink-muted">
+                        Nenhum pastor disponível no momento.
+                    </p>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <ul className="m-0 grid list-none grid-cols-1 gap-x-6 gap-y-10 border-t border-ink p-0 pt-10 sm:grid-cols-2 lg:grid-cols-3">
                         {pastors.items.map((pastor) => (
-                            <MissionCard key={pastor.name} name={pastor.name} image={pastor.image} />
+                            <PastorItem key={pastor.name} name={pastor.name} image={pastor.image} />
                         ))}
-                    </div>
+                    </ul>
                 )}
-            </div>
+            </EditorialSection>
         </div>
     );
 }
 
-function MissionCard({ name, image }: { name: string, image: string }) {
+function PastorItem({ name, image }: { name: string; image: string }) {
     return (
-        <Card className="group hover:shadow-lg transition-all duration-300 overflow-hidden border-none shadow-sm h-full flex flex-col">
-            <div className="relative aspect-square w-full overflow-hidden bg-muted">
+        <li className="group">
+            <div className="relative aspect-square w-full overflow-hidden border border-hairline bg-paper">
                 <ImageWithFallback
                     src={image}
                     alt={name}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
-            <CardContent className="p-6 flex flex-col gap-2 flex-grow bg-card relative">
-                <h3 className="font-bold text-lg leading-tight line-clamp-1" title={name}>{name}</h3>
-            </CardContent>
-        </Card>
+            <h3
+                className="mt-4 line-clamp-1 text-lg font-medium tracking-[-0.02em] md:text-xl"
+                title={name}
+            >
+                {name}
+            </h3>
+        </li>
     );
 }

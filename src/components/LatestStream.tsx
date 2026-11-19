@@ -90,9 +90,6 @@ const LatestStream: React.FC<LatestStreamProps> = ({ content }) => {
                             {sectionTitle}
                             <Period />
                         </SectionTitle>
-                        <p className="mt-5 max-w-2xl text-base text-ink-muted">
-                            Acompanhe nossos cultos e mensagens onde você estiver.
-                        </p>
                     </div>
                     <TextLink href={channelUrl}>youtube.com/@{channelHandle}</TextLink>
                 </div>

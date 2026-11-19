@@ -98,7 +98,7 @@ const NewsSection: React.FC<NewsSectionProps> = ({ events, registeredEventIds = 
 
                                 <div className="mt-auto flex items-center justify-between gap-4 border-t border-hairline pt-4">
                                     <span className="text-[15px] text-ink-muted">
-                                        {card.tag ?? 'Saiba mais'}
+                                        {card.tag ?? ''}
                                     </span>
                                     {isRegistered(item.id) ? (
                                         <span className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-detail">

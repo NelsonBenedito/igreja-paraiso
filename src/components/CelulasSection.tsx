@@ -102,7 +102,7 @@ const CelulasSection: React.FC<CelulasSectionProps> = ({ content, photos = [] })
                     {content.paragraph1}
                 </p>
             )}
-            {content.paragraph2 && (
+            {content.paragraph2 && !content.paragraph1.includes(content.paragraph2.trim()) && (
                 <p className="m-0 mt-3 max-w-[42.5rem] text-base leading-relaxed text-ink-muted md:text-lg">
                     {content.paragraph2}
                 </p>

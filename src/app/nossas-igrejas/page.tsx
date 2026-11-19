@@ -1,8 +1,7 @@
 import ImageWithFallback from "@/components/ImageWithFallback";
-import { MapPin, ArrowLeft, ExternalLink } from "lucide-react";
-import Link from "next/link";
 import { getSiteContent } from "@/lib/site-content/data";
-import { Button } from "@/components/ui/button";
+import type { SiteChurch } from "@/lib/site-content/types";
+import { SectionLabel, SectionTitle, Highlight, Period } from "@/components/site/Editorial";
 
 export const metadata = {
   title: "Nossas Igrejas | Igreja Paraíso",
@@ -12,6 +11,23 @@ export const metadata = {
 /** URL de embed do Google Maps sem necessidade de API key. */
 function mapEmbedUrl(query: string) {
   return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+}
+
+/** Minúsculas e sem acento, para comparar cidade com nome/endereço. */
+function normalize(text: string) {
+  return text.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+}
+
+/**
+ * Cidade (parte antes de " - " em `location`) só quando ela ainda não aparece
+ * no nome nem no endereço, para não repetir a mesma informação no cartão.
+ */
+function cityIfNew(church: SiteChurch, address: string) {
+  const city = church.location?.split(" - ")[0]?.trim();
+  if (!city) return null;
+  const c = normalize(city);
+  if (normalize(church.name).includes(c) || normalize(address).includes(c)) return null;
+  return city;
 }
 
 export default async function NossasIgrejasPage() {
@@ -25,102 +41,93 @@ export default async function NossasIgrejasPage() {
   });
 
   return (
-    <div className="bg-slate-50 dark:bg-paraiso-blue-deep min-h-screen pb-24 pt-28">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-slate-500 hover:text-paraiso-green transition-colors mb-8 text-sm font-bold uppercase tracking-widest"
-        >
-          <ArrowLeft size={16} /> Voltar para o início
-        </Link>
-
-        <div className="text-center max-w-3xl mx-auto mb-20 space-y-6">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-paraiso-green/10 text-paraiso-green text-xs font-black uppercase tracking-widest border border-paraiso-green/20">
+    <div className="bg-paper text-ink">
+      <header className="mx-auto max-w-[82rem] px-5 pb-16 pt-32 md:px-16 md:pb-24 md:pt-40">
+        {churches.badge ? (
+          <SectionLabel numbered={false} className="mb-6">
             {churches.badge}
-          </span>
-          <h1 className="text-4xl md:text-5xl font-black text-paraiso-blue-dark dark:text-white tracking-tighter uppercase leading-none">
-            {churches.titlePart1}{" "}
-            <span className="text-paraiso-green italic font-serif lowercase">
-              {churches.titleHighlight}
-            </span>
-          </h1>
-          <p className="text-slate-500 dark:text-slate-300 text-lg font-medium leading-relaxed">
+          </SectionLabel>
+        ) : null}
+        <SectionTitle as="h1" size="xl" className="max-w-[56rem]">
+          {churches.titlePart1} <Highlight>{churches.titleHighlight}</Highlight>
+          <Period />
+        </SectionTitle>
+        {churches.intro ? (
+          <p className="m-0 mt-8 max-w-[40rem] text-[17px] leading-[1.65] text-ink-muted">
             {churches.intro}
           </p>
-        </div>
+        ) : null}
+      </header>
 
-        {items.length === 0 ? (
-          <p className="text-center text-slate-500 dark:text-slate-300 font-medium">
-            Nenhuma igreja disponível no momento.
-          </p>
-        ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
-          {items.map((church) => {
-            const query = church.address?.trim() || church.location || church.name;
-            return (
-              <div
-                key={church.name}
-                className="group overflow-hidden rounded-[2.5rem] bg-white dark:bg-paraiso-blue-dark shadow-md hover:shadow-2xl transition-all duration-500 border border-slate-100 dark:border-white/5 flex flex-col"
-              >
-                <div className="relative aspect-[16/9] w-full overflow-hidden bg-slate-200">
-                  <ImageWithFallback
-                    src={church.image}
-                    alt={church.name}
-                    fill
-                    className="object-cover transition-all duration-700 grayscale group-hover:grayscale-0 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-paraiso-blue-deep/60 via-transparent to-transparent z-10" />
-                  <span className="absolute top-4 left-4 flex items-center gap-1 bg-white/90 backdrop-blur-sm dark:bg-paraiso-blue-dark/90 text-slate-800 dark:text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow z-20">
-                    <MapPin size={10} className="text-paraiso-green" />
-                    {church.isHeadquarters ? "Sede" : church.location.split(" - ")[0]}
-                  </span>
-                </div>
-
-                <div className="p-8 flex flex-col gap-5 flex-grow">
-                  <h3 className="font-black text-2xl text-slate-800 dark:text-white uppercase tracking-tight leading-tight group-hover:text-paraiso-green transition-colors">
-                    {church.name}
-                  </h3>
-
-                  {/* Endereço completo */}
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-paraiso-green shrink-0 mt-0.5" />
-                    <p className="text-sm md:text-base font-medium text-slate-600 dark:text-slate-300 leading-relaxed">
-                      {church.address?.trim() || church.location}
-                    </p>
-                  </div>
-
-                  {/* Mapa integrado */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-slate-100 dark:border-white/10 bg-slate-100 dark:bg-white/5">
-                    <iframe
-                      title={`Mapa — ${church.name}`}
-                      src={mapEmbedUrl(query)}
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      className="absolute inset-0 h-full w-full border-0"
-                      allowFullScreen
-                    />
-                  </div>
-
-                  {church.mapsUrl?.trim() ? (
-                    <div className="mt-auto pt-2">
-                      <Button
-                        asChild
-                        className="w-full bg-paraiso-blue hover:bg-paraiso-green text-white font-black uppercase tracking-widest text-xs py-5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
-                      >
-                        <a href={church.mapsUrl} target="_blank" rel="noopener noreferrer">
-                          <MapPin size={14} /> Como Chegar <ExternalLink size={12} />
-                        </a>
-                      </Button>
+      <section className="border-t border-hairline">
+        <div className="mx-auto max-w-[82rem] px-5 py-16 md:px-16 md:py-24">
+          {items.length === 0 ? (
+            <p className="m-0 text-ink-muted">Nenhuma igreja disponível no momento.</p>
+          ) : (
+            <ul className="m-0 grid list-none grid-cols-1 gap-x-10 gap-y-16 p-0 md:grid-cols-2">
+              {items.map((church) => {
+                const address = church.address?.trim() || church.location;
+                const query = church.address?.trim() || church.location || church.name;
+                const city = church.address?.trim() ? cityIfNew(church, address) : null;
+                return (
+                  <li key={church.name} className="group flex flex-col">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md border border-hairline bg-paper-soft">
+                      <ImageWithFallback
+                        src={church.image}
+                        alt={church.name}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
                     </div>
-                  ) : null}
-                </div>
-              </div>
-            );
-          })}
+
+                    <div className="mt-5 flex flex-1 flex-col gap-5 border-t border-hairline pt-5">
+                      {church.isHeadquarters ? (
+                        <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-detail">
+                          Sede
+                        </span>
+                      ) : null}
+                      <div>
+                        <h2 className="m-0 text-[22px] font-medium leading-tight tracking-[-0.01em] text-ink">
+                          {church.name}
+                        </h2>
+                        {city ? <p className="m-0 mt-1.5 text-sm text-ink-muted">{city}</p> : null}
+                        {address ? (
+                          <p className="m-0 mt-1.5 text-sm leading-relaxed text-ink-muted">{address}</p>
+                        ) : null}
+                      </div>
+
+                      <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md border border-hairline bg-paper-soft">
+                        <iframe
+                          title={`Mapa — ${church.name}`}
+                          src={mapEmbedUrl(query)}
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          className="absolute inset-0 h-full w-full border-0"
+                          allowFullScreen
+                        />
+                      </div>
+
+                      {church.mapsUrl?.trim() ? (
+                        <div className="mt-auto">
+                          <a
+                            href={church.mapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 border-b border-current pb-1 text-sm font-medium text-ink transition-colors hover:text-detail"
+                          >
+                            Como chegar <span aria-hidden="true">↗</span>
+                          </a>
+                        </div>
+                      ) : null}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
-        )}
-      </div>
+      </section>
     </div>
   );
 }

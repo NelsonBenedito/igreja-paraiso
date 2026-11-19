@@ -1,31 +1,46 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import { PillLink, Period, SectionTitle } from "@/components/site/Editorial";
 
 export const metadata: Metadata = {
   title: "Em breve | Igreja Paraíso",
-  description:
-    "Estamos a preparar o site. A campanha Cotas Campus já está disponível.",
+  description: "O site está em preparação. A campanha Cotas Campus já está no ar.",
 };
 
 export default function EmConstrucaoPage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-slate-50 px-6 py-16 text-center">
-      <p className="text-sm font-semibold uppercase tracking-widest text-paraiso-green mb-3">
-        Igreja Paraíso
-      </p>
-      <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 max-w-lg leading-tight">
-        Site em preparação
-      </h1>
-      <p className="mt-4 text-slate-600 max-w-md text-base leading-relaxed">
-        O restante do site ainda não está disponível nesta versão. A campanha do
-        novo campus já pode ser vista e apoiada no link abaixo.
-      </p>
-      <Link
-        href="/cotas/campus"
-        className="mt-8 inline-flex items-center justify-center rounded-full bg-paraiso-green px-8 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-paraiso-blue hover:shadow-lg"
-      >
-        Ir para Cotas Campus Paraíso
+    <main className="flex min-h-screen flex-col items-center justify-center bg-paper px-5 py-16 text-center font-display text-ink">
+      <Link href="/" aria-label="Igreja Paraíso — início" className="mb-12 flex items-center">
+        <Image
+          src="/IgrejaParaiso.webp"
+          alt="Igreja Paraíso"
+          width={1529}
+          height={461}
+          unoptimized
+          priority
+          className="h-11 w-auto object-contain dark:hidden"
+        />
+        <Image
+          src="/LogoParaisoW.svg"
+          alt="Igreja Paraíso"
+          width={1920}
+          height={562}
+          unoptimized
+          priority
+          className="hidden h-11 w-auto object-contain dark:block"
+        />
       </Link>
+      <SectionTitle as="h1" size="lg" className="max-w-2xl">
+        Em breve
+        <Period />
+      </SectionTitle>
+      <p className="mt-6 max-w-md text-lg leading-relaxed text-ink-muted">
+        O site está em preparação. A campanha do novo campus já está no ar.
+      </p>
+      <PillLink href="/cotas/campus" className="mt-10">
+        Ver Cotas Campus
+      </PillLink>
     </main>
   );
 }
