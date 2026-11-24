@@ -52,6 +52,12 @@ describe("/evento/[id] — ação de inscrição", () => {
     expect(html).toContain("Inscrições encerradas");
     expect(html).not.toContain("Inscrever-se");
   });
+
+  it("quem já se inscreveu pode inscrever outra pessoa com o mesmo e-mail", () => {
+    const html = render(evento({}), true);
+    expect(html).toContain("Inscrição confirmada");
+    expect(html).toContain("Inscrever outra pessoa");
+  });
 });
 
 describe("/evento/[id] — conteúdo do painel", () => {

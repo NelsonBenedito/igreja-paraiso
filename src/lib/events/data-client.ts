@@ -3,7 +3,6 @@ import {
   createEventCheckoutClient,
   validateEventCouponClient,
   fetchOrderPayment,
-  isDuplicateRegistrationError,
   isIdempotencyConflict,
   isSoldOutConflict,
   EventsApiError,
@@ -19,8 +18,12 @@ import type {
 
 export type RegistrationResult =
   | { ok: true; communityLink: string | null }
-  | { ok: false; reason: "duplicate" | "error"; message?: string };
+  | { ok: false; reason: "sold_out" | "error"; message?: string };
 
+/**
+ * Inscrição gratuita. O mesmo e-mail pode inscrever várias pessoas no evento,
+ * por isso o único `409` possível é falta de vaga.
+ */
 export async function submitEventRegistration(
   eventId: string,
   body: EventRegistrationRequest,
@@ -29,8 +32,8 @@ export async function submitEventRegistration(
     const dto = await createEventRegistrationClient(eventId, body);
     return { ok: true, communityLink: dto.communityLink ?? null };
   } catch (error) {
-    if (isDuplicateRegistrationError(error)) {
-      return { ok: false, reason: "duplicate" };
+    if (isSoldOutConflict(error)) {
+      return { ok: false, reason: "sold_out" };
     }
     const message = error instanceof EventsApiError ? error.message : undefined;
     console.error("[registrations] API error:", error);
