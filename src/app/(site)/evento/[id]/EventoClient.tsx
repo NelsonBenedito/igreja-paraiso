@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
     Calendar, MapPin, ChevronLeft, CheckCircle2, ArrowRight,
-    Globe, Monitor, Video, Share2, ExternalLink,
+    Globe, Monitor, Video, Share2, ExternalLink, UserPlus,
 } from 'lucide-react';
 import Link from 'next/link';
 import EventRegistrationModal from '@/components/EventRegistrationModal';
@@ -215,10 +215,19 @@ export default function EventoClient({ event, isRegisteredServer }: Props) {
                                         {isFinished ? 'Evento encerrado' : 'Inscrições encerradas'}
                                     </div>
                                 ) : isRegistered ? (
-                                    <div className="flex w-full items-center justify-center gap-2 rounded-full border border-hairline bg-paper-soft py-4 text-sm font-medium text-detail">
-                                        <CheckCircle2 size={16} />
-                                        Inscrição confirmada
-                                    </div>
+                                    <>
+                                        <div className="flex w-full items-center justify-center gap-2 rounded-full border border-hairline bg-paper-soft py-4 text-sm font-medium text-detail">
+                                            <CheckCircle2 size={16} />
+                                            Inscrição confirmada
+                                        </div>
+                                        {/* O mesmo e-mail pode inscrever familiares e amigos. */}
+                                        <button
+                                            onClick={() => setIsModalOpen(true)}
+                                            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-full border border-hairline text-sm font-medium text-ink transition-colors hover:border-ink/30"
+                                        >
+                                            <UserPlus size={14} /> Inscrever outra pessoa
+                                        </button>
+                                    </>
                                 ) : (
                                     <motion.button
                                         whileTap={{ scale: 0.98 }}

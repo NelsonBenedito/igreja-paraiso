@@ -306,10 +306,6 @@ export async function validateEventCouponClient(
   return validateEventCoupon(eventId, body);
 }
 
-export function isDuplicateRegistrationError(error: unknown): boolean {
-  return error instanceof EventsApiError && error.status === 409;
-}
-
 /**
  * `409` no checkout cobre dois casos distintos que exigem respostas diferentes:
  * stock esgotado (refetch dos ingressos) e `idempotencyKey` inutilizável

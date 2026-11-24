@@ -33,7 +33,6 @@ type Status =
     | 'awaiting_payment'
     | 'paid'
     | 'payment_failed'
-    | 'duplicate'
     | 'sold_out'
     | 'error';
 
@@ -380,8 +379,8 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                 setCommunityLink(result.communityLink);
                 setStatus('success');
                 onSuccess?.(event.id);
-            } else if (result.reason === 'duplicate') {
-                setStatus('duplicate');
+            } else if (result.reason === 'sold_out') {
+                setStatus('sold_out');
             } else {
                 setErrorMessage(result.message ?? null);
                 setStatus('error');
@@ -396,6 +395,14 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
         setErrorMessage(null);
         setCheckoutResponse(null);
         setPaymentStatus('PENDING');
+    };
+
+    /** Mantém o e-mail de contato e limpa os dados da pessoa para inscrever outra. */
+    const registerAnother = () => {
+        setForm(f => ({ ...f, name: '', phone: '', message: '' }));
+        setFieldValues({});
+        setCommunityLink(null);
+        void refetchTickets();
     };
 
     const refetchTickets = async () => {
@@ -532,6 +539,7 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                             <h3 className="text-2xl font-semibold tracking-[-0.03em] text-ink mb-2">Inscrição confirmada!</h3>
                                             <p className="text-ink-muted text-sm leading-relaxed mb-4">
                                                 Sua inscrição para <strong>{event.title}</strong> foi realizada com sucesso.
+                                                Pode inscrever outras pessoas usando o mesmo e-mail.
                                             </p>
                                             {communityLink && (
                                                 <a
@@ -544,9 +552,14 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                                 </a>
                                             )}
                                         </div>
-                                        <button onClick={onClose} className="px-8 py-3 w-full bg-ink text-paper font-medium text-sm rounded-full hover:opacity-90 transition-opacity">
-                                            Fechar
-                                        </button>
+                                        <div className="flex gap-3">
+                                            <button onClick={registerAnother} className="flex-1 px-4 py-3 border border-hairline text-ink font-medium text-sm rounded-full hover:border-ink/30 transition-colors">
+                                                Inscrever outra pessoa
+                                            </button>
+                                            <button onClick={onClose} className="flex-1 px-4 py-3 bg-ink text-paper font-medium text-sm rounded-full hover:opacity-90 transition-opacity">
+                                                Fechar
+                                            </button>
+                                        </div>
                                     </motion.div>
                                 )}
 
@@ -668,22 +681,6 @@ const EventRegistrationModal: React.FC<Props> = ({ event, onClose, onSuccess }) 
                                         <button onClick={refetchTickets} className="px-8 py-3 w-full bg-ink text-paper font-medium text-sm rounded-full hover:opacity-90 transition-opacity">
                                             Ver ingressos disponíveis
                                         </button>
-                                    </motion.div>
-                                )}
-
-                                {/* Já inscrito */}
-                                {status === 'duplicate' && (
-                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
-                                        <AlertCircle className="w-12 h-12 text-ink-muted mx-auto" />
-                                        <div>
-                                            <h3 className="text-2xl font-semibold tracking-[-0.03em] text-ink mb-2">Você já está inscrito!</h3>
-                                            <p className="text-ink-muted text-sm">Este e-mail já foi cadastrado para este evento.</p>
-                                        </div>
-                                        <div className="flex gap-3 justify-center">
-                                            <button onClick={reset} className="px-6 py-3 border border-hairline text-ink font-medium text-sm rounded-full hover:border-ink/30 transition-colors">
-                                                Tentar outro e-mail
-                                            </button>
-                                        </div>
                                     </motion.div>
                                 )}
 

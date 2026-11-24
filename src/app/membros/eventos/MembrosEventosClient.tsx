@@ -18,7 +18,7 @@ interface Props {
 const formatDate = (d: string) =>
     new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
 
-type ModalStatus = 'idle' | 'loading' | 'success' | 'duplicate' | 'error';
+type ModalStatus = 'idle' | 'loading' | 'success' | 'error';
 type ErrorDetail = { code?: string; message?: string } | null;
 
 export default function MembrosEventosClient({ events, registeredEventIds }: Props) {
@@ -78,8 +78,9 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
         if (result.ok) {
             setStatus('success');
             setRegisteredIds((prev) => [...prev, selectedEvent.id]);
-        } else if (result.reason === 'duplicate') {
-            setStatus('duplicate');
+        } else if (result.reason === 'sold_out') {
+            setErrorDetail({ message: 'Ingressos esgotados.' });
+            setStatus('error');
         } else {
             setErrorDetail({ message: result.message });
             setStatus('error');
@@ -263,20 +264,6 @@ export default function MembrosEventosClient({ events, registeredEventIds }: Pro
                                                 </p>
                                             </div>
                                             <button onClick={closeModal} className="px-8 py-3 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full hover:bg-paraiso-blue transition-all">
-                                                Fechar
-                                            </button>
-                                        </motion.div>
-                                    )}
-
-                                    {/* Duplicado */}
-                                    {status === 'duplicate' && (
-                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-6 space-y-4">
-                                            <AlertCircle className="w-16 h-16 text-amber-500 mx-auto" />
-                                            <div>
-                                                <h3 className="text-xl font-black text-paraiso-blue dark:text-white mb-2">Já inscrito!</h3>
-                                                <p className="text-slate-500 dark:text-slate-400 text-sm">Este e-mail já foi cadastrado para este evento.</p>
-                                            </div>
-                                            <button onClick={closeModal} className="px-8 py-3 bg-paraiso-green text-white font-black uppercase tracking-widest text-xs rounded-full">
                                                 Fechar
                                             </button>
                                         </motion.div>
